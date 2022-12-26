@@ -3,6 +3,7 @@ import pathlib
 from decimal import Decimal
 from typing import ClassVar, List
 
+from pydantic import Field
 from web3 import Web3
 
 from huma_signals.adapters.models import SignalAdapterBase
@@ -15,16 +16,18 @@ from .settings import POOL_REGISTRY
 class LendingPoolSignals(HumaBaseModel):
     # TODO: add other pool signals: utilization, liquidity, etc.
     # Pool policy signals
-    pool_address: str
-    apr: Decimal
-    max_credit_amount: Decimal
-    token_name: str
-    token_symbol: str
-    token_decimal: int
-    interval_in_days_max: int
-    interval_in_days_min: int
-    invoice_amount_ratio: float
-    is_testnet: bool = False
+    pool_address: str = Field(..., description="Address of the lending pool")
+    apr: int = Field(..., description="Annual percentage rate in BPS")
+    max_credit_amount: Decimal = Field(..., description="Maximum credit amount defined by the pool")
+    token_name: str = Field(..., description="Name of the token used by the pool")
+    token_symbol: str = Field(..., description="Symbol of the token used by the pool")
+    token_decimal: int = Field(..., description="Decimal of the token used by the pool")
+    interval_in_days_max: int = Field(..., description="Maximum payment interval in days for the pool")
+    interval_in_days_min: int = Field(..., description="Minimum payment interval in days for the pool")
+    invoice_amount_ratio: float = Field(
+        ..., description="For invoice factoring pool, the percentage of the payable amount the pool allow to borrow"
+    )
+    is_testnet: bool = Field(default=False, description="Whether the pool is on testnet or not")
 
 
 class LendingPoolAdapter(SignalAdapterBase):
