@@ -34,7 +34,7 @@ class LendingPoolAdapter(SignalAdapterBase):
 
     name: ClassVar[str] = "lending_pool"
     required_inputs: ClassVar[List[str]] = ["pool_address"]
-    signals: ClassVar[List[str]] = LendingPoolSignals.__fields__.keys()
+    signals: ClassVar[List[str]] = list(LendingPoolSignals.__fields__.keys())
 
     @classmethod
     def fetch(cls, pool_address: str) -> LendingPoolSignals:
