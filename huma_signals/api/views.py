@@ -24,3 +24,9 @@ def get_list_adapters():
     logger.info("Received list adapters request")
     return _list_adapters(ADAPTER_REGISTRY)
 
+
+@router.post("/fetch", response_model=SignalFetchResponse)
+def post_fetch(signal_request: SignalFetchRequest):
+    logger.info("Received signal request", request=signal_request)
+    signals = fetch_signal(signal_request.signal_names, signal_request.adapter_inputs)
+    return jsonable_encoder(SignalFetchResponse(signals=signals))

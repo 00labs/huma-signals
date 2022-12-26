@@ -13,7 +13,7 @@ class DummySignals(HumaBaseModel):
 
 class DummyAdapter(SignalAdapterBase):
     name: ClassVar[str] = "dummy_adapter"
-    required_inputs: ClassVar[List[str]] = ["test_inout"]
+    required_inputs: ClassVar[List[str]] = ["test_input"]
     signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
 
 
@@ -29,7 +29,7 @@ def describe_get_list_adapters():
         assert response["adapters"] == [
             {
                 "name": "dummy_adapter",
-                "required_inputs": ["test_inout"],
+                "required_inputs": ["test_input"],
                 "signals": ["test_signal"],
             }
         ]
