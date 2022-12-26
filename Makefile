@@ -13,3 +13,6 @@ lint-check:
 
 test:
 	ENV=test poetry run python3 -m pytest -v --color=yes
+
+run-local:
+	ENV=development poetry run python3 -m uvicorn huma_signals.api.main:app --reload
