@@ -10,6 +10,16 @@ class Chain(enum.Enum):
     GOERLI = "GOERLI"
     POLYGON = "POLYGON"
 
+    @staticmethod
+    def from_chain_name(chain_name: str) -> "Chain":
+        if chain_name.lower() in ("ethereum", "mainnet", "eth"):
+            return Chain.ETHEREUM
+        if chain_name.lower() in ("goerli"):
+            return Chain.GOERLI
+        if chain_name.lower() in ("polygon", "matic"):
+            return Chain.POLYGON
+        raise ValueError(f"Unsupported chain: {chain_name}")
+
     def chain_name(self) -> str:
         return self.name.lower()
 
