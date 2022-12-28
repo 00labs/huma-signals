@@ -29,6 +29,17 @@ def describe_chain():
             with pytest.raises(ValueError):
                 assert Chain("SOME_CHAIN") is None
 
+        def it_can_get_chain_from_chain_name():
+            assert Chain.from_chain_name("polygon") == Chain.POLYGON
+            assert Chain.from_chain_name("ethereum") == Chain.ETHEREUM
+            assert Chain.from_chain_name("goerli") == Chain.GOERLI
+            assert Chain.from_chain_name("matic") == Chain.POLYGON
+            assert Chain.from_chain_name("eth") == Chain.ETHEREUM
+            assert Chain.from_chain_name("MAINNET") == Chain.ETHEREUM
+
+            with pytest.raises(ValueError):
+                assert Chain.from_chain_name("SOME_CHAIN") is None
+
 
 def describe_get_w3():
     def it_can_get_w3():
