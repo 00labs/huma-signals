@@ -1,0 +1,37 @@
+name: Huma Decentralized Signal Portfolio CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Get short git-sha for image tag
+        id: short-sha
+        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.event.pull_request.head.sha }})"
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: huma-signals
+          IMAGE_TAG: ${{ steps.short-sha.outputs.sha_short }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name  $ECR_REPOSITORY
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
