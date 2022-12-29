@@ -28,3 +28,5 @@ FROM base AS prod
 
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
+
+CMD poetry run uvicorn huma_signals.api.main:app --reload --host "0.0.0.0"
