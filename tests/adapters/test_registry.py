@@ -63,6 +63,23 @@ def describe_find_required_adapter():
             find_required_adapter(["dummy_adapter.test_signal3"], dummy_registry)
 
 
+def describe_adapter_registry():
+    def all_adapaters_are_subclasses_of_signal_adapter_base():
+        assert all([issubclass(adapter, SignalAdapterBase) for adapter in ADAPTER_REGISTRY.values()])
+
+    def all_adapters_have_a_name():
+        assert all([hasattr(adapter, "name") for adapter in ADAPTER_REGISTRY.values()])
+        assert all([isinstance(adapter.name, str) for adapter in ADAPTER_REGISTRY.values()])
+
+    def all_adapters_have_required_inputs():
+        assert all([hasattr(adapter, "required_inputs") for adapter in ADAPTER_REGISTRY.values()])
+        assert all([isinstance(adapter.required_inputs, list) for adapter in ADAPTER_REGISTRY.values()])
+
+    def all_adapters_have_signals():
+        assert all([hasattr(adapter, "signals") for adapter in ADAPTER_REGISTRY.values()])
+        assert all([isinstance(adapter.signals, list) for adapter in ADAPTER_REGISTRY.values()])
+
+
 def describe_fetch_signal():
     def it_returns_the_correct_signal(dummy_registry):
         signals = fetch_signal(["dummy_adapter.test_signal"], {"test_input": 10}, dummy_registry)

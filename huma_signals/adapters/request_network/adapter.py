@@ -24,7 +24,7 @@ class RequestNetworkInvoiceAdapter(SignalAdapterBase):
         "borrower_wallet_address",
         "receivable_param",
     ]
-    signals: ClassVar[List[str]] = RequestNetworkInvoiceSignals.__fields__.keys()
+    signals: ClassVar[List[str]] = list(RequestNetworkInvoiceSignals.__fields__.keys())
 
     def _get_payments(from_address: str, to_address: str, rn_subgraph_endpoint_url: str):
         where_clause = ""
