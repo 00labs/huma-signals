@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 
+from .allowlist.adapter import AllowListAdapter
 from .lending_pools.adapter import LendingPoolAdapter
 from .models import SignalAdapterBase
 from .request_network.adapter import RequestNetworkInvoiceAdapter
@@ -7,6 +8,7 @@ from .request_network.adapter import RequestNetworkInvoiceAdapter
 ADAPTER_REGISTRY = {
     LendingPoolAdapter.name: LendingPoolAdapter,
     RequestNetworkInvoiceAdapter.name: RequestNetworkInvoiceAdapter,
+    AllowListAdapter.name: AllowListAdapter,
 }
 
 
