@@ -1,6 +1,6 @@
 import pytest
 
-from huma_signals.adapters.wallet_eth_txns.adapter import WalletEthTransactionsAdapter
+from huma_signals.adapters.ethereum_wallet.adapter import EthereumWalletAdapter
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -11,7 +11,7 @@ def valid_address() -> str:
 
 def describe_wallet_eth_txns_adapter():
     def it_works_e2e(valid_address):
-        result = WalletEthTransactionsAdapter.fetch(valid_address)
+        result = EthereumWalletAdapter.fetch(valid_address)
         assert result is not None
         assert result.total_transactions > 1400
         assert result.total_sent > 900

@@ -1,12 +1,13 @@
-# ETH Wallet Transactions Signal Adapter
+# Ethereum Wallet Signal Adapter
 
-This is the repository for the Signal Adapter that fetch signal about Ethereum addresses' transactions.  
+This is the repository for the Signal Adapter that fetch signal about Ethereum addresses.
 
 ## Type of signals
 
 - Address' tenure
 - Address' number of transactions
 - Address' current and historical balance
+- ...
 
 ## Local Development
 
