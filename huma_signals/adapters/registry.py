@@ -4,11 +4,13 @@ from .allowlist.adapter import AllowListAdapter
 from .lending_pools.adapter import LendingPoolAdapter
 from .models import SignalAdapterBase
 from .request_network.adapter import RequestNetworkInvoiceAdapter
+from .wallet_eth_txns.adapter import WalletEthTransactionsAdapter
 
 ADAPTER_REGISTRY = {
     LendingPoolAdapter.name: LendingPoolAdapter,
     RequestNetworkInvoiceAdapter.name: RequestNetworkInvoiceAdapter,
     AllowListAdapter.name: AllowListAdapter,
+    WalletEthTransactionsAdapter.name: WalletEthTransactionsAdapter,
 }
 
 
