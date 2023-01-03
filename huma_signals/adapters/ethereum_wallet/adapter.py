@@ -13,7 +13,7 @@ ETHERSCAN_BASE_URL = "api.etherscan.io"
 ETHERSCAN_API_KEY = os.environ.get("ETHERSCAN_API_KEY", "YourApiKeyToken")
 
 
-class WalletEthTransactionsSignals(HumaBaseModel):
+class EthereumWalletSignals(HumaBaseModel):
     total_transactions: int
     total_sent: int
     total_received: int
@@ -22,10 +22,10 @@ class WalletEthTransactionsSignals(HumaBaseModel):
     total_transactions_90days: int
 
 
-class WalletEthTransactionsAdapter(SignalAdapterBase):
-    name: ClassVar[str] = "wallet_eth_txns"
+class EthereumWalletAdapter(SignalAdapterBase):
+    name: ClassVar[str] = "ethereum_wallet"
     required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[List[str]] = list(WalletEthTransactionsSignals.__fields__.keys())
+    signals: ClassVar[List[str]] = list(EthereumWalletSignals.__fields__.keys())
 
     def _node_get_transactions(wallet_address):
         action = "txlist"
@@ -43,11 +43,11 @@ class WalletEthTransactionsAdapter(SignalAdapterBase):
             return []
 
     @classmethod
-    def fetch(cls, borrower_wallet_address: str) -> WalletEthTransactionsSignals:
+    def fetch(cls, borrower_wallet_address: str) -> EthereumWalletSignals:
         raw_txns = cls._node_get_transactions(borrower_wallet_address)
         txn_df = pd.DataFrame.from_records(raw_txns)
         if len(txn_df) == 0:
-            return WalletEthTransactionsSignals(
+            return EthereumWalletSignals(
                 total_transactions=0,
                 total_sent=0,
                 total_received=0,
@@ -65,7 +65,7 @@ class WalletEthTransactionsAdapter(SignalAdapterBase):
         # TODO: Limit to selected set of tokens
         txn_df["income"] = txn_df["value"] * txn_df["is_received"].astype(float)
 
-        return WalletEthTransactionsSignals(
+        return EthereumWalletSignals(
             total_transactions=len(txn_df),
             total_sent=sum(txn_df["is_sent"]),
             total_received=sum(txn_df["is_received"]),
