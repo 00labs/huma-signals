@@ -1,14 +1,16 @@
 from .chains import Chain
 
+
+
 TOKEN_ADDRESS_MAPPING = {
     Chain.ETHEREUM: {
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "USDC",
-        "0x3845badade8e6dff049820680d1f14bd3903a5d0": "SAND",
         "0x6b175474e89094c44da98b954eedeac495271d0f": "DAI",
         "0xdac17f958d2ee523a2206206994597c13d831ec7": "USDT",
-        "0xc944e90c64b2c07662a292be6244bdf05cda44a7": "GRT",
-        "0x967da4048cd07ab37855c090aaf366e4ce1b9f48": "OCEAN",
-        "0x8f8221afbb33998d8584a2b05749ba73c37a938a": "REQ",
+        # "0x3845badade8e6dff049820680d1f14bd3903a5d0": "SAND",
+        # "0xc944e90c64b2c07662a292be6244bdf05cda44a7": "GRT",
+        # "0x967da4048cd07ab37855c090aaf366e4ce1b9f48": "OCEAN",
+        # "0x8f8221afbb33998d8584a2b05749ba73c37a938a": "REQ",
     },
     Chain.POLYGON: {
         "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": "USDC",
@@ -22,13 +24,8 @@ TOKEN_ADDRESS_MAPPING = {
     },
 }
 
-# TODO: Fetch latest prices from API instead of hardcoding them
 TOKEN_USD_PRICE_MAPPING = {
     "USDC": 1.0 / 10**6,
-    "SAND": 0.44 / 10**18,
     "DAI": 1.0 / 10**18,
     "USDT": 1.0 / 10**6,
-    "GRT": 0.06 / 10**18,
-    "OCEAN": 0.16 / 10**18,
-    "REQ": 0.09 / 10**18,
 }
