@@ -47,7 +47,7 @@ class Invoice(HumaBaseModel):
     creation_date: datetime = Field(..., description="The date the invoice was created")
     due_date: datetime = Field(..., description="The date the invoice is due")
     # TODO: Support the balance field, 0 means it's not paid
-
+    # TODO: Have the conversation about Due date
     @classmethod
     def from_request_id(cls, receivable_param: str, invoice_api_url: str):
         response = requests.get(f"{invoice_api_url}?id={receivable_param}")

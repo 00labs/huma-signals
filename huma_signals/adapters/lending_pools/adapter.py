@@ -31,6 +31,7 @@ class LendingPoolSignals(HumaBaseModel):
 
 
 class LendingPoolAdapter(SignalAdapterBase):
+    # TODO: move the hard coded values to EA settings cause these are not pool setting
     interval_in_days_max: ClassVar[int] = 90
     interval_in_days_min: ClassVar[int] = 0
     invoice_amount_ratio: ClassVar[float] = 0.8

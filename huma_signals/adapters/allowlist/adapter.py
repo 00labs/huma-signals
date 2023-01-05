@@ -9,6 +9,8 @@ from huma_signals.models import HumaBaseModel
 
 ALLOW_LIST_ENDPOINT = os.getenv("ALLOW_LIST_ENDPOINT", "https://dev.allowlist.huma.finance")
 
+# TODO: Add explaination that this is a temp solution, and we are going to move these to EA decision. 
+
 
 class AllowListSignal(HumaBaseModel):
     on_allowlist: bool = False
