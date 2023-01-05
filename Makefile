@@ -12,7 +12,7 @@ lint-check:
 	poetry run isort --check huma_signals tests 
 
 test:
-	ENV=test poetry run python3 -m pytest -v --color=yes
+	ENV=test poetry run python3 -m pytest -v --cov=huma_signals --color=yes
 
 run-local:
 	ENV=development poetry run python3 -m uvicorn huma_signals.api.main:app --reload
