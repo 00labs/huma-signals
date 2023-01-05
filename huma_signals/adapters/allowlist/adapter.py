@@ -14,8 +14,9 @@ class AllowListSignal(HumaBaseModel):
     """
     Signals emitted by the allowlist adapter.
 
-    Note this is a temporary adapter and will be removed once the allowlist is integrated into the EAs. 
+    Note this is a temporary adapter and will be removed once the allowlist is integrated into the EAs.
     """
+
     on_allowlist: bool = False
 
 
