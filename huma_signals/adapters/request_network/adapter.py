@@ -86,7 +86,7 @@ class RequestNetworkInvoiceAdapter(SignalAdapterBase):
                     "currency",
                     "amountInCrypto",
                     "txn_time",
-                    "token_name",
+                    "token_symbol",
                     "token_usd_price",
                     "amount_usd",
                 ]
@@ -94,9 +94,9 @@ class RequestNetworkInvoiceAdapter(SignalAdapterBase):
         chain = Chain.from_chain_name(chain_name)
         df = payments_raw_df.copy().drop_duplicates("id")
         df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
-        df["token_name"] = df.tokenAddress.map(TOKEN_ADDRESS_MAPPING.get(chain)).fillna("Other")
+        df["token_symbol"] = df.tokenAddress.map(TOKEN_ADDRESS_MAPPING.get(chain)).fillna("Other")
         df["amount"] = df.amount.astype(float)
-        df["token_usd_price"] = df.token_name.map(TOKEN_USD_PRICE_MAPPING).fillna(0)
+        df["token_usd_price"] = df.token_symbol.map(TOKEN_USD_PRICE_MAPPING).fillna(0)
         df["amount_usd"] = (df.amount * df.token_usd_price).astype(int)
         return df
 
