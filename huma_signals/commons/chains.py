@@ -47,6 +47,9 @@ def get_w3(chain: Chain, alchemy_key: str = None) -> Web3:
         # Try to get from env
         alchemy_key = os.environ.get(f"ALCHEMY_KEY_{chain.name.upper()}")
 
+    if not alchemy_key:
+        raise ValueError(f"Alchemy key not set for chain: {chain}")
+
     if chain == Chain.ETHEREUM:
         return Web3(Web3.HTTPProvider(f"https://eth-mainnet.g.alchemy.com/v2/{alchemy_key}"))
     elif chain == Chain.POLYGON:
