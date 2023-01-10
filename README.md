@@ -3,6 +3,7 @@
 </p>
 
 # Decentralized Signal Portfolio
+
 <p>
   <a href="https://github.com/00labs/huma-signals/actions](https://github.com/00labs/huma-signals/actions" target="_blank">
     <img alt="Action Status" src="https://github.com/00labs/huma-signals/actions/workflows/ci.yaml/badge.svg">
@@ -34,4 +35,10 @@ For additional guides, examples, and APIs, see the [documentation](./docs/).
 
 ## Want to help?
 
+Give a ⭐️ if this project helped you!
+
 Want to file a bug, contribute some code, or improve the documentation? Excellent! Read up on our guidelines for [contributing](.docs/../docs/contributing.md).
+
+## 📝 License
+
+This project is [AGPL v3](https://www.gnu.org/licenses/agpl-3.0.en.html) licensed.
