@@ -17,6 +17,9 @@
   <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" target="_blank">
     <img alt="License: AGPLv3" src="https://img.shields.io/badge/License-AGPLv3-yellow.svg" />
   </a>
+  <a href="https://twitter.com/humafinance" target="_blank">
+    <img alt="Twitter: humafinance" src="https://img.shields.io/twitter/follow/humafinance.svg?style=social" />
+  </a>
 </p>
 
 The Decentralized Signal Portfolio (DSP) is an open platform that enables access to high-quality signals about a borrower's income, assets, and liabilities. These signals are collected through Signal Adapters hosted on the DSP, which gather data from a variety of on-chain and off-chain sources. Any developer can contribute to the platform by adding a new Signal Adapter for a specific data source.
