@@ -27,7 +27,9 @@ The Decentralized Signal Portfolio (DSP) is an open platform that enables access
 
 ## Overview
 
-- [Huma Whitepaper](https://docs.huma.finance/)
+📜 [Huma Whitepaper](https://docs.huma.finance/)
+
+🏠 [Homepage](https://huma.finance)
 
 ## Documentation
 
