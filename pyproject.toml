@@ -15,6 +15,7 @@ uvicorn = "^0.20.0"
 pandas = "^1.5.2"
 python-dotenv = "^0.21.0"
 web3 = "^5.31.3"
+sentry-sdk = {extras = ["fastapi"], version = "^1.13.0"}
 
 
 [tool.poetry.group.dev.dependencies]
