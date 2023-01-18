@@ -36,6 +36,7 @@ class Settings(pydantic.BaseSettings):
         case_sensitive = False
 
     env: str
+    sentry_dsn: str
 
 
 settings = Settings()
