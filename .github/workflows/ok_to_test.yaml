@@ -1,7 +1,7 @@
 # From: https://github.com/00labs/ok-to-test/blob/master/.github/workflows/ok-to-test.yml
 
 # If someone with write access comments "/ok-to-test" on a pull request, emit a repository_dispatch event
-name: Ok To Test
+name: OK To Test
 
 on:
   issue_comment:

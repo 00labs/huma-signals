@@ -1,8 +1,10 @@
-name: Huma DSP CI
 
 on:
   pull_request:
-    branches: [ "main" ]
+  repository_dispatch:
+    types: [ok-to-test-command]
+
+name: Huma DSP CI
 
 jobs:
   build:
@@ -35,7 +37,80 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name  $ECR_REPOSITORY
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  
+  # Repo owner has commented /ok-to-test on a (fork-based) pull request
+  build-forked:
+    runs-on: ubuntu-latest
+    if: 
+      github.event_name == 'repository_dispatch' &&
+      github.event.client_payload.slash_command.sha != '' &&
+      contains(github.event.client_payload.pull_request.head.sha, github.event.client_payload.slash_command.sha)
+    
+    steps:
+    # Check out merge commit
+    - name: Fork based /ok-to-test checkout
+      uses: actions/checkout@v2
+      with:
+        ref: 'refs/pull/${{ github.event.client_payload.pull_request.number }}/merge'
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Get short git-sha for image tag
+      id: short-sha
+      run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.event.pull_request.head.sha }})"
+
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: huma-signals
+        IMAGE_TAG: ${{ steps.short-sha.outputs.sha_short }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name  $ECR_REPOSITORY
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  
+    - run: |
+        echo "CI Run... success! ;-)"
+
+    # Update check run called "ci-fork"
+    - uses: actions/github-script@v5
+      id: update-check-run
+      if: ${{ always() }}
+      env:
+        number: ${{ github.event.client_payload.pull_request.number }}
+        job: ${{ github.job }}
+        # Conveniently, job.status maps to https://developer.github.com/v3/checks/runs/#update-a-check-run
+        conclusion: ${{ job.status }} 
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: pull } = await github.rest.pulls.get({
+            ...context.repo,
+            pull_number: process.env.number
+          });
+          const ref = pull.head.sha;
+          const { data: checks } = await github.rest.checks.listForRef({
+            ...context.repo,
+            ref
+          });
+          const check = checks.check_runs.filter(c => c.name === process.env.job);
+          const { data: result } = await github.rest.checks.update({
+            ...context.repo,
+            check_run_id: check[0].id,
+            status: 'completed',
+            conclusion: process.env.conclusion
+          });
+          return result;
+  
   lint:
     runs-on: ubuntu-latest
     steps:
