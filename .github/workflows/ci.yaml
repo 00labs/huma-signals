@@ -3,7 +3,6 @@ name: Huma DSP CI
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, edited]
-    branches: ['main']
 
 jobs:
   build:
@@ -11,6 +10,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
