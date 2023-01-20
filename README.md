@@ -6,7 +6,7 @@
 
 
 <p align="center">
-  <a href="https://github.com/00labs/huma-signals/actions](https://github.com/00labs/huma-signals/actions" target="_blank">
+  <a href="https://github.com/00labs/huma-signals/actions" target="_blank">
     <img alt="Action Status" src="https://github.com/00labs/huma-signals/actions/workflows/ci.yaml/badge.svg">
   </a>
   <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
