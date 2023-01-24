@@ -119,7 +119,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         cls, enriched_df: pd.DataFrame
     ) -> Dict[str, int | decimal.Decimal]:
         """
-        Calcluate some basic stats from the enriched payments data
+        Calculate some basic stats from the enriched payments data
         """
         if len(enriched_df) == 0:
             return {
