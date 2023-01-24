@@ -16,7 +16,8 @@ class Env(str, Enum):
 
 ENV = os.getenv("ENV")
 if ENV in (Env.PRODUCTION, Env.STAGING, Env.TESTNET):
-    env_path = Path(__file__).parent / "dotenv" / ".env"
+    # For ECS services, no .env is loaded.
+    env_path = None
 elif ENV == Env.TEST:
     env_path = Path(__file__).parent / "dotenv" / "test.env"
 elif ENV == Env.DEVELOPMENT:
@@ -28,7 +29,8 @@ else:
 
 # Load environment variables from .env file
 # Note they won't override existing environment variables
-dotenv.load_dotenv(dotenv_path=env_path)
+if env_path:
+    dotenv.load_dotenv(dotenv_path=env_path)
 
 
 class Settings(pydantic.BaseSettings):
