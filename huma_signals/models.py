@@ -1,10 +1,11 @@
-from datetime import datetime
-from decimal import Decimal
+# pylint: disable=too-few-public-methods
+import datetime
+import decimal
 
-from pydantic import BaseModel
+import pydantic
 
 
-class HumaBaseModel(BaseModel):
+class HumaBaseModel(pydantic.BaseModel):
     class Config:
         validate_assignment = True
         arbitrary_types_allowed = True
@@ -14,6 +15,8 @@ class HumaBaseModel(BaseModel):
 
         json_encoders = {
             # custom output conversion for datetime
-            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%SZ") if v else None,
-            Decimal: lambda v: str(v) if v else None,
+            datetime.datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%SZ")
+            if v
+            else None,
+            decimal.Decimal: lambda v: str(v) if v else None,
         }

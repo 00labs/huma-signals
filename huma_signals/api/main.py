@@ -1,11 +1,10 @@
+import fastapi
 import sentry_sdk
 import structlog
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware import cors
 
+from huma_signals.api import views
 from huma_signals.settings import settings
-
-from .views import router as api_router
 
 logger = structlog.get_logger(__name__)
 
@@ -15,20 +14,20 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-app = FastAPI()
+app = fastapi.FastAPI()
 
 # for javascript to call the endpoints
 origins = ["*"]
 app.add_middleware(
-    CORSMiddleware,
+    cors.CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(api_router, prefix="", tags=["huma_signals"])
+app.include_router(views.router, prefix="", tags=["huma_signals"])
 
 
 @app.get("/health")
-async def get_health():
-    return {"ok"}
+async def get_health() -> str:
+    return "ok"
