@@ -1,4 +1,4 @@
-# Getting Started
+# Getting started
 
 ## Requirements
 
@@ -14,7 +14,7 @@ make run-local
 
 Go to `http://localhost:8000/docs` and you can make requests through the UI.
 
-## Development Environment
+## Development environment
 
 ### Poetry
 
@@ -37,7 +37,7 @@ poetry install
 
 ### Code style
 
-To ensure code consistency we have CI to check code style. We use `black`, `flake8` and `isort` with some customization. You can run the CI check with
+To ensure code consistency we have CI to check code style. We use `black`, `flake8`, `isort` and `pylint` with some customization. You can run the CI check with
 
 ```bash
 make lint-check
@@ -55,7 +55,17 @@ In this project, we require all code to use type hints in order to ensure the re
 
 Using [Type Hints](https://peps.python.org/pep-0484/) and [Pydantic](https://pydantic-docs.helpmanual.io/) in our project allows us to improve the quality and reliability of our code. Type hints provide a way to specify the expected data types for function arguments and return values, which can help catch errors at runtime and improve code readability. Pydantic adds additional features on top of type hints, such as automatic data validation and data conversion, which can help prevent errors and ensure that our code is working with consistent, correct data.
 
-### Address Casing
+We run `mypy` as part of the `lint` command to type check the code.
+
+### Pre-commit hooks
+
+We use [`pre-commit`](https://pre-commit.com/) to run hooks to automatically format and lint code. You can run the following command set it up:
+
+```bash
+pre-commit install
+```
+
+### Address casing
 
 Addresses from transactions or smart contracts will be normalized to all lowercase internally. This makes it easier to query and aggregate across multiple data sources. Just make sure to `.lower()` API inputs when comparing input addresses.
 
@@ -73,7 +83,7 @@ To run individual tests:
 ENV=test poetry run python3 -m pytest {Path to the test file}
 ```
 
-### Pull Requests
+### Pull requests
 
 - Please create pull requests early to start the conversation about the changes.
 - The pull request title should summarize the contribution. Prefix with [WIP] if the PR is still a work in progress.
