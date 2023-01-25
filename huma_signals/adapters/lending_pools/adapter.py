@@ -1,36 +1,50 @@
+import decimal
 import json
 import pathlib
-from decimal import Decimal
-from typing import ClassVar, List
+from typing import Any, ClassVar, List
 
-from pydantic import Field
-from web3 import Web3
+import pydantic
+import web3
 
-from huma_signals.adapters.models import SignalAdapterBase
-from huma_signals.commons.chains import get_w3
-from huma_signals.models import HumaBaseModel
-
-from .settings import POOL_REGISTRY
+from huma_signals import models
+from huma_signals.adapters import models as adapter_models
+from huma_signals.adapters.lending_pools import settings
+from huma_signals.commons import chains
 
 
-class LendingPoolSignals(HumaBaseModel):
+class LendingPoolSignals(models.HumaBaseModel):
     # TODO: add other pool signals: utilization, liquidity, etc.
     # Pool policy signals
-    pool_address: str = Field(..., description="Address of the lending pool")
-    apr: int = Field(..., description="Annual percentage rate in BPS")
-    max_credit_amount: Decimal = Field(..., description="Maximum credit amount defined by the pool")
-    token_name: str = Field(..., description="Name of the token used by the pool")
-    token_symbol: str = Field(..., description="Symbol of the token used by the pool")
-    token_decimal: int = Field(..., description="Decimal of the token used by the pool")
-    interval_in_days_max: int = Field(..., description="Maximum payment interval in days for the pool")
-    interval_in_days_min: int = Field(..., description="Minimum payment interval in days for the pool")
-    invoice_amount_ratio: float = Field(
-        ..., description="For invoice factoring pool, the percentage of the payable amount the pool allow to borrow"
+    pool_address: str = pydantic.Field(..., description="Address of the lending pool")
+    apr: int = pydantic.Field(..., description="Annual percentage rate in BPS")
+    max_credit_amount: decimal.Decimal = pydantic.Field(
+        ..., description="Maximum credit amount defined by the pool"
     )
-    is_testnet: bool = Field(default=False, description="Whether the pool is on testnet or not")
+    token_name: str = pydantic.Field(
+        ..., description="Name of the token used by the pool"
+    )
+    token_symbol: str = pydantic.Field(
+        ..., description="Symbol of the token used by the pool"
+    )
+    token_decimal: int = pydantic.Field(
+        ..., description="Decimal of the token used by the pool"
+    )
+    interval_in_days_max: int = pydantic.Field(
+        ..., description="Maximum payment interval in days for the pool"
+    )
+    interval_in_days_min: int = pydantic.Field(
+        ..., description="Minimum payment interval in days for the pool"
+    )
+    invoice_amount_ratio: float = pydantic.Field(
+        ...,
+        description="For invoice factoring pool, the percentage of the payable amount the pool allow to borrow",
+    )
+    is_testnet: bool = pydantic.Field(
+        default=False, description="Whether the pool is on testnet or not"
+    )
 
 
-class LendingPoolAdapter(SignalAdapterBase):
+class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     # TODO: move the hard coded values to EA settings cause these are not pool setting
     interval_in_days_max: ClassVar[int] = 90
     interval_in_days_min: ClassVar[int] = 0
@@ -41,19 +55,28 @@ class LendingPoolAdapter(SignalAdapterBase):
     signals: ClassVar[List[str]] = list(LendingPoolSignals.__fields__.keys())
 
     @classmethod
-    def fetch(cls, pool_address: str) -> LendingPoolSignals:
-        pool_settings = POOL_REGISTRY.get(Web3.toChecksumAddress(pool_address))
-        w3 = get_w3(pool_settings.chain)
+    def fetch(  # pylint: disable=arguments-differ
+        cls, pool_address: str, *args: Any, **kwargs: Any
+    ) -> LendingPoolSignals:
+        pool_settings = settings.POOL_REGISTRY[
+            web3.Web3.toChecksumAddress(pool_address)
+        ]
 
-        huma_pool_contract = w3.eth.contract(
-            address=Web3.toChecksumAddress(pool_address),
-            abi=json.load(open(pool_settings.pool_abi_path)),
-        )
+        w3 = chains.get_w3(pool_settings.chain)
 
-        pool_config_contract = w3.eth.contract(
-            address=huma_pool_contract.functions.poolConfig().call(),
-            abi=json.load(open(pathlib.Path(__file__).parent.resolve() / "abi" / "BasePoolConfig.json")),
-        )
+        with open(pool_settings.pool_abi_path, encoding="utf-8") as f:
+            huma_pool_contract = w3.eth.contract(
+                address=web3.Web3.toChecksumAddress(pool_address),
+                abi=json.load(f),
+            )
+        with open(
+            pathlib.Path(__file__).parent.resolve() / "abi" / "BasePoolConfig.json",
+            encoding="utf-8",
+        ) as f:
+            pool_config_contract = w3.eth.contract(
+                address=huma_pool_contract.functions.poolConfig().call(),
+                abi=json.load(f),
+            )
 
         pool_summary = pool_config_contract.functions.getPoolSummary().call()
         return LendingPoolSignals(

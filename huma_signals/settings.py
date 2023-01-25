@@ -1,12 +1,14 @@
+# pylint: disable=too-few-public-methods
+import enum
 import os
-from enum import Enum
-from pathlib import Path
+import pathlib
 
-import dotenv
 import pydantic
 
+import dotenv
 
-class Env(str, Enum):
+
+class Env(str, enum.Enum):
     DEVELOPMENT = "development"
     TEST = "test"
     STAGING = "staging"
@@ -19,9 +21,9 @@ if ENV in (Env.PRODUCTION, Env.STAGING, Env.TESTNET):
     # For ECS services, no .env is loaded.
     env_path = None
 elif ENV == Env.TEST:
-    env_path = Path(__file__).parent / "dotenv" / "test.env"
+    env_path = pathlib.Path(__file__).parent / "dotenv" / "test.env"
 elif ENV == Env.DEVELOPMENT:
-    env_path = Path(__file__).parent / "dotenv" / "development.env"
+    env_path = pathlib.Path(__file__).parent / "dotenv" / "development.env"
 elif ENV is None:
     raise ValueError("No ENV is defined")
 else:

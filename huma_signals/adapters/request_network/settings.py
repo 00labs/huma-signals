@@ -1,23 +1,23 @@
-from huma_signals.commons.chains import Chain
+from huma_signals.commons import chains
 
 
 def get_rn_subgraph_endpoint_url(chain_name: str) -> str:
-    chain = Chain.from_chain_name(chain_name)
-    if chain == Chain.ETHEREUM:
+    chain = chains.Chain.from_chain_name(chain_name)
+    if chain == chains.Chain.ETHEREUM:
         return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-    elif chain == Chain.POLYGON:
+    if chain == chains.Chain.POLYGON:
         return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-matic"
-    elif chain == Chain.GOERLI:
+    if chain == chains.Chain.GOERLI:
         return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli"
 
     raise ValueError(f"Unsupported chain chain: {chain_name}")
 
 
 def get_rn_invoice_api_url(chain_name: str) -> str:
-    chain = Chain.from_chain_name(chain_name)
-    if chain == Chain.POLYGON:
+    chain = chains.Chain.from_chain_name(chain_name)
+    if chain == chains.Chain.POLYGON:
         return "https://polygon.huma.finance/invoice"
-    elif chain == Chain.GOERLI:
+    if chain == chains.Chain.GOERLI:
         return "https://goerli.api.huma.finance/invoice"
 
     raise ValueError(f"Unsupported chain chain: {chain_name}")

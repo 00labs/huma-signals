@@ -1,47 +1,46 @@
-from web3 import Web3
+import web3
 
-from huma_signals.commons.chains import Chain
-from huma_signals.commons.tokens import TOKEN_ADDRESS_MAPPING, TOKEN_USD_PRICE_MAPPING
+from huma_signals.commons import chains, tokens
 
 
-def describe_TOKEN_ADDRESS_MAPPING():
-    def it_contains_supported_chains():
-        assert Chain.ETHEREUM in TOKEN_ADDRESS_MAPPING
-        assert Chain.POLYGON in TOKEN_ADDRESS_MAPPING
-        assert Chain.GOERLI in TOKEN_ADDRESS_MAPPING
+def describe_TOKEN_ADDRESS_MAPPING() -> None:
+    def it_contains_supported_chains() -> None:
+        assert chains.Chain.ETHEREUM in tokens.TOKEN_ADDRESS_MAPPING
+        assert chains.Chain.POLYGON in tokens.TOKEN_ADDRESS_MAPPING
+        assert chains.Chain.GOERLI in tokens.TOKEN_ADDRESS_MAPPING
 
-    def it_contains_supported_tokens():
-        for chain in Chain:
-            assert "USDC" in TOKEN_ADDRESS_MAPPING[chain].values()
-            assert "USDT" in TOKEN_ADDRESS_MAPPING[chain].values()
-            assert "DAI" in TOKEN_ADDRESS_MAPPING[chain].values()
+    def it_contains_supported_tokens() -> None:
+        for chain in chains.Chain:
+            assert "USDC" in tokens.TOKEN_ADDRESS_MAPPING[chain].values()
+            assert "USDT" in tokens.TOKEN_ADDRESS_MAPPING[chain].values()
+            assert "DAI" in tokens.TOKEN_ADDRESS_MAPPING[chain].values()
 
-    def it_has_all_token_names_in_uppercase():
-        for chain in Chain:
-            for token in TOKEN_ADDRESS_MAPPING[chain].values():
+    def it_has_all_token_names_in_uppercase() -> None:
+        for chain in chains.Chain:
+            for token in tokens.TOKEN_ADDRESS_MAPPING[chain].values():
                 assert token == token.upper()
 
-    def it_has_all_token_address_in_lowercase():
-        for chain in Chain:
-            for token in TOKEN_ADDRESS_MAPPING[chain].keys():
+    def it_has_all_token_address_in_lowercase() -> None:
+        for chain in chains.Chain:
+            for token in tokens.TOKEN_ADDRESS_MAPPING[chain]:
                 assert token == token.lower()
 
-    def it_has_all_tokens_valid_eth_addresses():
-        for chain in Chain:
-            for token in TOKEN_ADDRESS_MAPPING[chain].keys():
-                assert Web3.isAddress(token)
+    def it_has_all_tokens_valid_eth_addresses() -> None:
+        for chain in chains.Chain:
+            for token in tokens.TOKEN_ADDRESS_MAPPING[chain]:
+                assert web3.Web3.isAddress(token)
 
 
-def describe_TOKEN_USD_PRICE_MAPPING():
-    def it_contains_supported_tokens():
-        assert "USDC" in TOKEN_USD_PRICE_MAPPING
-        assert "USDT" in TOKEN_USD_PRICE_MAPPING
-        assert "DAI" in TOKEN_USD_PRICE_MAPPING
+def describe_TOKEN_USD_PRICE_MAPPING() -> None:
+    def it_contains_supported_tokens() -> None:
+        assert "USDC" in tokens.TOKEN_USD_PRICE_MAPPING
+        assert "USDT" in tokens.TOKEN_USD_PRICE_MAPPING
+        assert "DAI" in tokens.TOKEN_USD_PRICE_MAPPING
 
-    def it_has_all_token_names_in_uppercase():
-        for token in TOKEN_USD_PRICE_MAPPING.keys():
+    def it_has_all_token_names_in_uppercase() -> None:
+        for token in tokens.TOKEN_USD_PRICE_MAPPING:
             assert token == token.upper()
 
-    def it_has_all_token_prices_positive():
-        for token_usd_price in TOKEN_USD_PRICE_MAPPING.values():
+    def it_has_all_token_prices_positive() -> None:
+        for token_usd_price in tokens.TOKEN_USD_PRICE_MAPPING.values():
             assert token_usd_price > 0

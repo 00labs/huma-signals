@@ -1,19 +1,27 @@
-from typing import ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List
 
-from pydantic import Field
+import pydantic
 
-from huma_signals.models import HumaBaseModel
+from huma_signals import models
 
 
-class SignalAdapterBase(HumaBaseModel):
-    name: ClassVar[str] = Field(..., description="Signal Adapter's name")
-    signals: ClassVar[List[str]] = Field(..., description="Signals that the adapter can fetch")
-    required_inputs: ClassVar[List[str]] = Field(..., description="Inputs that the adapter requires")
+class SignalAdapterBase(models.HumaBaseModel):
+    name: ClassVar[str] = pydantic.Field(..., description="Signal Adapter's name")
+    signals: ClassVar[List[str]] = pydantic.Field(
+        ..., description="Signals that the adapter can fetch"
+    )
+    required_inputs: ClassVar[List[str]] = pydantic.Field(
+        ..., description="Inputs that the adapter requires"
+    )
 
     @classmethod
-    def defintion(cls) -> Dict[str, str | List[str]]:
+    def definition(cls) -> Dict[str, str | List[str]]:
         return {
             "name": cls.name,
             "signals": cls.signals,
             "required_inputs": cls.required_inputs,
         }
+
+    @classmethod
+    def fetch(cls, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError

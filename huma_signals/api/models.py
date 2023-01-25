@@ -1,12 +1,13 @@
+# pylint: disable=too-few-public-methods
 from typing import Any, Dict, List
 
-from huma_signals.models import HumaBaseModel
+from huma_signals import models
 
 
-class SignalFetchRequest(HumaBaseModel):
+class SignalFetchRequest(models.HumaBaseModel):
     signal_names: List[str]
     adapter_inputs: Dict[str, Any]
 
 
-class SignalFetchResponse(HumaBaseModel):
+class SignalFetchResponse(models.HumaBaseModel):
     signals: Dict[str, Any]

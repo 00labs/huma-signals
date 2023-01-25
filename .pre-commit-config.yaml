@@ -1,0 +1,68 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-yaml
+        name: 'check-yaml'
+      - id: end-of-file-fixer
+        name: 'end-of-file-fixer'
+      - id: trailing-whitespace
+        name: 'trailing-whitespace'
+      - id: no-commit-to-branch
+        name: 'no-commit-to-branch - (master, main)'
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v1.7.7
+    hooks:
+      - id: autoflake
+        name: 'autoflake'
+        args: ['--in-place', '--remove-all-unused-imports', '--ignore-init-module-imports', '--verbose']
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        name: 'black'
+        args: ['--target-version', 'py38']
+        types: [python]
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.5.4
+    hooks:
+      - id: isort
+        name: 'isort'
+        args: ['--profile', 'black']
+        types: [python]
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+      - id: flake8
+        name: 'flake8'
+        # Certain checks disabled because of:
+        # E203: https://black.readthedocs.io/en/stable/the_black_code_style.html#slices
+        # W503: https://black.readthedocs.io/en/stable/the_black_code_style.html#line-breaks-binary-operators
+        args:
+          [
+              '--max-line-length',
+              '120',
+              '--ignore',
+              'E203, W503',
+          ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+      - id: mypy
+        name: mypy
+        language: system
+        types: [python]
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: bash -c 'poetry run pylint huma_signals'
+        language: system
+        types: [python]
+        args:
+          [
+              "--load-plugins=pylint_google_style_guide_imports_enforcing",
+              "--max-line-length=120",
+              "--disable=C0103, C0114, C0115, C0116, R0801, W0511",
+              "--extension-pkg-whitelist=pydantic",
+          ]
