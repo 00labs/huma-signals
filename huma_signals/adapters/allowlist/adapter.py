@@ -1,7 +1,7 @@
 import os
 from typing import Any, ClassVar, List
 
-import requests
+import httpx
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
@@ -28,7 +28,7 @@ class AllowListAdapter(adapter_models.SignalAdapterBase):
     signals: ClassVar[List[str]] = list(AllowListSignal.__fields__.keys())
 
     @classmethod
-    def fetch(  # pylint: disable=arguments-differ
+    async def fetch(  # pylint: disable=arguments-differ
         cls,
         borrower_wallet_address: str,
         chain_name: str,
@@ -37,18 +37,14 @@ class AllowListAdapter(adapter_models.SignalAdapterBase):
         **kwargs: Any,
     ) -> AllowListSignal:
         chain = chains.Chain.from_chain_name(chain_name)
-        if chain.is_testnet():
-            response = requests.get(
-                f"{allowlist_endpoint}/user/testnet/{borrower_wallet_address}",
-                timeout=10,
-            )
-        else:
-            response = requests.get(
-                f"{allowlist_endpoint}/user/mainnet/{borrower_wallet_address}",
-                timeout=10,
-            )
-        if response.status_code == 200 and response.json().get("status") == "found":
-            return AllowListSignal(
-                on_allowlist=True,
-            )
+        url = f"/user/{'testnet' if chain.is_testnet() else 'mainnet'}/{borrower_wallet_address}"
+        try:
+            async with httpx.AsyncClient(base_url=allowlist_endpoint) as client:
+                resp = await client.get(url=url)
+                resp.raise_for_status()
+                if resp.json().get("status") == "found":
+                    return AllowListSignal(on_allowlist=True)
+        except httpx.HTTPStatusError:
+            pass
+
         return AllowListSignal(on_allowlist=False)

@@ -3,15 +3,16 @@ import pytest
 from huma_signals.adapters.ethereum_wallet import adapter
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture
 def valid_address() -> str:
     # vitalik.eth
     return "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
 
 
 def describe_wallet_eth_txns_adapter() -> None:
-    def it_works_e2e(valid_address: str) -> None:
-        result = adapter.EthereumWalletAdapter.fetch(valid_address)
+    @pytest.mark.asyncio
+    async def it_works_e2e(valid_address: str) -> None:
+        result = await adapter.EthereumWalletAdapter.fetch(valid_address)
         assert result is not None
         assert result.total_transactions > 1400
         assert result.total_sent > 900

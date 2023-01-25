@@ -42,32 +42,38 @@ def describe_chain() -> None:
 
 
 def describe_get_w3() -> None:
-    def it_can_get_w3() -> None:
+    @pytest.mark.asyncio
+    async def it_can_get_w3() -> None:
         alchemy_key = os.getenv("ALCHEMY_KEY_GOERLI")
         w3 = chains.get_w3(chains.Chain.GOERLI, alchemy_key=alchemy_key)
         assert w3 is not None
-        assert w3.isConnected() is True
+        is_connected = await w3.is_connected()  # type: ignore[misc]
+        assert is_connected is True
 
-        latest_block = w3.eth.getBlock("latest")
+        # The type annotation for `eth` is wrong: it's annotated as `eth`, but it should be `AsyncEth`
+        # in this case. If the type annotation is correct then it wouldn't complain about the presence of `await`.
+        latest_block = await w3.eth.get_block("latest")  # type: ignore[misc]
         assert latest_block is not None
         assert latest_block["number"] > 0
         assert latest_block["hash"] is not None
 
-        block = w3.eth.getBlock(latest_block["hash"])
+        block = await w3.eth.get_block(latest_block["hash"])  # type: ignore[misc]
         assert block is not None
         assert block["number"] == latest_block["number"]
 
-    def it_can_get_w3_from_env() -> None:
+    @pytest.mark.asyncio
+    async def it_can_get_w3_from_env() -> None:
         w3 = chains.get_w3(chains.Chain.GOERLI)
 
         assert w3 is not None
-        assert w3.isConnected() is True
+        is_connected = await w3.is_connected()  # type: ignore[misc]
+        assert is_connected is True
 
-        latest_block = w3.eth.getBlock("latest")
+        latest_block = await w3.eth.get_block("latest")  # type: ignore[misc]
         assert latest_block is not None
         assert latest_block["number"] > 0
         assert latest_block["hash"] is not None
 
-        block = w3.eth.getBlock(latest_block["hash"])
+        block = await w3.eth.get_block(latest_block["hash"])  # type: ignore[misc]
         assert block is not None
         assert block["number"] == latest_block["number"]

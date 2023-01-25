@@ -15,7 +15,7 @@ class PoolSetting(models.HumaBaseModel):
 
 _POOLS = [
     PoolSetting(
-        pool_address=web3.Web3.toChecksumAddress(
+        pool_address=web3.Web3.to_checksum_address(
             "0xA22D20FB0c9980fb96A9B0B5679C061aeAf5dDE4"
         ),
         chain=chains.Chain.GOERLI,
@@ -24,7 +24,7 @@ _POOLS = [
         ),
     ),
     PoolSetting(
-        pool_address=web3.Web3.toChecksumAddress(
+        pool_address=web3.Web3.to_checksum_address(
             "0x11672c0bBFF498c72BC2200f42461c0414855042"
         ),
         chain=chains.Chain.GOERLI,
@@ -35,7 +35,7 @@ _POOLS = [
         ),
     ),
     PoolSetting(
-        pool_address=web3.Web3.toChecksumAddress(
+        pool_address=web3.Web3.to_checksum_address(
             "0xAb3dc5221F373Dd879BEc070058c775A0f6Af759"
         ),
         chain=chains.Chain.POLYGON,
@@ -44,7 +44,7 @@ _POOLS = [
         ),
     ),
     PoolSetting(
-        pool_address=web3.Web3.toChecksumAddress(
+        pool_address=web3.Web3.to_checksum_address(
             "0x58AAF1f9cB10F335111A2129273056bbED251B61"
         ),
         chain=chains.Chain.POLYGON,

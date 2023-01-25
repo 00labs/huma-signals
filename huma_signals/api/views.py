@@ -21,15 +21,15 @@ def _list_adapters(
 
 
 @router.get("/list_adapters", response_model=Dict)
-def get_list_adapters() -> Dict[str, Any]:
+async def get_list_adapters() -> Dict[str, Any]:
     logger.info("Received list adapters request")
     return _list_adapters(registry.ADAPTER_REGISTRY)
 
 
 @router.post("/fetch", response_model=models.SignalFetchResponse)
-def post_fetch(signal_request: models.SignalFetchRequest) -> Dict[str, Any]:
+async def post_fetch(signal_request: models.SignalFetchRequest) -> Dict[str, Any]:
     logger.info("Received signal request", request=signal_request)
-    signals = registry.fetch_signal(
+    signals = await registry.fetch_signal(
         signal_request.signal_names, signal_request.adapter_inputs
     )
     return encoders.jsonable_encoder(models.SignalFetchResponse(signals=signals))

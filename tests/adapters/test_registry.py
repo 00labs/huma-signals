@@ -18,7 +18,7 @@ class DummyAdapter(adapter_models.SignalAdapterBase):
     signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
 
     @classmethod
-    def fetch(cls, test_input: int) -> DummySignals:
+    async def fetch(cls, test_input: int) -> DummySignals:
         return DummySignals(
             test_signal=test_input,
             test_signal2=str(test_input * 2),
@@ -136,23 +136,26 @@ def describe_adapter_registry() -> None:
 
 
 def describe_fetch_signal() -> None:
-    def it_returns_the_correct_signal(
+    @pytest.mark.asyncio
+    async def it_returns_the_correct_signal(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
-        signals = registry.fetch_signal(
+        signals = await registry.fetch_signal(
             ["dummy_adapter.test_signal"], {"test_input": 10}, dummy_registry
         )
         assert signals == {"dummy_adapter.test_signal": 10}
 
-    def it_returns_the_correct_signals_with_type_conversion(
+    @pytest.mark.asyncio
+    async def it_returns_the_correct_signals_with_type_conversion(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
-        signals = registry.fetch_signal(
+        signals = await registry.fetch_signal(
             ["dummy_adapter.test_signal2"], {"test_input": 10}, dummy_registry
         )
         assert signals == {"dummy_adapter.test_signal2": "20"}
 
-    def it_returns_the_correct_signals_with_multiple_adapters(
+    @pytest.mark.asyncio
+    async def it_returns_the_correct_signals_with_multiple_adapters(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
         class DummyAdapter2(adapter_models.SignalAdapterBase):
@@ -161,7 +164,7 @@ def describe_fetch_signal() -> None:
             signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
 
             @classmethod
-            def fetch(cls, test_input: int) -> DummySignals:
+            async def fetch(cls, test_input: int) -> DummySignals:
                 return DummySignals(
                     test_signal=test_input * 10,
                     test_signal2=str(test_input * 2),
@@ -169,7 +172,7 @@ def describe_fetch_signal() -> None:
 
         dummy_registry["dummy_adapter2"] = DummyAdapter2
 
-        signals = registry.fetch_signal(
+        signals = await registry.fetch_signal(
             ["dummy_adapter.test_signal", "dummy_adapter2.test_signal"],
             {"test_input": 10},
             dummy_registry,

@@ -9,44 +9,47 @@ from huma_signals.adapters.request_network import adapter, models
 
 def describe_adapter() -> None:
     def describe_get_payments() -> None:
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def rn_subgraph_endpoint_url() -> str:
             return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def from_address() -> str:
             return "0x8d2aa089af73e788cf7afa1f94bf4cf2cde0db61".lower()
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def to_address() -> str:
             return (
                 "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
             )  # gitleaks:allow
 
-        def it_returns_payer_payment_history(
+        @pytest.mark.asyncio
+        async def it_returns_payer_payment_history(
             rn_subgraph_endpoint_url: str, from_address: str
         ) -> None:
-            payments = adapter.RequestNetworkInvoiceAdapter._get_payments(
+            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 from_address, None, rn_subgraph_endpoint_url
             )
             assert len(payments) > 0
             assert payments[-1]["from"] == from_address
             assert payments[-1]["to"].startswith("0x")
 
-        def it_returns_payee_payment_history(
+        @pytest.mark.asyncio
+        async def it_returns_payee_payment_history(
             rn_subgraph_endpoint_url: str, to_address: str
         ) -> None:
-            payments = adapter.RequestNetworkInvoiceAdapter._get_payments(
+            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 None, to_address, rn_subgraph_endpoint_url
             )
             assert len(payments) > 0
             assert payments[-1]["to"] == to_address
             assert payments[-1]["from"].startswith("0x")
 
-        def it_returns_pair_payment_history(
+        @pytest.mark.asyncio
+        async def it_returns_pair_payment_history(
             rn_subgraph_endpoint_url: str, from_address: str, to_address: str
         ) -> None:
-            payments = adapter.RequestNetworkInvoiceAdapter._get_payments(
+            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 from_address, to_address, rn_subgraph_endpoint_url
             )
             assert len(payments) > 0
@@ -54,37 +57,38 @@ def describe_adapter() -> None:
             assert payments[-1]["from"] == from_address
 
     def describe_fetch() -> None:
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def rn_subgraph_endpoint_url() -> str:
             return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli"
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def rn_invoice_api_url() -> str:
             return "https://goerli.api.huma.finance/invoice"
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def borrower_address() -> str:
             return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def receivable_param() -> str:
             return "0xdf135697d5b8b0ead72f8a80131c25c6fdb140bdc17d75652675fe801d9a5ff0"
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def payer_wallet_address() -> str:
             return "0x8b99407A4395714B706415277f17b4d549608AFe".lower()
 
-        @pytest.fixture(scope="session", autouse=True)
+        @pytest.fixture
         def payee_wallet_address() -> str:
             return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
 
-        def it_can_fetch_signals(
+        @pytest.mark.asyncio
+        async def it_can_fetch_signals(
             rn_subgraph_endpoint_url: str,
             rn_invoice_api_url: str,
             borrower_address: str,
             receivable_param: str,
         ) -> None:
-            signals = adapter.RequestNetworkInvoiceAdapter.fetch(
+            signals = await adapter.RequestNetworkInvoiceAdapter.fetch(
                 chain_name="goerli",
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
@@ -118,7 +122,8 @@ def describe_adapter() -> None:
                 due_date=datetime.datetime(2023, 1, 25),
             ),
         )
-        def it_can_calculate_signals_with_mocked_invoice(
+        @pytest.mark.asyncio
+        async def it_can_calculate_signals_with_mocked_invoice(
             mocked_invoice: str,
             borrower_address: str,
             receivable_param: str,
@@ -129,7 +134,7 @@ def describe_adapter() -> None:
             so we can test the signals are calculated correctly.
             """
             # TODO: Use a proper data tape instead of of rely on live data for this test
-            signals = adapter.RequestNetworkInvoiceAdapter.fetch(
+            signals = await adapter.RequestNetworkInvoiceAdapter.fetch(
                 chain_name="mainnet",
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,

@@ -3,8 +3,8 @@ from __future__ import annotations
 import datetime
 import decimal
 
+import httpx
 import pydantic
-import requests
 import web3
 
 from huma_signals import models
@@ -95,38 +95,44 @@ class Invoice(models.HumaBaseModel):
 
     # TODO: Support the balance field, 0 means it's not paid
     @classmethod
-    def from_request_id(cls, receivable_param: str, invoice_api_url: str) -> Invoice:
-        response = requests.get(f"{invoice_api_url}?id={receivable_param}", timeout=10)
-        if response.status_code == 200:
-            invoice_info = response.json()
-            if not web3.Web3.isAddress(invoice_info["owner"]):
-                raise Exception(
-                    f"Invoice's owner is not a valid address: {invoice_info['owner']}"
-                )
-            if not web3.Web3.isAddress(invoice_info["payer"]):
-                raise Exception(
-                    f"Invoice's payer is not a valid address: {invoice_info['payer']}"
-                )
-            if not web3.Web3.isAddress(invoice_info["payee"]):
-                raise Exception(
-                    f"Invoice's payee is not a valid address: {invoice_info['payee']}"
-                )
+    async def from_request_id(
+        cls, receivable_param: str, invoice_api_url: str
+    ) -> Invoice:
+        try:
+            async with httpx.AsyncClient(base_url=invoice_api_url) as client:
+                resp = await client.get(f"?id={receivable_param}")
+                resp.raise_for_status()
+                invoice_info = resp.json()
+                if not web3.Web3.is_address(invoice_info["owner"]):
+                    raise Exception(
+                        f"Invoice's owner is not a valid address: {invoice_info['owner']}"
+                    )
+                if not web3.Web3.is_address(invoice_info["payer"]):
+                    raise Exception(
+                        f"Invoice's payer is not a valid address: {invoice_info['payer']}"
+                    )
+                if not web3.Web3.is_address(invoice_info["payee"]):
+                    raise Exception(
+                        f"Invoice's payee is not a valid address: {invoice_info['payee']}"
+                    )
 
-            return cls(
-                token_owner=invoice_info["owner"].lower(),
-                currency=invoice_info.get("currencyInfo").get("symbol"),
-                amount=decimal.Decimal(invoice_info["expectedAmount"]),
-                status="",
-                payer=invoice_info["payer"].lower(),
-                payee=invoice_info["payee"].lower(),
-                creation_date=datetime.datetime.fromtimestamp(
-                    invoice_info["creationDate"]
-                ),
-                # TODO: Figure out way to get real due date
-                due_date=datetime.datetime.fromtimestamp(invoice_info["creationDate"])
-                + datetime.timedelta(days=30),
-            )
-
-        raise Exception(
-            f"Request Network subgraph returned status code {response.status_code}"
-        )
+                return cls(
+                    token_owner=invoice_info["owner"].lower(),
+                    currency=invoice_info.get("currencyInfo").get("symbol"),
+                    amount=decimal.Decimal(invoice_info["expectedAmount"]),
+                    status="",
+                    payer=invoice_info["payer"].lower(),
+                    payee=invoice_info["payee"].lower(),
+                    creation_date=datetime.datetime.fromtimestamp(
+                        invoice_info["creationDate"]
+                    ),
+                    # TODO: Figure out way to get real due date
+                    due_date=datetime.datetime.fromtimestamp(
+                        invoice_info["creationDate"]
+                    )
+                    + datetime.timedelta(days=30),
+                )
+        except httpx.HTTPStatusError as e:
+            raise Exception(
+                f"Request Network subgraph returned status code {e.response.status_code}"
+            ) from e

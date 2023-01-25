@@ -2,15 +2,15 @@ import datetime
 import os
 from typing import Any, ClassVar, List
 
+import httpx
 import pandas as pd
-import requests
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
 
 # Sign-up at https://etherscan.io/myapikey to get an API key
-ETHERSCAN_BASE_URL = "api.etherscan.io"
-ETHERSCAN_API_KEY = os.environ.get("ETHERSCAN_API_KEY", "YourApiKeyToken")
+ETHERSCAN_BASE_URL = "https://api.etherscan.io"
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "YourApiKeyToken")
 
 
 class EthereumWalletSignals(models.HumaBaseModel):
@@ -28,27 +28,30 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
     signals: ClassVar[List[str]] = list(EthereumWalletSignals.__fields__.keys())
 
     @classmethod
-    def _node_get_transactions(cls, wallet_address: str) -> List[Any]:
-        action = "txlist"
-        r = requests.get(
-            f"https://{ETHERSCAN_BASE_URL}/"
-            f"api?module=account&action={action}"
-            f"&address={wallet_address}"
-            f"&startblock=0&endblock=99999999"
-            f"&sort=asc"
-            f"&apikey={ETHERSCAN_API_KEY}",
-            timeout=10,
-        )
-        if r.status_code == 200 and r.json()["status"] == "1":
-            return r.json()["result"]
+    async def _node_get_transactions(cls, wallet_address: str) -> List[Any]:
+        try:
+            async with httpx.AsyncClient(base_url=ETHERSCAN_BASE_URL) as client:
+                resp = await client.get(
+                    f"/api?module=account&action=txlist"
+                    f"&address={wallet_address}"
+                    f"&startblock=0&endblock=99999999"
+                    f"&sort=asc"
+                    f"&apikey={ETHERSCAN_API_KEY}",
+                )
+                resp.raise_for_status()
+                payload = resp.json()
+                if payload["status"] == "1":
+                    return payload["result"]
+        except httpx.HTTPStatusError:
+            pass
 
         return []
 
     @classmethod
-    def fetch(  # pylint: disable=arguments-differ
+    async def fetch(  # pylint: disable=arguments-differ
         cls, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> EthereumWalletSignals:
-        raw_txns = cls._node_get_transactions(borrower_wallet_address)
+        raw_txns = await cls._node_get_transactions(borrower_wallet_address)
         txn_df = pd.DataFrame.from_records(raw_txns)
         if len(txn_df) == 0:
             return EthereumWalletSignals(
