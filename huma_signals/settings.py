@@ -3,9 +3,8 @@ import enum
 import os
 import pathlib
 
-import pydantic
-
 import dotenv
+import pydantic
 
 
 class Env(str, enum.Enum):
