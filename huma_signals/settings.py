@@ -3,9 +3,8 @@ import enum
 import os
 import pathlib
 
+import dotenv
 import pydantic
-
-import dotenv  # isort: skip
 
 
 class Env(str, enum.Enum):
