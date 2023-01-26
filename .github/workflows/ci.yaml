@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
-          ref: refs/pull/${{ github.event.number }}/merge
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
