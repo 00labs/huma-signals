@@ -1,5 +1,4 @@
 import datetime
-import os
 from typing import Any, ClassVar, List
 
 import pandas as pd
@@ -7,10 +6,11 @@ import requests
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
+from huma_signals.settings import settings
 
 # Sign-up at https://etherscan.io/myapikey to get an API key
 ETHERSCAN_BASE_URL = "api.etherscan.io"
-ETHERSCAN_API_KEY = os.environ.get("ETHERSCAN_API_KEY", "YourApiKeyToken")
+ETHERSCAN_API_KEY = settings.etherscan_api_key
 
 
 class EthereumWalletSignals(models.HumaBaseModel):
@@ -30,15 +30,19 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
     @classmethod
     def _node_get_transactions(cls, wallet_address: str) -> List[Any]:
         action = "txlist"
-        r = requests.get(
+        request_url = (
             f"https://{ETHERSCAN_BASE_URL}/"
             f"api?module=account&action={action}"
             f"&address={wallet_address}"
             f"&startblock=0&endblock=99999999"
             f"&sort=asc"
-            f"&apikey={ETHERSCAN_API_KEY}",
+            f"&apikey={ETHERSCAN_API_KEY}"
+        )
+        r = requests.get(
+            request_url,
             timeout=10,
         )
+
         if r.status_code == 200 and r.json()["status"] == "1":
             return r.json()["result"]
 

@@ -3,9 +3,8 @@ import enum
 import os
 import pathlib
 
-import pydantic
-
 import dotenv
+import pydantic
 
 
 class Env(str, enum.Enum):
@@ -41,6 +40,9 @@ class Settings(pydantic.BaseSettings):
 
     env: str
     sentry_dsn: str
+
+    # For the ethereum_wallet adapter
+    etherscan_api_key: str
 
 
 settings = Settings()
