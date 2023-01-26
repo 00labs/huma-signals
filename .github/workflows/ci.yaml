@@ -9,20 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Stop & Remove Docker Compose Containers
-        run: docker-compose down
-      - name: Run Docker Compose
-        run: docker-compose up --build -d
       - name: Lint
         run: docker-compose -f ./docker-compose-ci.yml run lint-tests
 
   tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: "refs/pull/${{ github.event.number }}/merge"
+      - uses: actions/checkout@v3
       - name: Unit and e2e tests
         env:
           ENV: test
