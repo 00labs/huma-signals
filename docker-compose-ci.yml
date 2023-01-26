@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
       target: dev
     image: huma-signals-ci:latest
-    command: ["make", "test"]
     environment:
-      - ENV=test
-      - ALCHEMY_KEY_GOERLI=${ALCHEMY_KEY_GOERLI}
+      - ENV
+      - ALCHEMY_KEY_GOERLI
+    command: ["make", "test"]

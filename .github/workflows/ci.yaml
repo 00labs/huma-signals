@@ -55,5 +55,7 @@ jobs:
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
       - name: Unit and e2e tests
-        run: |
-          ALCHEMY_KEY_GOERLI="${{ vars.ALCHEMY_KEY_GOERLI }}" docker-compose -f ./docker-compose-ci.yml run tests
+        env:
+          ENV: test
+          ALCHEMY_KEY_GOERLI: ${{ secrets.ALCHEMY_KEY_GOERLI }}
+        run: docker-compose -f ./docker-compose-ci.yml run tests
