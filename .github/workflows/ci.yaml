@@ -16,11 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use variables
-        run: |
-          echo "repository variable : ${{ vars.ALCHEMY_KEY_GOERLI }}"
       - name: Unit and e2e tests
-        env:
-          ENV: test
-          ALCHEMY_KEY_GOERLI: ${{ vars.ALCHEMY_KEY_GOERLI }}
-        run: docker-compose -f ./docker-compose-ci.yml run tests
+        run: |
+          ALCHEMY_KEY_GOERLI="${{ vars.ALCHEMY_KEY_GOERLI }}" docker-compose -f ./docker-compose-ci.yml run tests
