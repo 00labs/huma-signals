@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+
       - name: Lint
         run: docker-compose -f ./docker-compose-ci.yml run lint-tests
 
@@ -16,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - name: Unit and e2e tests
         run: |
           ALCHEMY_KEY_GOERLI="${{ vars.ALCHEMY_KEY_GOERLI }}" docker-compose -f ./docker-compose-ci.yml run tests
