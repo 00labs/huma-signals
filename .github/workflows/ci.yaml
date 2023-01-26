@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Use variables
+        run: |
+          echo "repository variable : ${{ vars.ALCHEMY_KEY_GOERLI }}"
       - name: Unit and e2e tests
         env:
           ENV: test
