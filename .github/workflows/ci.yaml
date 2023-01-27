@@ -57,4 +57,5 @@ jobs:
       - name: Unit and e2e tests
         env:
           ENV: test
+          ALCHEMY_KEY_GOERLI: ${{ secrets.ALCHEMY_KEY_GOERLI }}
         run: docker-compose -f ./docker-compose-ci.yml run tests
