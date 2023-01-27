@@ -16,7 +16,7 @@ It also helps us if you spread the word. Reference the project in blog posts, or
 
 If you come across any issues with the existing code and have a solution in mind, we welcome your contribution! Simply open a pull request with your fix and we will review it as soon as possible.
 
-## Report Bugs or Vulnerabilities
+## Report bugs or vulnerabilities
 
 If you have found a bug or identified a vulnerability in the project, we appreciate your help in disclosing it to us in a responsible manner. Please follow these steps when submitting a bug or vulnerability report:
 
@@ -30,7 +30,7 @@ If you have found a bug or identified a vulnerability in the project, we appreci
 
 By following these steps, you will help us triage and resolve the issue as quickly as possible. Thank you for your contribution!
 
-## Request a New Feature
+## Request a new feature
 
 If you have a great idea for a new feature, we'd love to hear about it! Please open an issue and provide the following information:
 
