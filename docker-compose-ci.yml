@@ -10,6 +10,7 @@ services:
     command: ["make", "lint-check"]
     environment:
       - ENV=development
+      - ALCHEMY_KEY_GOERLI=${{ secrets.ALCHEMY_KEY_GOERLI }}
 
   tests:
     build:
@@ -20,3 +21,4 @@ services:
     command: ["make", "test"]
     environment:
       - ENV=test
+      - ALCHEMY_KEY_GOERLI=${{ secrets.ALCHEMY_KEY_GOERLI }}
