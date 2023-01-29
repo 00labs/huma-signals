@@ -16,7 +16,7 @@ def get_rn_subgraph_endpoint_url(chain_name: str) -> str:
 def get_rn_invoice_api_url(chain_name: str) -> str:
     chain = chains.Chain.from_chain_name(chain_name)
     if chain == chains.Chain.POLYGON:
-        return "https://polygon.huma.finance/invoice"
+        return "https://polygon.api.huma.finance/invoice"
     if chain == chains.Chain.GOERLI:
         return "https://goerli.api.huma.finance/invoice"
 
