@@ -85,12 +85,9 @@ def describe_adapter() -> None:
             borrower_address: str,
             receivable_param: str,
         ) -> None:
-            signals = await adapter.RequestNetworkInvoiceAdapter.fetch(
-                chain_name="goerli",
+            signals = await adapter.RequestNetworkInvoiceAdapter().fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
-                rn_subgraph_endpoint_url=rn_subgraph_endpoint_url,
-                rn_invoice_endpoint_url=rn_invoice_api_url,
             )
             assert signals.payer_tenure == 0
             assert signals.payer_recent == 999
@@ -129,14 +126,17 @@ def describe_adapter() -> None:
             """
             In this test we mocked the invoice with a very active pair from mainnet,
             so we can test the signals are calculated correctly.
-            """
+
             # TODO: Use a proper data tape instead of of rely on live data for this test
-            signals = await adapter.RequestNetworkInvoiceAdapter.fetch(
-                chain_name="mainnet",
+            """
+            mainnet_subgraph = "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
+            signals = await adapter.RequestNetworkInvoiceAdapter(
+                chain_name="ethereum",
+                request_network_subgraph_endpoint_url=mainnet_subgraph,
+                request_network_invoice_api_url="https://goerli.api.huma.finance/invoice",
+            ).fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
-                rn_subgraph_endpoint_url=None,
-                rn_invoice_endpoint_url=rn_invoice_api_url,
             )
             assert signals.payer_tenure > 600
             assert signals.payer_recent < 999
