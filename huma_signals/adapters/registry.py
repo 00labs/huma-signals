@@ -35,7 +35,7 @@ def find_required_adapter(
     return list(set(adapters))
 
 
-def fetch_signal(
+async def fetch_signal(
     signal_names: List[str],
     adapter_inputs: Dict[str, Any],
     registry: Optional[Dict[str, Type[models.SignalAdapterBase]]] = None,
@@ -48,7 +48,7 @@ def fetch_signal(
     all_signals: Dict[str, Any] = {}
     for adapter in adapters:
         inputs = {k: adapter_inputs[k] for k in adapter.required_inputs}
-        signals = adapter().fetch(**inputs).dict()
+        signals = (await adapter().fetch(**inputs)).dict()
         all_signals |= {
             f"{adapter.name}.{signal}": value for signal, value in signals.items()
         }

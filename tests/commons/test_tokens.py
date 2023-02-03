@@ -28,7 +28,7 @@ def describe_TOKEN_ADDRESS_MAPPING() -> None:
     def it_has_all_tokens_valid_eth_addresses() -> None:
         for chain in chains.Chain:
             for token in tokens.TOKEN_ADDRESS_MAPPING[chain]:
-                assert web3.Web3.isAddress(token)
+                assert web3.Web3.is_address(token)
 
 
 def describe_TOKEN_USD_PRICE_MAPPING() -> None:

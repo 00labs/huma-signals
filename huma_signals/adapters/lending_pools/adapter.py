@@ -1,8 +1,9 @@
 import decimal
-import json
 import pathlib
 from typing import Any, ClassVar, List
 
+import aiofiles
+import orjson
 import pydantic
 import web3
 
@@ -55,30 +56,32 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     signals: ClassVar[List[str]] = list(LendingPoolSignals.__fields__.keys())
 
     @classmethod
-    def fetch(  # pylint: disable=arguments-differ
+    async def fetch(  # pylint: disable=arguments-differ
         cls, pool_address: str, *args: Any, **kwargs: Any
     ) -> LendingPoolSignals:
         pool_settings = settings.POOL_REGISTRY[
-            web3.Web3.toChecksumAddress(pool_address)
+            web3.Web3.to_checksum_address(pool_address)
         ]
 
         w3 = chains.get_w3(pool_settings.chain)
 
-        with open(pool_settings.pool_abi_path, encoding="utf-8") as f:
+        async with aiofiles.open(pool_settings.pool_abi_path, encoding="utf-8") as f:
+            contents = await f.read()
             huma_pool_contract = w3.eth.contract(
-                address=web3.Web3.toChecksumAddress(pool_address),
-                abi=json.load(f),
+                address=web3.Web3.to_checksum_address(pool_address),
+                abi=orjson.loads(contents),
             )
-        with open(
+        async with aiofiles.open(
             pathlib.Path(__file__).parent.resolve() / "abi" / "BasePoolConfig.json",
             encoding="utf-8",
         ) as f:
+            contents = await f.read()
             pool_config_contract = w3.eth.contract(
-                address=huma_pool_contract.functions.poolConfig().call(),
-                abi=json.load(f),
+                address=await huma_pool_contract.functions.poolConfig().call(),
+                abi=orjson.loads(contents),
             )
 
-        pool_summary = pool_config_contract.functions.getPoolSummary().call()
+        pool_summary = await pool_config_contract.functions.getPoolSummary().call()
         return LendingPoolSignals(
             pool_address=pool_address,
             apr=pool_summary[1],

@@ -2,8 +2,8 @@ import datetime
 import decimal
 from typing import Any, ClassVar, Dict, List, Optional
 
+import httpx
 import pandas as pd
-import requests
 import web3
 
 from huma_signals.adapters import models as adapter_models
@@ -26,7 +26,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
     )
 
     @classmethod
-    def _get_payments(
+    async def _get_payments(
         cls,
         from_address: Optional[str],
         to_address: Optional[str],
@@ -41,37 +41,41 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         payments = []
         last_chunk_size = DEFAULT_GRAPHQL_CHUNK_SIZE
         last_id = ""
-        while last_chunk_size == DEFAULT_GRAPHQL_CHUNK_SIZE:
-            query = f"""
-                query {{
-                payments(first: {DEFAULT_GRAPHQL_CHUNK_SIZE},
-                    where: {{
-                        {where_clause}
-                        id_gt: "{last_id}"
+        async with httpx.AsyncClient() as client:
+            while last_chunk_size == DEFAULT_GRAPHQL_CHUNK_SIZE:
+                query = f"""
+                    query HumaRequestNetworkPayments {{
+                        payments(
+                            first: {DEFAULT_GRAPHQL_CHUNK_SIZE},
+                            where: {{
+                                {where_clause}
+                                id_gt: "{last_id}"
+                            }}
+                            orderBy: id,
+                            orderDirection: asc
+                        ) {{
+                            id
+                            contractAddress
+                            tokenAddress
+                            to
+                            from
+                            timestamp
+                            txHash
+                            amount
+                            currency
+                            amountInCrypto
+                        }}
                     }}
-                    orderBy: id, orderDirection: asc
-                ) {{
-                    id
-                    contractAddress
-                    tokenAddress
-                    to
-                    from
-                    timestamp
-                    txHash
-                    amount
-                    currency
-                    amountInCrypto
-                }}
-                }}
-                """
-            r = requests.post(
-                rn_subgraph_endpoint_url, json={"query": query}, timeout=10
-            )
-            new_chunk = r.json()["data"]["payments"]
-            payments.extend(new_chunk)
-            last_chunk_size = len(new_chunk)
-            if len(payments) > 0:
-                last_id = payments[-1]["id"]
+                    """
+                resp = await client.post(
+                    rn_subgraph_endpoint_url,
+                    json={"query": query},
+                )
+                new_chunk = resp.json()["data"]["payments"]
+                payments.extend(new_chunk)
+                last_chunk_size = len(new_chunk)
+                if len(payments) > 0:
+                    last_id = payments[-1]["id"]
 
         return payments
 
@@ -144,7 +148,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         }
 
     @classmethod
-    def fetch(  # pylint: disable=too-many-arguments, arguments-differ
+    async def fetch(  # pylint: disable=too-many-arguments, arguments-differ
         cls,
         chain_name: str,
         borrower_wallet_address: str,
@@ -159,18 +163,22 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         if rn_invoice_endpoint_url is None:
             rn_invoice_endpoint_url = settings.get_rn_invoice_api_url(chain_name)
 
-        if not web3.Web3.isAddress(borrower_wallet_address):
+        if not web3.Web3.is_address(borrower_wallet_address):
             raise ValueError(
                 f"Invalid borrower wallet address: {borrower_wallet_address}"
             )
 
-        invoice = models.Invoice.from_request_id(
+        invoice = await models.Invoice.from_request_id(
             receivable_param, rn_invoice_endpoint_url
         )
 
         records = []
-        records.extend(cls._get_payments(invoice.payer, None, rn_subgraph_endpoint_url))
-        records.extend(cls._get_payments(None, invoice.payee, rn_subgraph_endpoint_url))
+        records.extend(
+            await cls._get_payments(invoice.payer, None, rn_subgraph_endpoint_url)
+        )
+        records.extend(
+            await cls._get_payments(None, invoice.payee, rn_subgraph_endpoint_url)
+        )
         payments_df = pd.DataFrame.from_records(records)
         enriched_payments_df = cls.enrich_payments_data(payments_df, chain_name)
 
