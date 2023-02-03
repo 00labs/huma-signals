@@ -44,6 +44,9 @@ class Settings(pydantic.BaseSettings):
     chain: chains.Chain
     sentry_dsn: str
 
+    # adapter: allowlist
+    allow_list_endpoint: str = "https://dev.allowlist.huma.finance/"
+
     # adapter: ethereum_wallet
     etherscan_base_url: str = "https://api.etherscan.io"
     etherscan_api_key: str
