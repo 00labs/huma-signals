@@ -42,7 +42,6 @@ def describe_chain() -> None:
 
 
 def describe_get_w3() -> None:
-    @pytest.mark.asyncio
     async def it_can_get_w3() -> None:
         alchemy_key = os.getenv("ALCHEMY_KEY_GOERLI")
         w3 = chains.get_w3(chains.Chain.GOERLI, alchemy_key=alchemy_key)
@@ -61,7 +60,6 @@ def describe_get_w3() -> None:
         assert block is not None
         assert block["number"] == latest_block["number"]
 
-    @pytest.mark.asyncio
     async def it_can_get_w3_from_env() -> None:
         w3 = chains.get_w3(chains.Chain.GOERLI)
 

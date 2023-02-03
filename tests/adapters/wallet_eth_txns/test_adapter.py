@@ -10,7 +10,6 @@ def valid_address() -> str:
 
 
 def describe_wallet_eth_txns_adapter() -> None:
-    @pytest.mark.asyncio
     async def it_works_e2e(valid_address: str) -> None:
         result = await adapter.EthereumWalletAdapter.fetch(valid_address)
         assert result is not None
