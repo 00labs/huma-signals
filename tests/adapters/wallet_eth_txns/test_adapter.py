@@ -11,7 +11,7 @@ def valid_address() -> str:
 
 def describe_wallet_eth_txns_adapter() -> None:
     async def it_works_e2e(valid_address: str) -> None:
-        result = await adapter.EthereumWalletAdapter.fetch(valid_address)
+        result = await adapter.EthereumWalletAdapter().fetch(valid_address)
         assert result is not None
         assert result.total_transactions > 1400
         assert result.total_sent > 900
