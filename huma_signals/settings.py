@@ -42,6 +42,7 @@ class Settings(pydantic.BaseSettings):
 
     env: str
     chain: chains.Chain
+    web3_provider_url: str
     sentry_dsn: str
 
     # adapter: allowlist

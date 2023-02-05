@@ -9,8 +9,9 @@ import web3
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
-from huma_signals.adapters.lending_pools import settings
-from huma_signals.commons import chains
+from huma_signals.adapters.lending_pools import registry
+from huma_signals.commons import web3_utils
+from huma_signals.settings import settings
 
 
 class LendingPoolSignals(models.HumaBaseModel):
@@ -59,11 +60,11 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     async def fetch(  # pylint: disable=arguments-differ
         cls, pool_address: str, *args: Any, **kwargs: Any
     ) -> LendingPoolSignals:
-        pool_settings = settings.POOL_REGISTRY[
+        pool_settings = registry.POOL_REGISTRY[
             web3.Web3.to_checksum_address(pool_address)
         ]
 
-        w3 = chains.get_w3(pool_settings.chain)
+        w3 = await web3_utils.get_w3(pool_settings.chain, settings.web3_provider_url)
 
         async with aiofiles.open(pool_settings.pool_abi_path, encoding="utf-8") as f:
             contents = await f.read()
