@@ -60,4 +60,6 @@ jobs:
           WEB3_PROVIDER_URL: ${{ secrets.WEB3_PROVIDER_URL }}
           SENTRY_DSN: ""
           ETHERSCAN_API_KEY: ""
+          REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL: https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
+          REQUEST_NETWORK_INVOICE_API_URL: https://goerli.api.huma.finance/invoice
         run: docker-compose -f ./docker-compose-ci.yml run tests
