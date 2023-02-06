@@ -15,7 +15,7 @@ class Chain(enum.Enum):
 
     @staticmethod
     def from_chain_name(chain_name: str) -> Chain:
-        if chain_name.lower() in ("ethereum", "mainnet", "eth"):
+        if chain_name.lower() in ("ethereum", "mainnet", "eth", "homestead"):
             return Chain.ETHEREUM
         if chain_name.lower() in ("goerli"):
             return Chain.GOERLI
