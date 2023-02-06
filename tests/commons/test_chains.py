@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from huma_signals.commons import chains
@@ -37,3 +39,39 @@ def describe_chain() -> None:
 
             with pytest.raises(ValueError):
                 assert chains.Chain.from_chain_name("SOME_CHAIN") is None
+
+
+def describe_get_w3() -> None:
+    async def it_can_get_w3() -> None:
+        alchemy_key = os.getenv("ALCHEMY_KEY_GOERLI")
+        w3 = chains.get_w3(chains.Chain.GOERLI, alchemy_key=alchemy_key)
+        assert w3 is not None
+        is_connected = await w3.is_connected()  # type: ignore[misc]
+        assert is_connected is True
+
+        # The type annotation for `eth` is wrong: it's annotated as `eth`, but it should be `AsyncEth`
+        # in this case. If the type annotation is correct then it wouldn't complain about the presence of `await`.
+        latest_block = await w3.eth.get_block("latest")  # type: ignore[misc]
+        assert latest_block is not None
+        assert latest_block["number"] > 0
+        assert latest_block["hash"] is not None
+
+        block = await w3.eth.get_block(latest_block["hash"])  # type: ignore[misc]
+        assert block is not None
+        assert block["number"] == latest_block["number"]
+
+    async def it_can_get_w3_from_env() -> None:
+        w3 = chains.get_w3(chains.Chain.GOERLI)
+
+        assert w3 is not None
+        is_connected = await w3.is_connected()  # type: ignore[misc]
+        assert is_connected is True
+
+        latest_block = await w3.eth.get_block("latest")  # type: ignore[misc]
+        assert latest_block is not None
+        assert latest_block["number"] > 0
+        assert latest_block["hash"] is not None
+
+        block = await w3.eth.get_block(latest_block["hash"])  # type: ignore[misc]
+        assert block is not None
+        assert block["number"] == latest_block["number"]

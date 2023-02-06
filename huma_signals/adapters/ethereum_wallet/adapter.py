@@ -1,13 +1,16 @@
 import datetime
+import os
 from typing import Any, ClassVar, List
 
 import httpx
 import pandas as pd
-import pydantic
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
-from huma_signals.settings import settings
+
+# Sign-up at https://etherscan.io/myapikey to get an API key
+ETHERSCAN_BASE_URL = "https://api.etherscan.io"
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "YourApiKeyToken")
 
 
 class EthereumWalletSignals(models.HumaBaseModel):
@@ -24,33 +27,16 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
     required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
     signals: ClassVar[List[str]] = list(EthereumWalletSignals.__fields__.keys())
 
-    etherscan_base_url: str = pydantic.Field(default=settings.etherscan_base_url)
-    etherscan_api_key: str = pydantic.Field(default=settings.etherscan_api_key)
-
-    @pydantic.validator("etherscan_base_url")
-    def validate_etherscan_base_url(cls, value: str) -> str:
-        if not value:
-            raise ValueError("etherscan_base_url is required")
-        return value
-
-    @pydantic.validator("etherscan_api_key")
-    def validate_etherscan_api_key(cls, value: str) -> str:
-        if not value:
-            raise ValueError("etherscan_api_key is required")
-        return value
-
     @classmethod
-    async def _node_get_transactions(
-        cls, wallet_address: str, etherscan_base_url: str, etherscan_api_key: str
-    ) -> List[Any]:
+    async def _node_get_transactions(cls, wallet_address: str) -> List[Any]:
         try:
-            async with httpx.AsyncClient(base_url=etherscan_base_url) as client:
+            async with httpx.AsyncClient(base_url=ETHERSCAN_BASE_URL) as client:
                 resp = await client.get(
                     f"/api?module=account&action=txlist"
                     f"&address={wallet_address}"
                     f"&startblock=0&endblock=99999999"
                     f"&sort=asc"
-                    f"&apikey={etherscan_api_key}",
+                    f"&apikey={ETHERSCAN_API_KEY}",
                 )
                 resp.raise_for_status()
                 payload = resp.json()
@@ -61,14 +47,11 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
 
         return []
 
+    @classmethod
     async def fetch(  # pylint: disable=arguments-differ
-        self, borrower_wallet_address: str, *args: Any, **kwargs: Any
+        cls, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> EthereumWalletSignals:
-        raw_txns = await self._node_get_transactions(
-            borrower_wallet_address,
-            etherscan_base_url=self.etherscan_base_url,
-            etherscan_api_key=self.etherscan_api_key,
-        )
+        raw_txns = await cls._node_get_transactions(borrower_wallet_address)
         txn_df = pd.DataFrame.from_records(raw_txns)
         if len(txn_df) == 0:
             return EthereumWalletSignals(

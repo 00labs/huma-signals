@@ -18,7 +18,9 @@ See [here](../../../docs/getting_started.md) for the development guide.
 The following environment variable is required to run the adapter
 
 ```bash
-WEB3_PROVIDER_URL
+ALCHEMY_KEY_GOERLI
+ALCHEMY_KEY_POLYGON
+ALCHEMY_KEY_MAINNET
 ```
 
 You can get Alchemy keys [here](https://docs.alchemy.com/docs/alchemy-quickstart-guide).

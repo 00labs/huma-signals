@@ -9,9 +9,8 @@ import web3
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
-from huma_signals.adapters.lending_pools import registry
-from huma_signals.commons import web3_utils
-from huma_signals.settings import settings
+from huma_signals.adapters.lending_pools import settings
+from huma_signals.commons import chains
 
 
 class LendingPoolSignals(models.HumaBaseModel):
@@ -56,14 +55,15 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     required_inputs: ClassVar[List[str]] = ["pool_address"]
     signals: ClassVar[List[str]] = list(LendingPoolSignals.__fields__.keys())
 
+    @classmethod
     async def fetch(  # pylint: disable=arguments-differ
-        self, pool_address: str, *args: Any, **kwargs: Any
+        cls, pool_address: str, *args: Any, **kwargs: Any
     ) -> LendingPoolSignals:
-        pool_settings = registry.POOL_REGISTRY[
+        pool_settings = settings.POOL_REGISTRY[
             web3.Web3.to_checksum_address(pool_address)
         ]
 
-        w3 = await web3_utils.get_w3(pool_settings.chain, settings.web3_provider_url)
+        w3 = chains.get_w3(pool_settings.chain)
 
         async with aiofiles.open(pool_settings.pool_abi_path, encoding="utf-8") as f:
             contents = await f.read()
@@ -89,8 +89,8 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
             token_name=pool_summary[5],
             token_symbol=pool_summary[6],
             token_decimal=pool_summary[7],
-            interval_in_days_max=self.interval_in_days_max,
-            interval_in_days_min=self.interval_in_days_min,
-            invoice_amount_ratio=self.invoice_amount_ratio,
+            interval_in_days_max=cls.interval_in_days_max,
+            interval_in_days_min=cls.interval_in_days_min,
+            invoice_amount_ratio=cls.invoice_amount_ratio,
             is_testnet=pool_settings.chain.is_testnet(),
         )

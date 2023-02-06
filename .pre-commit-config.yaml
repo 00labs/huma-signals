@@ -21,7 +21,7 @@ repos:
     hooks:
       - id: black
         name: 'black'
-        args: ['--target-version', 'py310']
+        args: ['--target-version', 'py38']
         types: [python]
   - repo: https://github.com/timothycrosley/isort
     rev: 5.5.4
@@ -61,7 +61,7 @@ repos:
         types: [python]
         args:
           [
-              "--load-plugins=pylint_google_style_guide_imports_enforcing, pylint_pydantic",
+              "--load-plugins=pylint_google_style_guide_imports_enforcing",
               "--max-line-length=120",
               "--disable=C0103, C0114, C0115, C0116, R0801, W0511",
               "--extension-pkg-whitelist=pydantic, orjson",
