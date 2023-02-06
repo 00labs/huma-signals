@@ -25,7 +25,7 @@ elif ENV == Env.TEST:
     env_path = pathlib.Path(__file__).parent / "dotenv" / "test.env"
 elif ENV == Env.DEVELOPMENT:
     env_path = pathlib.Path(__file__).parent / "dotenv" / "development.env"
-elif ENV is None:
+elif not ENV:
     raise ValueError("No ENV is defined")
 else:
     raise ValueError(f"Unknown ENV: {ENV}")

@@ -20,3 +20,7 @@ def describe_allowlist_adapter() -> None:
 
         result = await adapter.AllowListAdapter().fetch(invalid_address, "goerli")
         assert result == adapter.AllowListSignal(on_allowlist=False)
+
+    def it_validate_allowlist_endpoint() -> None:
+        with pytest.raises(ValueError):
+            adapter.AllowListAdapter(allowlist_endpoint="")

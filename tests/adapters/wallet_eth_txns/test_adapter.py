@@ -20,3 +20,24 @@ def describe_wallet_eth_txns_adapter() -> None:
         assert result.wallet_teneur_in_days > 2600
         assert result.total_income_90days > 0
         assert result.total_transactions_90days > 0
+
+    def it_validate_etherscan_base_url() -> None:
+        with pytest.raises(ValueError):
+            adapter.EthereumWalletAdapter(etherscan_base_url="")
+
+    def it_validate_etherscan_api_key() -> None:
+        with pytest.raises(ValueError):
+            adapter.EthereumWalletAdapter(etherscan_api_key="")
+
+    async def it_handles_address_with_no_records() -> None:
+        # This address has no transactions
+        result = await adapter.EthereumWalletAdapter().fetch(
+            "0x0000000000000000000000000000000000000000"
+        )
+        assert result is not None
+        assert result.total_transactions == 0
+        assert result.total_sent == 0
+        assert result.total_received == 0
+        assert result.wallet_teneur_in_days == 0
+        assert result.total_income_90days == 0
+        assert result.total_transactions_90days == 0

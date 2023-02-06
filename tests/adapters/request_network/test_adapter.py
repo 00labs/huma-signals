@@ -8,6 +8,20 @@ from huma_signals.adapters.request_network import adapter, models
 
 
 def describe_adapter() -> None:
+    def it_validate_rn_invoice_api_url() -> None:
+        with pytest.raises(ValueError):
+            adapter.RequestNetworkInvoiceAdapter(request_network_invoice_api_url="")
+
+    def it_validate_rn_subgraph_endpoint_url() -> None:
+        with pytest.raises(ValueError):
+            adapter.RequestNetworkInvoiceAdapter(
+                request_network_subgraph_endpoint_url=""
+            )
+
+    def it_validate_chain_name() -> None:
+        with pytest.raises(ValueError):
+            adapter.RequestNetworkInvoiceAdapter(chain_name="")
+
     def describe_get_payments() -> None:
         @pytest.fixture
         def rn_subgraph_endpoint_url() -> str:
@@ -112,7 +126,6 @@ def describe_adapter() -> None:
                 due_date=datetime.datetime(2023, 1, 25),
             ),
         )
-        @pytest.mark.asyncio
         async def it_can_calculate_signals_with_mocked_invoice(
             mocked_invoice: str,
             borrower_address: str,
