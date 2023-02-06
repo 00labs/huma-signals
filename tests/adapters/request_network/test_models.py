@@ -28,7 +28,6 @@ def rn_invoice_api_url() -> str:
 
 
 def describe_invoice() -> None:
-    @pytest.mark.asyncio
     async def it_can_be_initialized_with_a_receivable_param(
         receivable_param: str,
         rn_invoice_api_url: str,

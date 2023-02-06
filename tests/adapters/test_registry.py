@@ -136,7 +136,6 @@ def describe_adapter_registry() -> None:
 
 
 def describe_fetch_signal() -> None:
-    @pytest.mark.asyncio
     async def it_returns_the_correct_signal(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
@@ -145,7 +144,6 @@ def describe_fetch_signal() -> None:
         )
         assert signals == {"dummy_adapter.test_signal": 10}
 
-    @pytest.mark.asyncio
     async def it_returns_the_correct_signals_with_type_conversion(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
@@ -154,7 +152,6 @@ def describe_fetch_signal() -> None:
         )
         assert signals == {"dummy_adapter.test_signal2": "20"}
 
-    @pytest.mark.asyncio
     async def it_returns_the_correct_signals_with_multiple_adapters(
         dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:

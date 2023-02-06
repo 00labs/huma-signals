@@ -23,7 +23,6 @@ def describe_adapter() -> None:
                 "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
             )  # gitleaks:allow
 
-        @pytest.mark.asyncio
         async def it_returns_payer_payment_history(
             rn_subgraph_endpoint_url: str, from_address: str
         ) -> None:
@@ -34,7 +33,6 @@ def describe_adapter() -> None:
             assert payments[-1]["from"] == from_address
             assert payments[-1]["to"].startswith("0x")
 
-        @pytest.mark.asyncio
         async def it_returns_payee_payment_history(
             rn_subgraph_endpoint_url: str, to_address: str
         ) -> None:
@@ -81,7 +79,6 @@ def describe_adapter() -> None:
         def payee_wallet_address() -> str:
             return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
 
-        @pytest.mark.asyncio
         async def it_can_fetch_signals(
             rn_subgraph_endpoint_url: str,
             rn_invoice_api_url: str,
