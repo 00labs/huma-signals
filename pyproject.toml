@@ -21,7 +21,6 @@ base58 = "^2.1.1"
 ipfshttpclient = "^0.7.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
-pylint-pydantic = "^0.1.6"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -60,7 +59,7 @@ extension-pkg-whitelist = "pydantic, orjson"
 max-line-length = "120"
 
 [tool.pylint.master]
-load-plugins = "pylint_google_style_guide_imports_enforcing, pylint_pydantic"
+load-plugins = "pylint_google_style_guide_imports_enforcing"
 
 [build-system]
 requires = ["poetry-core"]

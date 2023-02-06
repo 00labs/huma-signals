@@ -22,5 +22,6 @@ class SignalAdapterBase(models.HumaBaseModel):
             "required_inputs": cls.required_inputs,
         }
 
-    async def fetch(self, *args: Any, **kwargs: Any) -> Any:
+    @classmethod
+    async def fetch(cls, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError

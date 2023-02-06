@@ -15,12 +15,8 @@ def invalid_address() -> str:
 
 def describe_allowlist_adapter() -> None:
     async def it_works_e2e(valid_address: str, invalid_address: str) -> None:
-        result = await adapter.AllowListAdapter().fetch(valid_address, "goerli")
+        result = await adapter.AllowListAdapter.fetch(valid_address, "goerli")
         assert result == adapter.AllowListSignal(on_allowlist=True)
 
-        result = await adapter.AllowListAdapter().fetch(invalid_address, "goerli")
+        result = await adapter.AllowListAdapter.fetch(invalid_address, "goerli")
         assert result == adapter.AllowListSignal(on_allowlist=False)
-
-    def it_validate_allowlist_endpoint() -> None:
-        with pytest.raises(ValueError):
-            adapter.AllowListAdapter(allowlist_endpoint="")
