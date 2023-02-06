@@ -23,8 +23,8 @@ def describe_adapter() -> None:
                 "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
             )  # gitleaks:allow
 
-        async def it_returns_payer_payment_history(
-            rn_subgraph_endpoint_url: str, from_address: str
+        async def it_returns_payment_history(
+            rn_subgraph_endpoint_url: str, from_address: str, to_address: str
         ) -> None:
             payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 from_address, None, rn_subgraph_endpoint_url
@@ -33,9 +33,6 @@ def describe_adapter() -> None:
             assert payments[-1]["from"] == from_address
             assert payments[-1]["to"].startswith("0x")
 
-        async def it_returns_payee_payment_history(
-            rn_subgraph_endpoint_url: str, to_address: str
-        ) -> None:
             payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 None, to_address, rn_subgraph_endpoint_url
             )
@@ -43,10 +40,6 @@ def describe_adapter() -> None:
             assert payments[-1]["to"] == to_address
             assert payments[-1]["from"].startswith("0x")
 
-        @pytest.mark.asyncio
-        async def it_returns_pair_payment_history(
-            rn_subgraph_endpoint_url: str, from_address: str, to_address: str
-        ) -> None:
             payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
                 from_address, to_address, rn_subgraph_endpoint_url
             )
@@ -85,7 +78,10 @@ def describe_adapter() -> None:
             borrower_address: str,
             receivable_param: str,
         ) -> None:
-            signals = await adapter.RequestNetworkInvoiceAdapter().fetch(
+            signals = await adapter.RequestNetworkInvoiceAdapter(
+                request_network_invoice_api_url=rn_invoice_api_url,
+                request_network_subgraph_url=rn_subgraph_endpoint_url,
+            ).fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
             )
