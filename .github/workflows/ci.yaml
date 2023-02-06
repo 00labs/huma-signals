@@ -57,6 +57,8 @@ jobs:
       - name: Unit and e2e tests
         env:
           ENV: test
+          CHAIN: GOERLI
+          ALCHEMY_KEY_GOERLI: ${{ secrets.ALCHEMY_KEY_GOERLI }}
           WEB3_PROVIDER_URL: ${{ secrets.WEB3_PROVIDER_URL }}
           SENTRY_DSN: ""
           ETHERSCAN_API_KEY: ""
