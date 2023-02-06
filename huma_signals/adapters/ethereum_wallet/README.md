@@ -19,6 +19,7 @@ The following environment variable is required to run the adapter.
 (Sign up at https://etherscan.io/myapikey to get an API key)
 
 ```bash
+ETHERSCAN_BASE_URL
 ETHERSCAN_API_KEY
 ```
 

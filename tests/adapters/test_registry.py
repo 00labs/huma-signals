@@ -17,8 +17,7 @@ class DummyAdapter(adapter_models.SignalAdapterBase):
     required_inputs: ClassVar[List[str]] = ["test_input"]
     signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
 
-    @classmethod
-    async def fetch(cls, test_input: int) -> DummySignals:
+    async def fetch(self, test_input: int) -> DummySignals:
         return DummySignals(
             test_signal=test_input,
             test_signal2=str(test_input * 2),

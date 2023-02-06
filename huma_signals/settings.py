@@ -6,6 +6,8 @@ import pathlib
 import dotenv
 import pydantic
 
+from huma_signals.commons import chains
+
 
 class Env(str, enum.Enum):
     DEVELOPMENT = "development"
@@ -23,7 +25,7 @@ elif ENV == Env.TEST:
     env_path = pathlib.Path(__file__).parent / "dotenv" / "test.env"
 elif ENV == Env.DEVELOPMENT:
     env_path = pathlib.Path(__file__).parent / "dotenv" / "development.env"
-elif ENV is None:
+elif not ENV:
     raise ValueError("No ENV is defined")
 else:
     raise ValueError(f"Unknown ENV: {ENV}")
@@ -39,7 +41,20 @@ class Settings(pydantic.BaseSettings):
         case_sensitive = False
 
     env: str
+    chain: chains.Chain
+    web3_provider_url: str
     sentry_dsn: str
+
+    # adapter: allowlist
+    allow_list_endpoint: str = "https://dev.allowlist.huma.finance/"
+
+    # adapter: ethereum_wallet
+    etherscan_base_url: str = "https://api.etherscan.io"
+    etherscan_api_key: str
+
+    # adapter: request_network
+    request_network_subgraph_endpoint_url: str
+    request_network_invoice_api_url: str
 
 
 settings = Settings()
