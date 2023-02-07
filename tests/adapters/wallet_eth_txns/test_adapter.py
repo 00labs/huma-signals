@@ -30,10 +30,7 @@ def describe_wallet_eth_txns_adapter() -> None:
             adapter.EthereumWalletAdapter(etherscan_api_key="")
 
     async def it_handles_address_with_no_records() -> None:
-        # This address has no transactions
-        result = await adapter.EthereumWalletAdapter().fetch(
-            "0x0000000000000000000000000000000000000000"
-        )
+        result = await adapter.EthereumWalletAdapter().fetch("0x1234")
         assert result is not None
         assert result.total_transactions == 0
         assert result.total_sent == 0
