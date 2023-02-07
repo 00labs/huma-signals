@@ -104,15 +104,15 @@ class Invoice(models.HumaBaseModel):
                 resp.raise_for_status()
                 invoice_info = resp.json()
                 if not web3.Web3.is_address(invoice_info["owner"]):
-                    raise Exception(
+                    raise ValueError(
                         f"Invoice's owner is not a valid address: {invoice_info['owner']}"
                     )
                 if not web3.Web3.is_address(invoice_info["payer"]):
-                    raise Exception(
+                    raise ValueError(
                         f"Invoice's payer is not a valid address: {invoice_info['payer']}"
                     )
                 if not web3.Web3.is_address(invoice_info["payee"]):
-                    raise Exception(
+                    raise ValueError(
                         f"Invoice's payee is not a valid address: {invoice_info['payee']}"
                     )
 

@@ -16,7 +16,7 @@ lint-check:
 	poetry run pylint huma_signals
 
 test:
-	ENV=test poetry run python3 -m pytest -v --cov=huma_signals --color=yes
+	ENV=test poetry run python3 -m pytest -v --cov=huma_signals --color=yes --cov-report term-missing
 
 run-local:
 	ENV=development poetry run python3 -m uvicorn huma_signals.api.main:app --reload
