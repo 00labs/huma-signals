@@ -4,26 +4,53 @@ from typing import Any, ClassVar, Dict, List, Optional
 
 import httpx
 import pandas as pd
+import pydantic
 import web3
 
 from huma_signals.adapters import models as adapter_models
-from huma_signals.adapters.request_network import models, settings
+from huma_signals.adapters.request_network import models
 from huma_signals.commons import chains, tokens
+from huma_signals.settings import settings
 
 _ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
-DEFAULT_GRAPHQL_CHUNK_SIZE = 1000
+_DEFAULT_GRAPHQL_CHUNK_SIZE = 1000
 
 
 class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "request_network"
     required_inputs: ClassVar[List[str]] = [
-        "chain_name",
         "borrower_wallet_address",
         "receivable_param",
     ]
     signals: ClassVar[List[str]] = list(
         models.RequestNetworkInvoiceSignals.__fields__.keys()
     )
+
+    request_network_invoice_api_url: str = pydantic.Field(
+        default=settings.request_network_invoice_api_url
+    )
+    request_network_subgraph_endpoint_url: str = pydantic.Field(
+        default=settings.request_network_subgraph_endpoint_url
+    )
+    chain_name: str = pydantic.Field(default=settings.chain)
+
+    @pydantic.validator("request_network_invoice_api_url")
+    def validate_request_network_invoice_api_url(cls, value: str) -> str:
+        if not value:
+            raise ValueError("request_network_invoice_api_url is required")
+        return value
+
+    @pydantic.validator("request_network_subgraph_endpoint_url")
+    def validate_request_network_subgraph_endpoint_url(cls, value: str) -> str:
+        if not value:
+            raise ValueError("request_network_subgraph_endpoint_url is required")
+        return value
+
+    @pydantic.validator("chain_name")
+    def validate_chain_name(cls, value: str) -> str:
+        if not value:
+            raise ValueError("chain_name is required")
+        return value
 
     @classmethod
     async def _get_payments(
@@ -39,14 +66,14 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             where_clause += f'to: "{to_address}",\n'
 
         payments = []
-        last_chunk_size = DEFAULT_GRAPHQL_CHUNK_SIZE
+        last_chunk_size = _DEFAULT_GRAPHQL_CHUNK_SIZE
         last_id = ""
         async with httpx.AsyncClient() as client:
-            while last_chunk_size == DEFAULT_GRAPHQL_CHUNK_SIZE:
+            while last_chunk_size == _DEFAULT_GRAPHQL_CHUNK_SIZE:
                 query = f"""
                     query HumaRequestNetworkPayments {{
                         payments(
-                            first: {DEFAULT_GRAPHQL_CHUNK_SIZE},
+                            first: {_DEFAULT_GRAPHQL_CHUNK_SIZE},
                             where: {{
                                 {where_clause}
                                 id_gt: "{last_id}"
@@ -147,48 +174,43 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             "unique_payers": enriched_df["from"].nunique(),
         }
 
-    @classmethod
     async def fetch(  # pylint: disable=too-many-arguments, arguments-differ
-        cls,
-        chain_name: str,
+        self,
         borrower_wallet_address: str,
         receivable_param: str,
         *args: Any,
-        rn_subgraph_endpoint_url: Optional[str] = None,
-        rn_invoice_endpoint_url: Optional[str] = None,
         **kwargs: Any,
     ) -> models.RequestNetworkInvoiceSignals:
-        if rn_subgraph_endpoint_url is None:
-            rn_subgraph_endpoint_url = settings.get_rn_subgraph_endpoint_url(chain_name)
-        if rn_invoice_endpoint_url is None:
-            rn_invoice_endpoint_url = settings.get_rn_invoice_api_url(chain_name)
-
         if not web3.Web3.is_address(borrower_wallet_address):
             raise ValueError(
                 f"Invalid borrower wallet address: {borrower_wallet_address}"
             )
 
         invoice = await models.Invoice.from_request_id(
-            receivable_param, rn_invoice_endpoint_url
+            receivable_param, self.request_network_invoice_api_url
         )
 
         records = []
         records.extend(
-            await cls._get_payments(invoice.payer, None, rn_subgraph_endpoint_url)
+            await self._get_payments(
+                invoice.payer, None, self.request_network_subgraph_endpoint_url
+            )
         )
         records.extend(
-            await cls._get_payments(None, invoice.payee, rn_subgraph_endpoint_url)
+            await self._get_payments(
+                None, invoice.payee, self.request_network_subgraph_endpoint_url
+            )
         )
         payments_df = pd.DataFrame.from_records(records)
-        enriched_payments_df = cls.enrich_payments_data(payments_df, chain_name)
+        enriched_payments_df = self.enrich_payments_data(payments_df, self.chain_name)
 
-        payer_stats = cls.get_payment_stats(
+        payer_stats = self.get_payment_stats(
             enriched_payments_df[enriched_payments_df["from"] == invoice.payer]
         )
-        payee_stats = cls.get_payment_stats(
+        payee_stats = self.get_payment_stats(
             enriched_payments_df[enriched_payments_df["to"] == invoice.payee]
         )
-        pair_stats = cls.get_payment_stats(
+        pair_stats = self.get_payment_stats(
             enriched_payments_df[
                 (enriched_payments_df["from"] == invoice.payer)
                 & (enriched_payments_df["to"] == invoice.payee)
