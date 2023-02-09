@@ -50,7 +50,7 @@ jobs:
           SERVICE_NAME: mainnet-homestead-huma-signals
         run: aws ecs update-service --cluster "$CLUSTER_NAME" --service "$SERVICE_NAME" --force-new-deployment
 
-        - name: Redeploy ECS on polygon
+      - name: Redeploy ECS on polygon
         env:
           CLUSTER_NAME: mainnet-huma-signals
           SERVICE_NAME: mainnet-matic-huma-signals
