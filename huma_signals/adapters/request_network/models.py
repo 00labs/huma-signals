@@ -21,7 +21,7 @@ class RequestNetworkInvoiceSignals(models.HumaBaseModel):
     payer_count: int = pydantic.Field(
         ..., description="The number of transactions the payer has made"
     )
-    payer_total_amount: decimal.Decimal = pydantic.Field(
+    payer_total_amount: int = pydantic.Field(
         ..., description="The total amount the payer has paid"
     )
     payer_unique_payees: int = pydantic.Field(
@@ -38,7 +38,7 @@ class RequestNetworkInvoiceSignals(models.HumaBaseModel):
     payee_count: int = pydantic.Field(
         ..., description="The number of transactions the payee has made"
     )
-    payee_total_amount: decimal.Decimal = pydantic.Field(
+    payee_total_amount: int = pydantic.Field(
         ..., description="The total amount the payee has received"
     )
     payee_unique_payers: int = pydantic.Field(
@@ -49,7 +49,7 @@ class RequestNetworkInvoiceSignals(models.HumaBaseModel):
     mutual_count: int = pydantic.Field(
         ..., description="The number of transactions between the payer and payee"
     )
-    mutual_total_amount: decimal.Decimal = pydantic.Field(
+    mutual_total_amount: int = pydantic.Field(
         ..., description="The total amount the payer and payee have transacted"
     )
 
