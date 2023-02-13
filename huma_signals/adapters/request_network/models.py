@@ -134,5 +134,5 @@ class Invoice(models.HumaBaseModel):
                 )
         except httpx.HTTPStatusError as e:
             raise Exception(
-                f"Request Network subgraph returned status code {e.response.status_code}"
+                f"Request Network API returned status code {e.response.status_code}"
             ) from e
