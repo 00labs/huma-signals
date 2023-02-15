@@ -22,6 +22,8 @@ ipfshttpclient = "^0.7.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 pylint-pydantic = "^0.1.6"
+ddtrace = {extras = ["opentracing"], version = "^1.7.5"}
+datadog = "^0.44.0"
 
 
 [tool.poetry.group.dev.dependencies]
