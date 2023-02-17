@@ -32,7 +32,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
     request_network_subgraph_endpoint_url: str = pydantic.Field(
         default=settings.request_network_subgraph_endpoint_url
     )
-    chain_name: str = pydantic.Field(default=settings.chain)
+    chain: chains.Chain = pydantic.Field(default=settings.chain)
 
     @pydantic.validator("request_network_invoice_api_url")
     def validate_request_network_invoice_api_url(cls, value: str) -> str:
@@ -46,10 +46,10 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             raise ValueError("request_network_subgraph_endpoint_url is required")
         return value
 
-    @pydantic.validator("chain_name")
-    def validate_chain_name(cls, value: str) -> str:
+    @pydantic.validator("chain")
+    def validate_chain(cls, value: chains.Chain) -> chains.Chain:
         if not value:
-            raise ValueError("chain_name is required")
+            raise ValueError("chain is required")
         return value
 
     @classmethod
@@ -108,7 +108,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
 
     @classmethod
     def enrich_payments_data(
-        cls, payments_raw_df: pd.DataFrame, chain_name: str
+        cls, payments_raw_df: pd.DataFrame, chain: chains.Chain
     ) -> pd.DataFrame:
         """
         Enriches the raw payments data with additional information
@@ -132,7 +132,6 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
                     "amount_usd",
                 ]
             )
-        chain = chains.Chain.from_chain_name(chain_name)
         df = payments_raw_df.copy().drop_duplicates("id")
         df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
         df["token_symbol"] = df.tokenAddress.map(
@@ -202,7 +201,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             )
         )
         payments_df = pd.DataFrame.from_records(records)
-        enriched_payments_df = self.enrich_payments_data(payments_df, self.chain_name)
+        enriched_payments_df = self.enrich_payments_data(payments_df, self.chain)
 
         payer_stats = self.get_payment_stats(
             enriched_payments_df[enriched_payments_df["from"] == invoice.payer]
