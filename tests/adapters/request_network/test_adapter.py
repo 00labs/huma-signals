@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from huma_signals.adapters.request_network import adapter, models
+from huma_signals.commons import chains
 
 
 def describe_adapter() -> None:
@@ -18,9 +19,9 @@ def describe_adapter() -> None:
                 request_network_subgraph_endpoint_url=""
             )
 
-    def it_validate_chain_name() -> None:
+    def it_validate_chain() -> None:
         with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(chain_name="")
+            adapter.RequestNetworkInvoiceAdapter(chain=None)
 
     def describe_get_payments() -> None:
         @pytest.fixture
@@ -140,7 +141,7 @@ def describe_adapter() -> None:
             """
             mainnet_subgraph = "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
             signals = await adapter.RequestNetworkInvoiceAdapter(
-                chain_name="ethereum",
+                chain=chains.Chain.ETHEREUM,
                 request_network_subgraph_endpoint_url=mainnet_subgraph,
                 request_network_invoice_api_url="https://goerli.api.huma.finance/invoice",
             ).fetch(
