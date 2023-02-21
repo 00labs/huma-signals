@@ -43,7 +43,8 @@ class Settings(pydantic.BaseSettings):
     env: str
     chain: chains.Chain
     web3_provider_url: str
-    sentry_dsn: str
+    sentry_dsn: str | None = os.getenv("SENTRY_DSN")
+    datadog_api_key: str | None = os.getenv("DATADOG_API_KEY")
 
     # adapter: allowlist
     allow_list_endpoint: str = "https://dev.allowlist.huma.finance/"
