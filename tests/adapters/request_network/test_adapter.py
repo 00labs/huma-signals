@@ -69,7 +69,7 @@ def describe_adapter() -> None:
 
         @pytest.fixture
         def rn_invoice_api_url() -> str:
-            return "https://goerli.api.huma.finance/invoice"
+            return "https://dev.goerli.rnreader.huma.finance/invoice"
 
         @pytest.fixture
         def borrower_address() -> str:
@@ -77,7 +77,7 @@ def describe_adapter() -> None:
 
         @pytest.fixture
         def receivable_param() -> str:
-            return "0xdf135697d5b8b0ead72f8a80131c25c6fdb140bdc17d75652675fe801d9a5ff0"
+            return "0x0235"
 
         @pytest.fixture
         def payer_wallet_address() -> str:
@@ -104,15 +104,15 @@ def describe_adapter() -> None:
             assert signals.payer_recent == 999
             assert signals.payer_count == 0
             assert signals.payer_total_amount == decimal.Decimal("0")
-            assert signals.payee_tenure == 0
+            assert signals.payee_tenure > 7500
             assert signals.payee_recent == 999
             assert signals.payee_count == 0
             assert signals.payee_total_amount == decimal.Decimal("0")
             assert signals.mutual_count == 0
             assert signals.mutual_total_amount == decimal.Decimal("0")
-            assert signals.payee_match_borrower is True
-            assert signals.borrower_own_invoice is True
-            assert signals.payer_on_allowlist is False
+            assert signals.payee_match_borrower is False
+            assert signals.borrower_own_invoice is False
+            assert signals.payer_on_allowlist is True
 
         @mock.patch(
             "huma_signals.adapters.request_network.models.Invoice.from_request_id",
@@ -143,7 +143,7 @@ def describe_adapter() -> None:
             signals = await adapter.RequestNetworkInvoiceAdapter(
                 chain=chains.Chain.ETHEREUM,
                 request_network_subgraph_endpoint_url=mainnet_subgraph,
-                request_network_invoice_api_url="https://goerli.api.huma.finance/invoice",
+                request_network_invoice_api_url="https://dev.goerli.rnreader.huma.finance/invoice",
             ).fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
