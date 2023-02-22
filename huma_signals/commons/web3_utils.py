@@ -31,6 +31,7 @@ async def get_w3(chain: chains.Chain, web3_provider_url: str) -> web3.Web3:
     w3 = web3.Web3(
         provider=web3.Web3.AsyncHTTPProvider(web3_provider_url), modules=_MODULES
     )
+    print(w3.net.version, chain, _WEB3_CHAIN_NETWORK_ID.get(chain))
     if await w3.net.version != _WEB3_CHAIN_NETWORK_ID.get(chain):  # type: ignore
         raise ValueError(f"Web3 provider is not compatible with chain {chain.name}")
     return w3
