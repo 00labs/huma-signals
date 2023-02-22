@@ -8,6 +8,7 @@ import pydantic
 import web3
 
 from huma_signals.adapters import models as adapter_models
+from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.request_network import models
 from huma_signals.commons import chains, tokens
 from huma_signals.settings import settings
@@ -216,13 +217,20 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             ]
         )
 
+        # Fetch wallet tenure using ethereum_wallet adapter
+        payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
+            invoice.payee
+        )
+        payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
+            invoice.payer
+        )
         return models.RequestNetworkInvoiceSignals(
-            payer_tenure=payer_stats.get("earliest_txn_age_in_days", 0),
+            payer_tenure=payer_wallet.wallet_teneur_in_days,
             payer_recent=payer_stats.get("last_txn_age_in_days", 0),
             payer_count=payer_stats.get("total_txns", 0),
             payer_total_amount=payer_stats.get("total_amount", 0),
             payer_unique_payees=payer_stats.get("unique_payees", 0),
-            payee_tenure=payee_stats.get("earliest_txn_age_in_days", 0),
+            payee_tenure=payee_wallet.wallet_teneur_in_days,
             payee_recent=payee_stats.get("last_txn_age_in_days", 0),
             payee_count=payee_stats.get("total_txns", 0),
             payee_total_amount=payee_stats.get("total_amount", 0),
