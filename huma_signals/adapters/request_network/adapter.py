@@ -243,6 +243,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             borrower_own_invoice=(
                 invoice.token_owner.lower() == borrower_wallet_address.lower()
             ),
+            payer_match_payee=(invoice.payer.lower() == invoice.payee.lower()),
             days_until_due_date=((invoice.due_date - datetime.datetime.utcnow()).days),
             invoice_amount=invoice.amount,
             # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
