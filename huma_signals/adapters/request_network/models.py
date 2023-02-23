@@ -57,6 +57,9 @@ class RequestNetworkInvoiceSignals(models.HumaBaseModel):
     payee_match_borrower: bool = pydantic.Field(
         ..., description="Whether the borrower is the invoice's payee"
     )
+    payer_match_payee: bool = pydantic.Field(
+        ..., description="Whether the payee is the invoice's payer"
+    )
     borrower_own_invoice: bool = pydantic.Field(
         ..., description="Whether the borrower own the invoice NFT token"
     )

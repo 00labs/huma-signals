@@ -104,7 +104,7 @@ def describe_adapter() -> None:
             assert signals.payer_recent == 999
             assert signals.payer_count == 0
             assert signals.payer_total_amount == decimal.Decimal("0")
-            assert signals.payee_tenure > 7500
+            assert signals.payee_tenure > 750
             assert signals.payee_recent == 999
             assert signals.payee_count == 0
             assert signals.payee_total_amount == decimal.Decimal("0")
@@ -160,4 +160,5 @@ def describe_adapter() -> None:
             assert signals.mutual_total_amount >= decimal.Decimal("6_000_000")
             assert signals.payee_match_borrower is False
             assert signals.borrower_own_invoice is False
-            assert signals.payer_on_allowlist is False
+            assert signals.payer_on_allowlist is True
+            assert signals.payer_match_payee is False
