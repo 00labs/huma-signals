@@ -5,16 +5,20 @@ from typing import Any, ClassVar, Dict, List, Optional
 import httpx
 import pandas as pd
 import pydantic
+import structlog
 import web3
 
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
+from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import models
 from huma_signals.commons import chains, tokens
 from huma_signals.settings import settings
 
 _ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
 _DEFAULT_GRAPHQL_CHUNK_SIZE = 1000
+
+logger = structlog.get_logger(__name__)
 
 
 class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
@@ -217,13 +221,26 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             ]
         )
 
-        # Fetch wallet tenure using ethereum_wallet adapter
-        payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-            invoice.payee
-        )
-        payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-            invoice.payer
-        )
+        # Fetch wallet tenure
+        if settings.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
+            logger.info("Fetching wallet tenure for ethereum")
+            payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
+                invoice.payee
+            )  # type: Any
+            payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
+                invoice.payer
+            )  # type: Any
+        elif settings.chain == chains.Chain.POLYGON:
+            logger.info("Fetching wallet tenure for polygon")
+            payee_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
+                invoice.payee
+            )
+            payer_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
+                invoice.payer
+            )
+        else:
+            raise ValueError(f"Unsupported chain for wallet tenure: {settings.chain}")
+
         return models.RequestNetworkInvoiceSignals(
             payer_tenure=payer_wallet.wallet_teneur_in_days,
             payer_recent=payer_stats.get("last_txn_age_in_days", 0),

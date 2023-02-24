@@ -1,4 +1,4 @@
-# Ethereum Wallet Signal Adapter
+# Polygon Wallet Signal Adapter
 
 This is the repository for the Signal Adapter that fetch signal about Polygon addresses.
 
