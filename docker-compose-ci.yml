@@ -26,5 +26,7 @@ services:
       - WEB3_PROVIDER_URL
       - ETHERSCAN_API_KEY
       - ETHERSCAN_BASE_URL=https://api.etherscan.io
+      - POLYGONSCAN_API_KEY
+      - POLYGONSCAN_BASE_URL=https://api.polygonscan.io
       - REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL=https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
       - REQUEST_NETWORK_INVOICE_API_URL=https://goerli.api.huma.finance/invoice
