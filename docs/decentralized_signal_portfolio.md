@@ -46,7 +46,7 @@ class WalletEthTransactionsSignals(Model):
     total_transactions: int
     total_sent: int
     total_received: int
-    wallet_teneur_in_days: int
+    wallet_tenure_in_days: int
     total_income_90days: float
     total_transactions_90days: int
 ```
