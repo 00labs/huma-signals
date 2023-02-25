@@ -5,9 +5,12 @@ import decimal
 
 import httpx
 import pydantic
+import structlog
 import web3
 
 from huma_signals import models
+
+logger = structlog.get_logger()
 
 
 class RequestNetworkInvoiceSignals(models.HumaBaseModel):
@@ -136,6 +139,13 @@ class Invoice(models.HumaBaseModel):
                     + datetime.timedelta(days=30),
                 )
         except httpx.HTTPStatusError as e:
+            logger.error(
+                f"Request Network API returned status code {e.response.status_code}",
+                exc_info=True,
+                base_url=invoice_api_url,
+                receivable_param=receivable_param,
+            )
+
             raise Exception(
-                f"Request Network API returned status code {e.response.status_code}"
+                f"Request Network API returned status code {e.response.status_code}",
             ) from e

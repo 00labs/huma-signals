@@ -4,10 +4,13 @@ from typing import Any, ClassVar, List
 import httpx
 import pandas as pd
 import pydantic
+import structlog
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
 from huma_signals.settings import settings
+
+logger = structlog.get_logger()
 
 
 class PolygonWalletSignals(models.HumaBaseModel):
@@ -59,7 +62,7 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
                 if payload["status"] == "1":
                     return payload["result"]
         except httpx.HTTPStatusError:
-            pass
+            logger.error("Error fetching transactions", exc_info=True, request=request)
 
         return []
 
