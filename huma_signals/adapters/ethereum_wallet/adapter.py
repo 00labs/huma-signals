@@ -4,10 +4,13 @@ from typing import Any, ClassVar, List
 import httpx
 import pandas as pd
 import pydantic
+import structlog
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
 from huma_signals.settings import settings
+
+logger = structlog.get_logger()
 
 
 class EthereumWalletSignals(models.HumaBaseModel):
@@ -45,19 +48,20 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
     ) -> List[Any]:
         try:
             async with httpx.AsyncClient(base_url=etherscan_base_url) as client:
-                resp = await client.get(
+                request = (
                     f"/api?module=account&action=txlist"
                     f"&address={wallet_address}"
                     f"&startblock=0&endblock=99999999"
                     f"&sort=asc"
-                    f"&apikey={etherscan_api_key}",
+                    f"&apikey={etherscan_api_key}"
                 )
+                resp = await client.get(request)
                 resp.raise_for_status()
                 payload = resp.json()
                 if payload["status"] == "1":
                     return payload["result"]
         except httpx.HTTPStatusError:
-            pass
+            logger.error("Error fetching transactions", exc_info=True, request=request)
 
         return []
 
