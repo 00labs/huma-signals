@@ -242,12 +242,12 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             raise ValueError(f"Unsupported chain for wallet tenure: {settings.chain}")
 
         return models.RequestNetworkInvoiceSignals(
-            payer_tenure=payer_wallet.wallet_teneur_in_days,
+            payer_tenure=payer_wallet.wallet_tenure_in_days,
             payer_recent=payer_stats.get("last_txn_age_in_days", 0),
             payer_count=payer_stats.get("total_txns", 0),
             payer_total_amount=payer_stats.get("total_amount", 0),
             payer_unique_payees=payer_stats.get("unique_payees", 0),
-            payee_tenure=payee_wallet.wallet_teneur_in_days,
+            payee_tenure=payee_wallet.wallet_tenure_in_days,
             payee_recent=payee_stats.get("last_txn_age_in_days", 0),
             payee_count=payee_stats.get("total_txns", 0),
             payee_total_amount=payee_stats.get("total_amount", 0),

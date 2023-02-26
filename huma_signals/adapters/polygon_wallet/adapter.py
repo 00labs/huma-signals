@@ -17,7 +17,7 @@ class PolygonWalletSignals(models.HumaBaseModel):
     total_transactions: int
     total_sent: int
     total_received: int
-    wallet_teneur_in_days: int
+    wallet_tenure_in_days: int
     total_income_90days: float
     total_transactions_90days: int
 
@@ -80,7 +80,7 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
                 total_transactions=0,
                 total_sent=0,
                 total_received=0,
-                wallet_teneur_in_days=0,
+                wallet_tenure_in_days=0,
                 total_income_90days=0,
                 total_transactions_90days=0,
             )
@@ -100,7 +100,7 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
             total_transactions=len(txn_df),
             total_sent=sum(txn_df["is_sent"]),
             total_received=sum(txn_df["is_received"]),
-            wallet_teneur_in_days=(
+            wallet_tenure_in_days=(
                 datetime.datetime.now() - txn_df["timeStamp"].min()
             ).days,
             total_income_90days=sum(txn_df["income"] * txn_df["in_90days"]),
