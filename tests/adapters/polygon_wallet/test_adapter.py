@@ -16,7 +16,7 @@ def describe_polygon_wallet_adapter() -> None:
         assert result.total_sent > 5
         assert result.total_received > 400
         assert result.total_transactions == result.total_sent + result.total_received
-        assert result.wallet_teneur_in_days > 180
+        assert result.wallet_tenure_in_days > 180
         assert result.total_income_90days > 0
         assert result.total_transactions_90days > 0
 
@@ -34,6 +34,6 @@ def describe_polygon_wallet_adapter() -> None:
         assert result.total_transactions == 0
         assert result.total_sent == 0
         assert result.total_received == 0
-        assert result.wallet_teneur_in_days == 0
+        assert result.wallet_tenure_in_days == 0
         assert result.total_income_90days == 0
         assert result.total_transactions_90days == 0
