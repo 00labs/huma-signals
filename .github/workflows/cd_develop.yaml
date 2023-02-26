@@ -43,3 +43,9 @@ jobs:
           CLUSTER_NAME: dev-testnet-huma-signals
           SERVICE_NAME: dev-testnet-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      - name: Redeploy ECS on matic
+        env:
+          CLUSTER_NAME: dev-mainnet-huma-signals
+          SERVICE_NAME: dev-matic-huma-signals
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment

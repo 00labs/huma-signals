@@ -5,9 +5,12 @@ import decimal
 
 import httpx
 import pydantic
+import structlog
 import web3
 
 from huma_signals import models
+
+logger = structlog.get_logger()
 
 
 class RequestNetworkInvoiceSignals(models.HumaBaseModel):
@@ -56,6 +59,9 @@ class RequestNetworkInvoiceSignals(models.HumaBaseModel):
     # invoice based features
     payee_match_borrower: bool = pydantic.Field(
         ..., description="Whether the borrower is the invoice's payee"
+    )
+    payer_match_payee: bool = pydantic.Field(
+        ..., description="Whether the payee is the invoice's payer"
     )
     borrower_own_invoice: bool = pydantic.Field(
         ..., description="Whether the borrower own the invoice NFT token"
@@ -133,6 +139,13 @@ class Invoice(models.HumaBaseModel):
                     + datetime.timedelta(days=30),
                 )
         except httpx.HTTPStatusError as e:
+            logger.error(
+                f"Request Network API returned status code {e.response.status_code}",
+                exc_info=True,
+                base_url=invoice_api_url,
+                receivable_param=receivable_param,
+            )
+
             raise Exception(
-                f"Request Network API returned status code {e.response.status_code}"
+                f"Request Network API returned status code {e.response.status_code}",
             ) from e
