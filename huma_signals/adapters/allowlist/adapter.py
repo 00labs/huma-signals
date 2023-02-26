@@ -1,7 +1,6 @@
 from typing import Any, ClassVar, List
 
 import httpx
-import pydantic
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
@@ -24,14 +23,13 @@ class AllowListAdapter(adapter_models.SignalAdapterBase):
     required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
     signals: ClassVar[List[str]] = list(AllowListSignal.__fields__.keys())
 
-    chain: chains.Chain = pydantic.Field(default=settings.chain)
-    allowlist_endpoint: str = pydantic.Field(default=settings.allow_list_endpoint)
-
-    @pydantic.validator("allowlist_endpoint")
-    def validate_allowlist_endpoint(cls, value: str) -> str:
-        if not value:
-            raise ValueError("allowlist_endpoint is required")
-        return value
+    def __init__(
+        self,
+        chain: chains.Chain = settings.chain,
+        allowlist_endpoint: str = settings.allow_list_endpoint,
+    ) -> None:
+        self.chain = chain
+        self.allowlist_endpoint = allowlist_endpoint
 
     async def fetch(  # pylint: disable=arguments-differ
         self,
