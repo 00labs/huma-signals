@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, ClassVar, List
 
 import httpx
@@ -6,7 +7,6 @@ import structlog
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
-from huma_signals.commons import datetime_utils
 from huma_signals.settings import settings
 
 logger = structlog.get_logger()
@@ -31,6 +31,11 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
         polygonscan_base_url: str = settings.polygonscan_base_url,
         polygonscan_api_key: str = settings.polygonscan_api_key,
     ) -> None:
+        if not polygonscan_base_url:
+            raise ValueError("polygonscan_base_url is empty")
+        if not polygonscan_api_key:
+            raise ValueError("polygonscan_api_key is empty")
+
         self.polygonscan_base_url = polygonscan_base_url
         self.polygonscan_api_key = polygonscan_api_key
 
@@ -50,7 +55,7 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
                 total_income_90days=0,
                 total_transactions_90days=0,
             )
-        now = datetime_utils.tz_aware_utc_now()
+        now = datetime.datetime.utcnow()
         txn_df["timeStamp"] = pd.to_datetime(txn_df["timeStamp"], unit="s")
         txn_df["value"] = txn_df["value"].astype(float)
         txn_df["from"] = txn_df["from"].str.lower()

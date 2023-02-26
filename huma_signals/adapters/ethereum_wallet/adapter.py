@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, ClassVar, List
 
 import httpx
@@ -6,7 +7,6 @@ import structlog
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
-from huma_signals.commons import datetime_utils
 from huma_signals.settings import settings
 
 logger = structlog.get_logger()
@@ -31,6 +31,11 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
         etherscan_base_url: str = settings.etherscan_base_url,
         etherscan_api_key: str = settings.etherscan_api_key,
     ) -> None:
+        if not etherscan_base_url:
+            raise ValueError("etherscan_base_url is empty")
+        if not etherscan_api_key:
+            raise ValueError("etherscan_api_key is empty")
+
         self.etherscan_base_url = etherscan_base_url
         self.etherscan_api_key = etherscan_api_key
 
@@ -50,7 +55,7 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
                 total_income_90days=0,
                 total_transactions_90days=0,
             )
-        now = datetime_utils.tz_aware_utc_now()
+        now = datetime.datetime.utcnow()
         txn_df["timeStamp"] = pd.to_datetime(txn_df["timeStamp"], unit="s")
         txn_df["value"] = txn_df["value"].astype(float)
         txn_df["from"] = txn_df["from"].str.lower()

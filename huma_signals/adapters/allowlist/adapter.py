@@ -28,6 +28,9 @@ class AllowListAdapter(adapter_models.SignalAdapterBase):
         chain: chains.Chain = settings.chain,
         allowlist_endpoint: str = settings.allow_list_endpoint,
     ) -> None:
+        if not allowlist_endpoint:
+            raise ValueError("allowlist_endpoint is empty")
+
         self.chain = chain
         self.allowlist_endpoint = allowlist_endpoint
 

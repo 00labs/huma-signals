@@ -1,3 +1,4 @@
+import datetime
 import decimal
 from typing import Any, ClassVar, Dict, List, Optional
 
@@ -10,7 +11,7 @@ from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import models
-from huma_signals.commons import chains, datetime_utils, tokens
+from huma_signals.commons import chains, tokens
 from huma_signals.settings import settings
 
 _ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
@@ -116,9 +117,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
                 invoice.token_owner.lower() == borrower_wallet_address.lower()
             ),
             payer_match_payee=(invoice.payer.lower() == invoice.payee.lower()),
-            days_until_due_date=(
-                invoice.due_date - datetime_utils.tz_aware_utc_now()
-            ).days,
+            days_until_due_date=(invoice.due_date - datetime.datetime.utcnow()).days,
             invoice_amount=invoice.amount,
             # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
             payer_on_allowlist=True,
@@ -230,7 +229,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
                 "unique_payees": 0,
                 "unique_payers": 0,
             }
-        now = datetime_utils.tz_aware_utc_now()
+        now = datetime.datetime.utcnow()
         return {
             "total_amount": enriched_df.amount_usd.sum(),
             "total_txns": len(enriched_df),
