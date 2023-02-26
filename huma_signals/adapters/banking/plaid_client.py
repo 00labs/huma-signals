@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 import datetime
 import decimal
 from typing import List, Optional
@@ -7,14 +8,21 @@ from plaid.api import plaid_api
 from plaid.model import (
     accounts_balance_get_request,
     accounts_balance_get_request_options,
+    credit_bank_income_get_request,
+    credit_bank_income_summary,
+    income_verification_source_type,
     item_public_token_exchange_request,
     products,
     sandbox_public_token_create_request,
+    sandbox_public_token_create_request_income_verification_bank_income,
+    sandbox_public_token_create_request_options,
+    sandbox_public_token_create_request_options_income_verification,
     transaction,
     transactions_get_request,
+    user_create_request,
 )
 
-from huma_signals.commons import async_utils, datetime_utils
+from huma_signals.commons import async_utils, datetime_utils, string_utils
 
 PLAID_ENVS = {
     "production": plaid.Environment.Production,
@@ -25,7 +33,6 @@ PLAID_ENVS = {
 
 class PlaidClient:
     def __init__(self, plaid_env: str, plaid_client_id: str, plaid_secret: str) -> None:
-        super().__init__()
         configuration = plaid.Configuration(
             host=PLAID_ENVS[plaid_env],
             api_key={
@@ -34,6 +41,14 @@ class PlaidClient:
             },
         )
         self.client = plaid_api.PlaidApi(plaid.ApiClient(configuration))
+
+    async def create_user_token(self, wallet_address: str) -> str:
+        # Obfuscate the wallet address by hashing it.
+        request = user_create_request.UserCreateRequest(
+            client_user_id=string_utils.sha256_hash_hex(wallet_address)
+        )
+        response = await async_utils.sync_to_async(self.client.user_create, request)
+        return response.user_token
 
     async def exchange_access_token(self, public_token: str) -> str:
         request = item_public_token_exchange_request.ItemPublicTokenExchangeRequest(
@@ -69,6 +84,15 @@ class PlaidClient:
 
         return transactions
 
+    async def fetch_bank_income(
+        self, user_token: str
+    ) -> credit_bank_income_summary.CreditBankIncomeSummary:
+        request = credit_bank_income_get_request.CreditBankIncomeGetRequest(
+            user_token=user_token,
+        )
+        response = self.client.credit_bank_income_get(request)
+        return response.bank_income.bank_income_summary
+
     async def fetch_bank_account_available_balance(
         self,
         plaid_access_token: str,
@@ -90,10 +114,25 @@ class PlaidClient:
         )
         return response.accounts[0].balances.available
 
-    async def create_sandbox_public_token(self, institution_id: str) -> str:
+    async def create_sandbox_public_token(
+        self, institution_id: str, user_token: str
+    ) -> str:
         request = sandbox_public_token_create_request.SandboxPublicTokenCreateRequest(
             institution_id=institution_id,
-            initial_products=[products.Products("transactions")],
+            initial_products=[products.Products("INCOME_VERIFICATION")],
+            options=sandbox_public_token_create_request_options.SandboxPublicTokenCreateRequestOptions(
+                income_verification=sandbox_public_token_create_request_options_income_verification.SandboxPublicTokenCreateRequestOptionsIncomeVerification(  # noqa: E501
+                    income_source_types=[
+                        income_verification_source_type.IncomeVerificationSourceType(
+                            "BANK"
+                        )
+                    ],
+                    bank_income=sandbox_public_token_create_request_income_verification_bank_income.SandboxPublicTokenCreateRequestIncomeVerificationBankIncome(  # noqa: E501
+                        days_requested=365,
+                    ),
+                ),
+            ),
+            user_token=user_token,
         )
         response = await async_utils.sync_to_async(
             self.client.sandbox_public_token_create, request

@@ -2,10 +2,8 @@ from typing import Any, ClassVar, Dict, List
 
 import pydantic
 
-from huma_signals import models
 
-
-class SignalAdapterBase(models.HumaBaseModel):
+class SignalAdapterBase:
     name: ClassVar[str] = pydantic.Field(..., description="Signal Adapter's name")
     signals: ClassVar[List[str]] = pydantic.Field(
         ..., description="Signals that the adapter can fetch"

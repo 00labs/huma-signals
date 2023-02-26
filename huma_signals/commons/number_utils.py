@@ -8,12 +8,12 @@ def round_to_cents(value: None) -> None:
 
 
 @overload
-def round_to_cents(value: decimal.Decimal | float) -> decimal.Decimal:
+def round_to_cents(value: decimal.Decimal | float | int) -> decimal.Decimal:
     pass
 
 
 def round_to_cents(
-    value: Optional[decimal.Decimal] | Optional[float],
+    value: Optional[decimal.Decimal | float | int],
 ) -> Optional[decimal.Decimal]:
     if value is None:
         return None

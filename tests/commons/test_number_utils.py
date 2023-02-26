@@ -8,7 +8,7 @@ from huma_signals.commons import number_utils
 
 def describe_round_to_cents() -> None:
     @pytest.mark.parametrize(
-        "input_,expected",
+        "input_, expected",
         [
             (None, None),
             (decimal.Decimal("10.00"), decimal.Decimal("10.00")),
