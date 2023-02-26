@@ -16,7 +16,7 @@ See [here](../../../docs/getting_started.md) for the development guide.
 ## Required environment variable
 
 The following environment variable is required to run the adapter.
-(Sign up at https://polygonscan.io/myapikey to get an API key)
+(Sign up at https://polygonscan.com/myapikey to get an API key)
 
 ```bash
 POLYGONSCAN_BASE_URL

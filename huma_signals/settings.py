@@ -54,7 +54,7 @@ class Settings(pydantic.BaseSettings):
     etherscan_api_key: str
 
     # adapter: polygon_wallet
-    polygonscan_base_url: str = "https://api.etherscan.io"
+    polygonscan_base_url: str = "https://api.polygonscan.com"
     polygonscan_api_key: str
 
     # adapter: request_network
