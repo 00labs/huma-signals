@@ -19,10 +19,6 @@ def describe_adapter() -> None:
                 request_network_subgraph_endpoint_url=""
             )
 
-    def it_validate_chain() -> None:
-        with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(chain=None)
-
     def describe_get_payments() -> None:
         @pytest.fixture
         def rn_subgraph_endpoint_url() -> str:
@@ -38,26 +34,30 @@ def describe_adapter() -> None:
                 "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
             )  # gitleaks:allow
 
-        async def it_returns_payment_history(
-            rn_subgraph_endpoint_url: str, from_address: str, to_address: str
-        ) -> None:
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                from_address, None, rn_subgraph_endpoint_url
+        @pytest.fixture
+        def adapter_(
+            rn_subgraph_endpoint_url: str,
+        ) -> adapter.RequestNetworkInvoiceAdapter:
+            return adapter.RequestNetworkInvoiceAdapter(
+                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
             )
+
+        async def it_returns_payment_history(
+            from_address: str,
+            to_address: str,
+            adapter_: adapter.RequestNetworkInvoiceAdapter,
+        ) -> None:
+            payments = await adapter_._get_payments(from_address, None)
             assert len(payments) > 0
             assert payments[-1]["from"] == from_address
             assert payments[-1]["to"].startswith("0x")
 
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                None, to_address, rn_subgraph_endpoint_url
-            )
+            payments = await adapter_._get_payments(None, to_address)
             assert len(payments) > 0
             assert payments[-1]["to"] == to_address
             assert payments[-1]["from"].startswith("0x")
 
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                from_address, to_address, rn_subgraph_endpoint_url
-            )
+            payments = await adapter_._get_payments(from_address, to_address)
             assert len(payments) > 0
             assert payments[-1]["to"] == to_address
             assert payments[-1]["from"] == from_address
@@ -87,16 +87,21 @@ def describe_adapter() -> None:
         def payee_wallet_address() -> str:
             return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
 
+        @pytest.fixture
+        def adapter_(
+            rn_invoice_api_url: str, rn_subgraph_endpoint_url: str
+        ) -> adapter.RequestNetworkInvoiceAdapter:
+            return adapter.RequestNetworkInvoiceAdapter(
+                request_network_invoice_api_url=rn_invoice_api_url,
+                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
+            )
+
         async def it_can_fetch_signals(
-            rn_subgraph_endpoint_url: str,
-            rn_invoice_api_url: str,
             borrower_address: str,
             receivable_param: str,
+            adapter_: adapter.RequestNetworkInvoiceAdapter,
         ) -> None:
-            signals = await adapter.RequestNetworkInvoiceAdapter(
-                request_network_invoice_api_url=rn_invoice_api_url,
-                request_network_subgraph_url=rn_subgraph_endpoint_url,
-            ).fetch(
+            signals = await adapter_.fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
             )
@@ -128,10 +133,8 @@ def describe_adapter() -> None:
             ),
         )
         async def it_can_calculate_signals_with_mocked_invoice(
-            mocked_invoice: str,
             borrower_address: str,
             receivable_param: str,
-            rn_invoice_api_url: str,
         ) -> None:
             """
             In this test we mocked the invoice with a very active pair from mainnet,
