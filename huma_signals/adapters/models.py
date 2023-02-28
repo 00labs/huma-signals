@@ -4,9 +4,9 @@ from typing import Any, ClassVar, Dict, List
 class SignalAdapterBase:
     # Signal adapters name.
     name: ClassVar[str]
-    # Signals that the adapter can fetch
+    # Signals that the adapter can fetch.
     signals: ClassVar[List[str]]
-    # Inputs that the adapter requires
+    # Inputs that the adapter requires.
     required_inputs: ClassVar[List[str]]
 
     @classmethod
