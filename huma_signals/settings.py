@@ -61,5 +61,8 @@ class Settings(pydantic.BaseSettings):
     request_network_subgraph_endpoint_url: str
     request_network_invoice_api_url: str
 
+    # adapter: bulla_network
+    bulla_network_subgraph_endpoint_url: str
+
 
 settings = Settings()
