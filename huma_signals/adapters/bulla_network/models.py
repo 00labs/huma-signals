@@ -153,7 +153,9 @@ class Invoice(models.HumaBaseModel):
                     status=claim["status"],
                     payer=debtor,
                     payee=creditor,
-                    creation_date=datetime.datetime.fromtimestamp(int(claim["created"])),
+                    creation_date=datetime.datetime.fromtimestamp(
+                        int(claim["created"])
+                    ),
                     due_date=datetime.datetime.fromtimestamp(int(claim["dueBy"])),
                 )
         except httpx.HTTPStatusError as e:

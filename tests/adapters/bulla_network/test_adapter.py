@@ -1,19 +1,14 @@
-import datetime
 import decimal
-from unittest import mock
 
 import pytest
 
-from huma_signals.adapters.bulla_network import adapter, models
-from huma_signals.commons import chains
+from huma_signals.adapters.bulla_network import adapter
 
 
 def describe_adapter() -> None:
     def it_validate_bn_subgraph_endpoint_url() -> None:
         with pytest.raises(ValueError):
-            adapter.BullaNetworkInvoiceAdapter(
-                bulla_network_subgraph_endpoint_url=""
-            )
+            adapter.BullaNetworkInvoiceAdapter(bulla_network_subgraph_endpoint_url="")
 
     def describe_get_claim_payments() -> None:
         @pytest.fixture
@@ -33,22 +28,28 @@ def describe_adapter() -> None:
         async def it_returns_claim_payment_history(
             bn_subgraph_endpoint_url: str, from_address: str, to_address: str
         ) -> None:
-            claim_payments = await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
-                to_address, None, bn_subgraph_endpoint_url
+            claim_payments = (
+                await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
+                    to_address, None, bn_subgraph_endpoint_url
+                )
             )
             assert len(claim_payments) > 0
             assert claim_payments[-1]["claim"]["creditor"]["id"] == to_address
             assert claim_payments[-1]["debtor"].startswith("0x")
 
-            claim_payments = await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
-                None, from_address, bn_subgraph_endpoint_url
+            claim_payments = (
+                await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
+                    None, from_address, bn_subgraph_endpoint_url
+                )
             )
             assert len(claim_payments) > 0
             assert claim_payments[-1]["debtor"] == from_address
             assert claim_payments[-1]["claim"]["creditor"]["id"].startswith("0x")
 
-            claim_payments = await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
-                to_address, from_address, bn_subgraph_endpoint_url
+            claim_payments = (
+                await adapter.BullaNetworkInvoiceAdapter._get_claim_payments(
+                    to_address, from_address, bn_subgraph_endpoint_url
+                )
             )
             assert len(claim_payments) > 0
             assert claim_payments[-1]["claim"]["creditor"]["id"] == to_address
@@ -86,10 +87,8 @@ def describe_adapter() -> None:
                 borrower_wallet_address=borrower_address,
                 claim_id=claim_id,
             )
-            
+
             assert signals.payee_match_borrower is True
             assert signals.invoice_amount == decimal.Decimal("1_000_000")
             assert signals.borrower_own_invoice is True
             assert signals.payer_on_allowlist is True
-
-       

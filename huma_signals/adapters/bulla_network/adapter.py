@@ -7,7 +7,6 @@ import pandas as pd
 import pydantic
 import structlog
 import web3
-import json
 
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.bulla_network import models
@@ -113,9 +112,9 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         df["token_symbol"] = df.claim.apply(lambda x: x["token"]["symbol"])
         df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
         df["amount"] = df.paymentAmount.astype(float)
-        df["token_usd_price"] = df['token_symbol'].map(
-            tokens.TOKEN_USD_PRICE_MAPPING
-        ).fillna(0)
+        df["token_usd_price"] = (
+            df["token_symbol"].map(tokens.TOKEN_USD_PRICE_MAPPING).fillna(0)
+        )
         df["amount_usd"] = (df.amount * df.token_usd_price).astype(int)
         return df
 
@@ -172,7 +171,7 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         )
         records.extend(
             await self._get_claim_payments(
-                invoice.payee, None , self.bulla_network_subgraph_endpoint_url
+                invoice.payee, None, self.bulla_network_subgraph_endpoint_url
             )
         )
         claim_payments_df = pd.DataFrame.from_records(records)
