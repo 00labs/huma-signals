@@ -11,6 +11,7 @@ _WEB3_CHAIN_NETWORK_ID: Dict[chains.Chain, str] = {
     chains.Chain.ETHEREUM: "1",
     chains.Chain.GOERLI: "5",
     chains.Chain.POLYGON: "998",
+    chains.Chain.LOCAL: "31337",
 }
 
 _MODULES: Dict[str, Union[Type[module.Module], Sequence[Any]]] = {

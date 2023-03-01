@@ -19,4 +19,4 @@ test:
 	ENV=test poetry run python3 -m pytest -v --cov=huma_signals --color=yes --cov-report term-missing
 
 run-local:
-	ENV=development poetry run python3 -m uvicorn huma_signals.api.main:app --reload
+	ENV=development poetry run python3 -m uvicorn huma_signals.api.main:app --reload --port 8001
