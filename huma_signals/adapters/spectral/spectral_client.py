@@ -1,10 +1,11 @@
 from datetime import datetime
 
+import httpx
+import pydantic
+import structlog
+
 from huma_signals import models
 from huma_signals.settings import settings
-import pydantic
-import httpx
-import structlog
 
 logger = structlog.get_logger()
 
@@ -23,9 +24,6 @@ class SpectralWalletSignals(models.HumaBaseModel):
     score: float
     score_ingredients: SpectralScoreIngredients
     score_timestamp: datetime
-    total_sent: int
-    total_received: int
-    wallet_tenure_in_days: int
     probability_of_liquidation: float
     risk_level: str
     wallet_address: str
@@ -51,16 +49,27 @@ class SpectralClient(models.HumaBaseModel):
             raise ValueError("spectral api_key is required")
         return value
 
-    async def get_scores(self, wallet_address: str) -> SpectralWalletSignals:
+    async def _create_score(self, wallet_address: str) -> None:
         try:
             async with httpx.AsyncClient(base_url=self.base_url) as client:
                 request = (
                     f"/api/v1/addresses/{wallet_address}"
                     f"/calculate_score"
                 )
-                resp = await client.get(request)
-
+                headers = {"Authorization": f"Bearer {self.api_key}"}
+                resp = await client.post(request, headers=headers)
                 resp.raise_for_status()
-                return SpectralWalletSignals.from_json(resp.json())
+        except httpx.HTTPStatusError:
+            logger.error("Error fetching transactions", exc_info=True, request=request)
+
+    async def get_scores(self, wallet_address: str) -> SpectralWalletSignals:
+        await self._create_score(wallet_address)
+        try:
+            async with httpx.AsyncClient(base_url=self.base_url) as client:
+                request = f"/api/v1/addresses/{wallet_address}"
+                headers = {"Authorization": f"Bearer {self.api_key}"}
+                resp = await client.get(request, headers=headers)
+                resp.raise_for_status()
+                return SpectralWalletSignals(**resp.json())
         except httpx.HTTPStatusError:
             logger.error("Error fetching transactions", exc_info=True, request=request)
