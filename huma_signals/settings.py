@@ -57,6 +57,9 @@ class Settings(pydantic.BaseSettings):
     polygonscan_base_url: str = "https://api.polygonscan.com"
     polygonscan_api_key: str
 
+    # adapter: spectral
+    spectral_api_key: str
+
     # adapter: request_network
     request_network_subgraph_endpoint_url: str
     request_network_invoice_api_url: str

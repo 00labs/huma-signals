@@ -30,3 +30,4 @@ services:
       - POLYGONSCAN_BASE_URL=https://api.polygonscan.com
       - REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL=https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
       - REQUEST_NETWORK_INVOICE_API_URL=https://goerli.api.huma.finance/invoice
+      - SPECTRAL_API_KEY
