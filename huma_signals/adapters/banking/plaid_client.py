@@ -1,17 +1,20 @@
 # pylint: disable=line-too-long
 import datetime
 import decimal
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import plaid
 from plaid.api import plaid_api
 from plaid.model import (
     accounts_balance_get_request,
     accounts_balance_get_request_options,
+    country_code,
     credit_bank_income_get_request,
     credit_bank_income_summary,
     income_verification_source_type,
     item_public_token_exchange_request,
+    link_token_create_request,
+    link_token_create_request_user,
     products,
     sandbox_public_token_create_request,
     sandbox_public_token_create_request_income_verification_bank_income,
@@ -29,6 +32,7 @@ PLAID_ENVS = {
     "development": plaid.Environment.Development,
     "sandbox": plaid.Environment.Sandbox,
 }
+_INCOME_DAYS_REQUESTED = 365
 
 
 class PlaidClient:
@@ -49,6 +53,37 @@ class PlaidClient:
         )
         response = await async_utils.sync_to_async(self.client.user_create, request)
         return response.user_token
+
+    async def create_link_token(self, wallet_address: str) -> Tuple[str, str]:
+        # user_token = await self.create_user_token(wallet_address=wallet_address)
+        request = link_token_create_request.LinkTokenCreateRequest(
+            # `balance` product is automatically included.
+            products=[products.Products("transactions")],
+            client_name="Huma Financials",
+            country_codes=[country_code.CountryCode("US")],
+            # redirect_uri="https://app.huma.finance/",
+            language="en",
+            webhook="http://localhost:8001",
+            link_customization_name="default",
+            # income_verification=link_token_create_request_income_verification.LinkTokenCreateRequestIncomeVerification(
+            #     income_source_types=[
+            #         income_verification_source_type.IncomeVerificationSourceType(
+            #             "BANK"
+            #         )
+            #     ],
+            #     bank_income=link_token_create_request_income_verification_bank_income.LinkTokenCreateRequestIncomeVerificationBankIncome(  # noqa: E501
+            #         days_requested=_INCOME_DAYS_REQUESTED,
+            #     ),
+            # ),
+            user=link_token_create_request_user.LinkTokenCreateRequestUser(
+                client_user_id=string_utils.sha256_hash_hex(wallet_address)
+            ),
+            # user_token=user_token,
+        )
+        response = await async_utils.sync_to_async(
+            self.client.link_token_create, request
+        )
+        return response.link_token, ""
 
     async def exchange_access_token(self, public_token: str) -> str:
         request = item_public_token_exchange_request.ItemPublicTokenExchangeRequest(
@@ -110,7 +145,7 @@ class PlaidClient:
             ),
         )
         response = await async_utils.sync_to_async(
-            self.client.transactions_get, request
+            self.client.accounts_balance_get, request
         )
         return response.accounts[0].balances.available
 
@@ -128,7 +163,7 @@ class PlaidClient:
                         )
                     ],
                     bank_income=sandbox_public_token_create_request_income_verification_bank_income.SandboxPublicTokenCreateRequestIncomeVerificationBankIncome(  # noqa: E501
-                        days_requested=365,
+                        days_requested=_INCOME_DAYS_REQUESTED,
                     ),
                 ),
             ),
