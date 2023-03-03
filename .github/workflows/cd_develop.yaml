@@ -3,7 +3,7 @@ name: Dev Huma Signals CD
 on:
   push:
     branches: [ "develop" ]
-  
+
   workflow_dispatch:
 
 jobs:

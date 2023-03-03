@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import httpx
 import pydantic
@@ -23,7 +23,7 @@ class SpectralScoreIngredients(models.HumaBaseModel):
 class SpectralWalletSignals(models.HumaBaseModel):
     score: float
     score_ingredients: SpectralScoreIngredients
-    score_timestamp: datetime
+    score_timestamp: datetime.datetime
     probability_of_liquidation: float
     risk_level: str
     wallet_address: str
@@ -31,10 +31,11 @@ class SpectralWalletSignals(models.HumaBaseModel):
 
 class SpectralClient(models.HumaBaseModel):
     """Spectral Client"""
-    base_url: str = pydantic.Field(default='https://api.spectral.finance')
+
+    base_url: str = pydantic.Field(default="https://api.spectral.finance")
     api_key: str = pydantic.Field(
         default=settings.spectral_api_key,
-        description="Ethereum private key of the Spectral client"
+        description="Ethereum private key of the Spectral client",
     )
 
     @pydantic.validator("base_url")
@@ -52,10 +53,7 @@ class SpectralClient(models.HumaBaseModel):
     async def _create_score(self, wallet_address: str) -> None:
         try:
             async with httpx.AsyncClient(base_url=self.base_url) as client:
-                request = (
-                    f"/api/v1/addresses/{wallet_address}"
-                    f"/calculate_score"
-                )
+                request = f"/api/v1/addresses/{wallet_address}" f"/calculate_score"
                 headers = {"Authorization": f"Bearer {self.api_key}"}
                 resp = await client.post(request, headers=headers)
                 resp.raise_for_status()
@@ -71,5 +69,6 @@ class SpectralClient(models.HumaBaseModel):
                 resp = await client.get(request, headers=headers)
                 resp.raise_for_status()
                 return SpectralWalletSignals(**resp.json())
-        except httpx.HTTPStatusError:
+        except httpx.HTTPStatusError as e:
             logger.error("Error fetching transactions", exc_info=True, request=request)
+            raise e

@@ -128,7 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# env files 
+# env files
 *.env
 *.envrc
 .idea/
