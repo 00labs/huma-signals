@@ -3,7 +3,7 @@ name: Huma Decentralized Signal Portfolio CD
 on:
   push:
     branches: [ "main" ]
-
+  
   workflow_dispatch:
 
 jobs:
