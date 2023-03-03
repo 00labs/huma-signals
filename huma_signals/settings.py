@@ -61,5 +61,10 @@ class Settings(pydantic.BaseSettings):
     request_network_subgraph_endpoint_url: str
     request_network_invoice_api_url: str
 
+    # adapter: banking
+    plaid_client_id: str
+    plaid_secret: str
+    plaid_env: str
+
 
 settings = Settings()

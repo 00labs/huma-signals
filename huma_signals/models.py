@@ -1,6 +1,5 @@
 # pylint: disable=too-few-public-methods
 import datetime
-import decimal
 
 import pydantic
 
@@ -18,5 +17,5 @@ class HumaBaseModel(pydantic.BaseModel):
             datetime.datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%SZ")
             if v
             else None,
-            decimal.Decimal: lambda v: str(v) if v else None,
+            # decimal.Decimal: lambda v: str(v) if v else None,
         }
