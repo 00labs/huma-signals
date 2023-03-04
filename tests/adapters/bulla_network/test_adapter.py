@@ -69,6 +69,14 @@ def describe_adapter() -> None:
             return 234
 
         @pytest.fixture
+        def paid_claim_id() -> int:
+            return 237
+
+        @pytest.fixture
+        def fraud_claim_id() -> int:
+            return 238
+
+        @pytest.fixture
         def payer_wallet_address() -> str:
             return "0xcd003c72BF78F9C56C8eDB9DC4d450be8292d339".lower()
 
@@ -92,3 +100,43 @@ def describe_adapter() -> None:
             assert signals.invoice_amount == decimal.Decimal("1_000_000")
             assert signals.borrower_own_invoice is True
             assert signals.payer_on_allowlist is True
+            assert signals.invoice_status == "Pending"
+            assert signals.payer_has_accepted_invoice is False
+
+        async def it_can_fetch_signals_paid_invoice(
+            bn_subgraph_endpoint_url: str,
+            borrower_address: str,
+            paid_claim_id: int,
+        ) -> None:
+            signals = await adapter.BullaNetworkInvoiceAdapter(
+                bulla_network_subgraph_url=bn_subgraph_endpoint_url,
+            ).fetch(
+                borrower_wallet_address=borrower_address,
+                claim_id=paid_claim_id,
+            )
+
+            assert signals.payee_match_borrower is True
+            assert signals.invoice_amount == decimal.Decimal("1_000_000")
+            assert signals.borrower_own_invoice is True
+            assert signals.payer_on_allowlist is True
+            assert signals.invoice_status == "Paid"
+            assert signals.payer_has_accepted_invoice is True
+
+        async def it_can_fetch_signals_fraud_invoice(
+            bn_subgraph_endpoint_url: str,
+            borrower_address: str,
+            fraud_claim_id: int,
+        ) -> None:
+            signals = await adapter.BullaNetworkInvoiceAdapter(
+                bulla_network_subgraph_url=bn_subgraph_endpoint_url,
+            ).fetch(
+                borrower_wallet_address=borrower_address,
+                claim_id=fraud_claim_id,
+            )
+
+            assert signals.payee_match_borrower is True
+            assert signals.invoice_amount == decimal.Decimal("1_000_000")
+            assert signals.borrower_own_invoice is True
+            assert signals.payer_on_allowlist is True
+            assert signals.invoice_status == "Repaying"
+            assert signals.payer_has_accepted_invoice is False

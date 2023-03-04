@@ -72,6 +72,13 @@ class BullaNetworkInvoiceSignals(models.HumaBaseModel):
     invoice_amount: decimal.Decimal = pydantic.Field(
         ..., description="The amount of the invoice"
     )
+    invoice_status: str = pydantic.Field(
+        ...,
+        description="The status of the invoice (Paid, Pending, Repaying, Rejected, Rescinded)",
+    )
+    payer_has_accepted_invoice: bool = pydantic.Field(
+        ..., description="Whether the payer has paid at least 1 wei of the invoice"
+    )
 
     # allowlist feature
     payer_on_allowlist: bool = pydantic.Field(

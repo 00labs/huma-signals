@@ -74,6 +74,7 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
                             paymentAmount
                             timestamp
                             transactionHash
+                            paidBy
                         }}
                     }}
                     """
@@ -105,10 +106,14 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
                     "timestamp",
                     "transactionHash",
                     "amount",
+                    "paid_by_debtor",
+                    "claim_id",
                 ]
             )
         df = claims_raw_df.copy().drop_duplicates("id")
+        df["claim_id"] = df.claim.apply(lambda x: x["id"])
         df["creditor"] = df.claim.apply(lambda x: x["creditor"]["id"])
+        df["paid_by_debtor"] = df.debtor.eq(df.paidBy)
         df["token_symbol"] = df.claim.apply(lambda x: x["token"]["symbol"])
         df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
         df["amount"] = df.paymentAmount.astype(float)
@@ -194,6 +199,12 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             ]
         )
 
+        this_claim_payment_stats = enriched_claim_payments_df[
+            (enriched_claim_payments_df["debtor"] == invoice.payer)
+            & (enriched_claim_payments_df["claim_id"] == str(claim_id))
+            & (enriched_claim_payments_df["paid_by_debtor"].eq(True))
+        ]
+
         # Fetch wallet tenure
         if settings.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
             logger.info("Fetching wallet tenure for ethereum")
@@ -236,6 +247,8 @@ class BullaNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             payer_match_payee=(invoice.payer.lower() == invoice.payee.lower()),
             days_until_due_date=((invoice.due_date - datetime.datetime.utcnow()).days),
             invoice_amount=invoice.amount,
+            invoice_status=invoice.status,
+            payer_has_accepted_invoice=len(this_claim_payment_stats) > 0,
             # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
             payer_on_allowlist=True,
         )
