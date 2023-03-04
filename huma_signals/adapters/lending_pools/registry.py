@@ -36,6 +36,17 @@ _POOLS = [
     ),
     PoolSetting(
         pool_address=web3.Web3.to_checksum_address(
+            "0x79486A42Bb34fc81F1988ED60b33c3eb42065D98"
+        ),
+        chain=chains.Chain.GOERLI,
+        pool_abi_path=str(
+            pathlib.Path(__file__).parent.resolve()
+            / "abi"
+            / "StreamFactoringPoolV1.json"
+        ),
+    ),
+    PoolSetting(
+        pool_address=web3.Web3.to_checksum_address(
             "0xAb3dc5221F373Dd879BEc070058c775A0f6Af759"
         ),
         chain=chains.Chain.POLYGON,

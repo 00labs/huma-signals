@@ -50,6 +50,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy
+        entry: bash -c 'poetry run mypy huma_signals'
         language: system
         types: [python]
   - repo: local
