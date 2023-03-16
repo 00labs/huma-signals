@@ -40,18 +40,12 @@ jobs:
 
       - name: Redeploy ECS on testnet
         env:
-          CLUSTER_NAME: testnet-huma-signals
-          SERVICE_NAME: testnet-huma-signals
-        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
-
-      - name: Redeploy ECS on mainnet
-        env:
-          CLUSTER_NAME: mainnet-huma-signals
-          SERVICE_NAME: mainnet-homestead-huma-signals
+          CLUSTER_NAME: prod-testnet-huma-signals
+          SERVICE_NAME: prod-testnet-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
       - name: Redeploy ECS on polygon
         env:
-          CLUSTER_NAME: mainnet-huma-signals
-          SERVICE_NAME: mainnet-matic-huma-signals
+          CLUSTER_NAME: prod-mainnet-huma-signals
+          SERVICE_NAME: prod-mainnet-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
