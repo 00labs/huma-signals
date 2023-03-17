@@ -42,5 +42,5 @@ services:
       - PORT=80
       - TIMEOUT=120000
       - RECEIVABLE_ADDRESS=0xC2AC172a293d68f548ea343414584aA37eb29Dcd
-    prots:
+    ports:
       - '80'
