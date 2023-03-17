@@ -29,4 +29,18 @@ services:
       - POLYGONSCAN_API_KEY
       - POLYGONSCAN_BASE_URL=https://api.polygonscan.com
       - REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL=https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
-      - REQUEST_NETWORK_INVOICE_API_URL=https://goerli.api.huma.finance/invoice
+      - REQUEST_NETWORK_INVOICE_API_URL=http://rn-reader/invoice
+    depends_on:
+      - rn-reader
+
+  rn-reader:
+    image: rn-reader
+    command: ["yarn", "server"]
+    environment:
+      - PROVIDER_URL
+      - REQUEST_NODE_URL=https://goerli.gateway.request.network/
+      - PORT=80
+      - TIMEOUT=120000
+      - RECEIVABLE_ADDRESS=0xC2AC172a293d68f548ea343414584aA37eb29Dcd
+    prots:
+      - '80'

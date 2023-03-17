@@ -54,6 +54,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
+      - name: load rn-reader docker image
+        run: docker load -i rn-reader.tar.gz
       - name: Unit and e2e tests
         env:
           ENV: test
@@ -63,6 +65,7 @@ jobs:
           SENTRY_DSN: ""
           DATADOG_API_KEY: ""
           ETHERSCAN_API_KEY: ""
-          REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL: https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
-          REQUEST_NETWORK_INVOICE_API_URL: https://goerli.api.huma.finance/invoice
+          PROVIDER_URL: ${{ secrets.WEB3_PROVIDER_URL }}
+          # REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL: https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
+          # REQUEST_NETWORK_INVOICE_API_URL: https://goerli.api.huma.finance/invoice
         run: docker-compose -f ./docker-compose-ci.yml run tests
