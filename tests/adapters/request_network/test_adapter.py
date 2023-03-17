@@ -69,7 +69,7 @@ def describe_adapter() -> None:
 
         @pytest.fixture
         def rn_invoice_api_url() -> str:
-            return "https://dev.goerli.rnreader.huma.finance/invoice"
+            return "http://rn-reader/invoice"
 
         @pytest.fixture
         def borrower_address() -> str:
