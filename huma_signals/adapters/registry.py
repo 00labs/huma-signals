@@ -4,6 +4,7 @@ from huma_signals.adapters import models
 from huma_signals.adapters.allowlist import adapter as allowlist_adapter
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.lending_pools import adapter as lending_pools_adapter
+from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import adapter as request_network_adapter
 
 ADAPTER_REGISTRY: Dict[str, Type[models.SignalAdapterBase]] = {
@@ -11,6 +12,7 @@ ADAPTER_REGISTRY: Dict[str, Type[models.SignalAdapterBase]] = {
     request_network_adapter.RequestNetworkInvoiceAdapter.name: request_network_adapter.RequestNetworkInvoiceAdapter,
     allowlist_adapter.AllowListAdapter.name: allowlist_adapter.AllowListAdapter,
     ethereum_wallet_adapter.EthereumWalletAdapter.name: ethereum_wallet_adapter.EthereumWalletAdapter,
+    polygon_wallet_adapter.PolygonWalletAdapter.name: polygon_wallet_adapter.PolygonWalletAdapter,
 }
 
 

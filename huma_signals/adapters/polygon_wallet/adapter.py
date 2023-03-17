@@ -13,7 +13,7 @@ from huma_signals.settings import settings
 logger = structlog.get_logger()
 
 
-class EthereumWalletSignals(models.HumaBaseModel):
+class PolygonWalletSignals(models.HumaBaseModel):
     total_transactions: int
     total_sent: int
     total_received: int
@@ -22,40 +22,41 @@ class EthereumWalletSignals(models.HumaBaseModel):
     total_transactions_90days: int
 
 
-class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "ethereum_wallet"
+class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
+    name: ClassVar[str] = "polygon_wallet"
     required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[List[str]] = list(EthereumWalletSignals.__fields__.keys())
+    signals: ClassVar[List[str]] = list(PolygonWalletSignals.__fields__.keys())
 
-    etherscan_base_url: str = pydantic.Field(default=settings.etherscan_base_url)
-    etherscan_api_key: str = pydantic.Field(default=settings.etherscan_api_key)
+    polygonscan_base_url: str = pydantic.Field(default=settings.polygonscan_base_url)
+    polygonscan_api_key: str = pydantic.Field(default=settings.polygonscan_api_key)
 
-    @pydantic.validator("etherscan_base_url")
-    def validate_etherscan_base_url(cls, value: str) -> str:
+    @pydantic.validator("polygonscan_base_url")
+    def validate_polygonscan_base_url(cls, value: str) -> str:
         if not value:
-            raise ValueError("etherscan_base_url is required")
+            raise ValueError("polygonscan_base_url is required")
         return value
 
-    @pydantic.validator("etherscan_api_key")
-    def validate_etherscan_api_key(cls, value: str) -> str:
+    @pydantic.validator("polygonscan_api_key")
+    def validate_polygonscan_api_key(cls, value: str) -> str:
         if not value:
-            raise ValueError("etherscan_api_key is required")
+            raise ValueError("polygonscan_api_key is required")
         return value
 
     @classmethod
     async def _node_get_transactions(
-        cls, wallet_address: str, etherscan_base_url: str, etherscan_api_key: str
+        cls, wallet_address: str, polygonscan_base_url: str, polygonscan_api_key: str
     ) -> List[Any]:
         try:
-            async with httpx.AsyncClient(base_url=etherscan_base_url) as client:
+            async with httpx.AsyncClient(base_url=polygonscan_base_url) as client:
                 request = (
                     f"/api?module=account&action=txlist"
                     f"&address={wallet_address}"
                     f"&startblock=0&endblock=99999999"
                     f"&sort=asc"
-                    f"&apikey={etherscan_api_key}"
+                    f"&apikey={polygonscan_api_key}"
                 )
                 resp = await client.get(request)
+
                 resp.raise_for_status()
                 payload = resp.json()
                 if payload["status"] == "1":
@@ -67,15 +68,15 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
 
     async def fetch(  # pylint: disable=arguments-differ
         self, borrower_wallet_address: str, *args: Any, **kwargs: Any
-    ) -> EthereumWalletSignals:
+    ) -> PolygonWalletSignals:
         raw_txns = await self._node_get_transactions(
             borrower_wallet_address,
-            etherscan_base_url=self.etherscan_base_url,
-            etherscan_api_key=self.etherscan_api_key,
+            polygonscan_base_url=self.polygonscan_base_url,
+            polygonscan_api_key=self.polygonscan_api_key,
         )
         txn_df = pd.DataFrame.from_records(raw_txns)
         if len(txn_df) == 0:
-            return EthereumWalletSignals(
+            return PolygonWalletSignals(
                 total_transactions=0,
                 total_sent=0,
                 total_received=0,
@@ -95,7 +96,7 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
         # TODO: Limit to selected set of tokens
         txn_df["income"] = txn_df["value"] * txn_df["is_received"].astype(float)
 
-        return EthereumWalletSignals(
+        return PolygonWalletSignals(
             total_transactions=len(txn_df),
             total_sent=sum(txn_df["is_sent"]),
             total_received=sum(txn_df["is_received"]),
