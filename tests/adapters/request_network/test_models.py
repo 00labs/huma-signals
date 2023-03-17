@@ -24,7 +24,7 @@ def payee_wallet_address() -> str:
 
 @pytest.fixture
 def rn_invoice_api_url() -> str:
-    return "https://goerli.api.huma.finance/invoice"
+    return "http://rn-reader/invoice"
 
 
 def describe_invoice() -> None:
