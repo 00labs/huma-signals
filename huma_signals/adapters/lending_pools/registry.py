@@ -36,13 +36,13 @@ _POOLS = [
     ),
     PoolSetting(
         pool_address=web3.Web3.to_checksum_address(
-            "0x79486A42Bb34fc81F1988ED60b33c3eb42065D98"
+            "0xf695AE2Ee144883A1470357E18593094C6B12488"
         ),
-        chain=chains.Chain.GOERLI,
+        chain=chains.Chain.MUMBAI,
         pool_abi_path=str(
             pathlib.Path(__file__).parent.resolve()
             / "abi"
-            / "StreamFactoringPoolV1.json"
+            / "SuperfluidFactoringPool.json"
         ),
     ),
     PoolSetting(
