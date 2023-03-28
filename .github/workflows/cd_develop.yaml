@@ -38,10 +38,16 @@ jobs:
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name  $ECR_REPOSITORY
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Redeploy ECS on testnet
+      - name: Redeploy ECS on testnet goerli
         env:
           CLUSTER_NAME: dev-testnet-huma-signals
           SERVICE_NAME: dev-testnet-huma-signals
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      - name: Redeploy ECS on testnet mumbai
+        env:
+          CLUSTER_NAME: dev-testnet-huma-signals
+          SERVICE_NAME: dev-testnet-mumbai-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
       - name: Redeploy ECS on matic
