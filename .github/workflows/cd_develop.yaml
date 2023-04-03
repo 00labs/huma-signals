@@ -50,6 +50,18 @@ jobs:
           SERVICE_NAME: dev-testnet-mumbai-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
+      - name: Redeploy ECS on testnet goerli internal
+        env:
+          CLUSTER_NAME: dev-testnet-huma-signals
+          SERVICE_NAME: dev-testnet-huma-signals-int
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      - name: Redeploy ECS on testnet mumbai internal
+        env:
+          CLUSTER_NAME: dev-testnet-huma-signals
+          SERVICE_NAME: dev-testnet-mumbai-huma-signals-int
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
       - name: Redeploy ECS on matic
         env:
           CLUSTER_NAME: dev-mainnet-huma-signals
