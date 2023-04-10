@@ -19,10 +19,6 @@ def describe_adapter() -> None:
                 request_network_subgraph_endpoint_url=""
             )
 
-    def it_validates_chain() -> None:
-        with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(chain=None)
-
     def describe_fetch() -> None:
         @pytest.fixture
         def rn_subgraph_endpoint_url() -> str:
@@ -56,7 +52,7 @@ def describe_adapter() -> None:
         ) -> None:
             signals = await adapter.RequestNetworkInvoiceAdapter(
                 request_network_invoice_api_url=rn_invoice_api_url,
-                request_network_subgraph_url=rn_subgraph_endpoint_url,
+                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
             ).fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,

@@ -8,7 +8,7 @@ import pydantic
 import structlog
 import web3
 
-from huma_signals import models
+from huma_signals import exceptions, models
 
 logger = structlog.get_logger()
 
@@ -146,6 +146,6 @@ class Invoice(models.HumaBaseModel):
                 receivable_param=receivable_param,
             )
 
-            raise Exception(
+            raise exceptions.RequestException(
                 f"Request Network API returned status code {e.response.status_code}",
             ) from e
