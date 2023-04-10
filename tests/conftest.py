@@ -5,6 +5,11 @@ import pytest
 from huma_signals import settings
 from huma_signals.commons.chains import Chain
 
+# Fixtures registered below will be made globally available.
+pytest_plugins = [
+    "tests.fixtures.request_fixtures",
+]
+
 
 @pytest.fixture(scope="session", autouse=True)
 def ensure_test_env() -> None:
