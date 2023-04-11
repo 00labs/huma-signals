@@ -57,3 +57,7 @@ repos:
         entry: bash -c 'poetry run pylint huma_signals'
         language: system
         types: [python]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.2
+    hooks:
+      - id: gitleaks
