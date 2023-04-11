@@ -4,18 +4,20 @@ from unittest import mock
 
 import pytest
 
-from huma_signals.adapters.request_network import adapter, models
+from huma_signals.adapters.request_network import models, request_invoice_adapter
 from huma_signals.commons import chains
 
 
 def describe_adapter() -> None:
     def it_validates_rn_invoice_api_url() -> None:
         with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(request_network_invoice_api_url="")
+            request_invoice_adapter.RequestNetworkInvoiceAdapter(
+                request_network_invoice_api_url=""
+            )
 
     def it_validates_rn_subgraph_endpoint_url() -> None:
         with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(
+            request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 request_network_subgraph_endpoint_url=""
             )
 
@@ -50,7 +52,7 @@ def describe_adapter() -> None:
             borrower_address: str,
             receivable_param: str,
         ) -> None:
-            signals = await adapter.RequestNetworkInvoiceAdapter(
+            signals = await request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 request_network_invoice_api_url=rn_invoice_api_url,
                 request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
             ).fetch(
@@ -97,7 +99,7 @@ def describe_adapter() -> None:
             # TODO: Use a proper data tape instead of of rely on live data for this test
             """
             mainnet_subgraph = "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-            signals = await adapter.RequestNetworkInvoiceAdapter(
+            signals = await request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 chain=chains.Chain.ETHEREUM,
                 request_network_subgraph_endpoint_url=mainnet_subgraph,
                 request_network_invoice_api_url="https://dev.goerli.rnreader.huma.finance/invoice",
