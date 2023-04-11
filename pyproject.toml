@@ -15,7 +15,6 @@ uvicorn = "^0.20.0"
 pandas = "^1.5.2"
 python-dotenv = "^0.21.0"
 web3 = "^6.1.0"
-sentry-sdk = {extras = ["fastapi"], version = "^1.13.0"}
 httpx = "^0.23.3"
 base58 = "^2.1.1"
 ipfshttpclient = "^0.7.0"
