@@ -15,7 +15,8 @@ class PaymentFactory(factory.DictFactory):
     from_ = address_helpers.fake_hex_address_factory()
     timestamp = factory.LazyFunction(lambda: int(datetime.datetime.now().timestamp()))
     tx_hash = address_helpers.fake_hex_address_factory()
-    amount: int = factory.Faker("pyint", min_value=1, max_value=1e18)
+    # mypy couldn't figure out that the faker is producing an int value and complains.
+    amount: int = factory.Faker("pyint", min_value=1, max_value=1e18)  # type: ignore[assignment]
     currency: str | None = None
     amount_in_crypto: str | None = None
 
