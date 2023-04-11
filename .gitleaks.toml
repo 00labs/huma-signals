@@ -1,0 +1,5 @@
+[[rules]]
+id = "allow-vcr-cassettes"
+description = "Allow values captured in VCR cassettes"
+regex = '''^.*$'''
+path = '''^vcr_cassettes/.*'''

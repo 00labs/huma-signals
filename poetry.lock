@@ -1165,6 +1165,40 @@ files = [
 tests = ["asttokens", "littleutils", "pytest", "rich"]
 
 [[package]]
+name = "factory-boy"
+version = "3.2.1"
+description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "factory_boy-3.2.1-py2.py3-none-any.whl", hash = "sha256:eb02a7dd1b577ef606b75a253b9818e6f9eaf996d94449c9d5ebb124f90dc795"},
+    {file = "factory_boy-3.2.1.tar.gz", hash = "sha256:a98d277b0c047c75eb6e4ab8508a7f81fb03d2cb21986f627913546ef7a2a55e"},
+]
+
+[package.dependencies]
+Faker = ">=0.7.0"
+
+[package.extras]
+dev = ["Django", "Pillow", "SQLAlchemy", "coverage", "flake8", "isort", "mongoengine", "tox", "wheel (>=0.32.0)", "zest.releaser[recommended]"]
+doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
+
+[[package]]
+name = "faker"
+version = "18.4.0"
+description = "Faker is a Python package that generates fake data for you."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "Faker-18.4.0-py3-none-any.whl", hash = "sha256:170ead9d0d140916168b142df69c44722b8f622ced2070802d0af9c476f0cb84"},
+    {file = "Faker-18.4.0.tar.gz", hash = "sha256:977ad0b7aa7a61ed57287d6a0723a827e9d3dd1f8cc82aaf08707f281b33bacc"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.4"
+
+[[package]]
 name = "fastapi"
 version = "0.88.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -3068,6 +3102,22 @@ files = [
 ]
 
 [[package]]
+name = "types-factory-boy"
+version = "0.4.1"
+description = "Typing stubs for factory-boy"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "types_factory_boy-0.4.1-py3-none-any.whl", hash = "sha256:a1fa265fad8b24ddf2d4363227d675d0c4cd44951b71d68ea8fc58aa90b0f85d"},
+    {file = "types_factory_boy-0.4.1.tar.gz", hash = "sha256:275b9e17a6ad79992bec77b956bb707770f7b0256e4172265e2139e48faf6faf"},
+]
+
+[package.dependencies]
+factory-boy = ">=3.2.0"
+typing-extensions = ">=4.2.0,<5.0.0"
+
+[[package]]
 name = "types-pytz"
 version = "2023.3.0.0"
 description = "Typing stubs for pytz"
@@ -3507,4 +3557,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "344b7a3d6bf071ce1e1d3cc398a06371720e86bc9355e7ef3d48f8fe01888824"
+content-hash = "f32a1379204ffd667d5ccd94d36c010f4e737c53a33fa068cfb0a0b5ae18cb88"
