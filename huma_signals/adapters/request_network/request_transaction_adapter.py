@@ -26,11 +26,11 @@ class RequestTransactionAdapter:
 
     def __init__(
         self,
-        request_client_: request_client.BaseRequestClient,
+        request_client_: request_client.BaseRequestClient | None = None,
         request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
         chain: chains.Chain = settings.chain,
     ) -> None:
-        self.request_client = request_client_
+        self.request_client = request_client_ or request_client.RequestClient()
         self.request_network_subgraph_endpoint_url = (
             request_network_subgraph_endpoint_url
         )
