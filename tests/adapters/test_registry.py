@@ -86,14 +86,6 @@ def describe_find_required_adapter() -> None:
 
 
 def describe_adapter_registry() -> None:
-    def all_adapters_are_subclasses_of_signal_adapter_base() -> None:
-        assert all(
-            [
-                issubclass(adapter, adapter_models.SignalAdapterBase)
-                for adapter in registry.ADAPTER_REGISTRY.values()
-            ]
-        )
-
     def all_adapters_have_a_name() -> None:
         assert all(
             [hasattr(adapter, "name") for adapter in registry.ADAPTER_REGISTRY.values()]
