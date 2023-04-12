@@ -11,27 +11,24 @@ repos:
       - id: no-commit-to-branch
         name: 'no-commit-to-branch - (master, main)'
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.7.7
+    rev: v2.0.2
     hooks:
       - id: autoflake
         name: 'autoflake'
-        args: ['--in-place', '--remove-all-unused-imports', '--ignore-init-module-imports', '--verbose']
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.3.0
     hooks:
       - id: black
         name: 'black'
-        args: ['--target-version', 'py310']
         types: [python]
   - repo: https://github.com/timothycrosley/isort
-    rev: 5.5.4
+    rev: 5.11.5
     hooks:
       - id: isort
         name: 'isort'
-        args: ['--profile', 'black']
         types: [python]
   - repo: https://github.com/pycqa/flake8
-    rev: 3.8.3
+    rev: 6.0.0
     hooks:
       - id: flake8
         name: 'flake8'
@@ -46,11 +43,11 @@ repos:
               'E203, W503',
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.910
+    rev: v1.1.1
     hooks:
       - id: mypy
         name: mypy
-        entry: bash -c 'poetry run mypy huma_signals'
+        entry: bash -c 'poetry run mypy .'
         language: system
         types: [python]
   - repo: local
@@ -60,10 +57,7 @@ repos:
         entry: bash -c 'poetry run pylint huma_signals'
         language: system
         types: [python]
-        args:
-          [
-              "--load-plugins=pylint_google_style_guide_imports_enforcing, pylint_pydantic",
-              "--max-line-length=120",
-              "--disable=C0103, C0114, C0115, C0116, R0801, W0511",
-              "--extension-pkg-whitelist=pydantic, orjson",
-          ]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.2
+    hooks:
+      - id: gitleaks

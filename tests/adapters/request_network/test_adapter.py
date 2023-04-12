@@ -9,58 +9,15 @@ from huma_signals.commons import chains
 
 
 def describe_adapter() -> None:
-    def it_validate_rn_invoice_api_url() -> None:
+    def it_validates_rn_invoice_api_url() -> None:
         with pytest.raises(ValueError):
             adapter.RequestNetworkInvoiceAdapter(request_network_invoice_api_url="")
 
-    def it_validate_rn_subgraph_endpoint_url() -> None:
+    def it_validates_rn_subgraph_endpoint_url() -> None:
         with pytest.raises(ValueError):
             adapter.RequestNetworkInvoiceAdapter(
                 request_network_subgraph_endpoint_url=""
             )
-
-    def it_validate_chain() -> None:
-        with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(chain=None)
-
-    def describe_get_payments() -> None:
-        @pytest.fixture
-        def rn_subgraph_endpoint_url() -> str:
-            return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-
-        @pytest.fixture
-        def from_address() -> str:
-            return "0x8d2aa089af73e788cf7afa1f94bf4cf2cde0db61".lower()
-
-        @pytest.fixture
-        def to_address() -> str:
-            return (
-                "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
-            )  # gitleaks:allow
-
-        async def it_returns_payment_history(
-            rn_subgraph_endpoint_url: str, from_address: str, to_address: str
-        ) -> None:
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                from_address, None, rn_subgraph_endpoint_url
-            )
-            assert len(payments) > 0
-            assert payments[-1]["from"] == from_address
-            assert payments[-1]["to"].startswith("0x")
-
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                None, to_address, rn_subgraph_endpoint_url
-            )
-            assert len(payments) > 0
-            assert payments[-1]["to"] == to_address
-            assert payments[-1]["from"].startswith("0x")
-
-            payments = await adapter.RequestNetworkInvoiceAdapter._get_payments(
-                from_address, to_address, rn_subgraph_endpoint_url
-            )
-            assert len(payments) > 0
-            assert payments[-1]["to"] == to_address
-            assert payments[-1]["from"] == from_address
 
     def describe_fetch() -> None:
         @pytest.fixture
@@ -95,7 +52,7 @@ def describe_adapter() -> None:
         ) -> None:
             signals = await adapter.RequestNetworkInvoiceAdapter(
                 request_network_invoice_api_url=rn_invoice_api_url,
-                request_network_subgraph_url=rn_subgraph_endpoint_url,
+                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
             ).fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,

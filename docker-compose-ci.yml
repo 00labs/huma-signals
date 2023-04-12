@@ -34,7 +34,7 @@ services:
       - rn-reader
 
   rn-reader:
-    image: 117773458657.dkr.ecr.us-west-1.amazonaws.com/request-network-reader:latest
+    image: 117773458657.dkr.ecr.us-west-1.amazonaws.com/dev-rn-reader:latest
     command: ["yarn", "server"]
     environment:
       - PROVIDER_URL

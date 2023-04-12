@@ -15,7 +15,7 @@ _WEB3_CHAIN_NETWORK_ID: Dict[chains.Chain, str] = {
 }
 
 _MODULES: Dict[str, Union[Type[module.Module], Sequence[Any]]] = {
-    "eth": eth.AsyncEth,
+    "eth": eth.AsyncEth,  # type: ignore[attr-defined]
     "net": net.AsyncNet,
     "geth": (
         geth.Geth,
