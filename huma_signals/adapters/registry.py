@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, Optional, Type
 
+from huma_signals import constants
 from huma_signals.adapters import models
 from huma_signals.adapters.allowlist import adapter as allowlist_adapter
+from huma_signals.adapters.banking import adapter as banking_network_adapter
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.lending_pools import adapter as lending_pools_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
@@ -13,10 +15,11 @@ ADAPTER_REGISTRY: Dict[str, Type[models.SignalAdapterBase]] = {
     allowlist_adapter.AllowListAdapter.name: allowlist_adapter.AllowListAdapter,
     ethereum_wallet_adapter.EthereumWalletAdapter.name: ethereum_wallet_adapter.EthereumWalletAdapter,
     polygon_wallet_adapter.PolygonWalletAdapter.name: polygon_wallet_adapter.PolygonWalletAdapter,
+    banking_network_adapter.BankingAdapter.name: banking_network_adapter.BankingAdapter,
 }
 
 
-def find_required_adapter(
+def find_required_adapters(
     signal_names: List[str],
     adapter_registry: Optional[Dict[str, Type[models.SignalAdapterBase]]] = None,
 ) -> List[Type[models.SignalAdapterBase]]:
@@ -37,6 +40,21 @@ def find_required_adapter(
     return list(set(adapters))
 
 
+async def fetch_user_input_types(
+    signal_names: List[str],
+    registry: Optional[Dict[str, Type[models.SignalAdapterBase]]] = None,
+) -> List[constants.UserInputType]:
+    if registry is None:
+        registry = ADAPTER_REGISTRY
+
+    adapters = find_required_adapters(signal_names, registry)
+    return [
+        user_input_type
+        for adapter in adapters
+        for user_input_type in adapter.user_input_types()
+    ]
+
+
 async def fetch_signal(
     signal_names: List[str],
     adapter_inputs: Dict[str, Any],
@@ -46,7 +64,7 @@ async def fetch_signal(
     if registry is None:
         registry = ADAPTER_REGISTRY
 
-    adapters = find_required_adapter(signal_names, registry)
+    adapters = find_required_adapters(signal_names, registry)
     all_signals: Dict[str, Any] = {}
     for adapter in adapters:
         inputs = {k: adapter_inputs[k] for k in adapter.required_inputs}

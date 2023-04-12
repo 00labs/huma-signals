@@ -1,0 +1,132 @@
+interactions:
+- request:
+    body: '{"client_user_id": "d559e9b87fbbb74abc5de65ccae08ec180c1f4580a143a448b30e5f596310f7f"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      PLAID-CLIENT-ID:
+      - 63fa9cfe02d2d300129a40b4
+      PLAID-SECRET:
+      - 2665b99ee8e4911287e48b7e78486b
+      Plaid-Version:
+      - '2020-09-14'
+      User-Agent:
+      - Plaid Python v11.6.0
+    method: POST
+    uri: https://sandbox.plaid.com/user/create
+  response:
+    body:
+      string: "{\n  \"request_id\": \"MSH3ewsoyjtwmei\",\n  \"user_id\": \"ec6a620de767e9a4c0d34c733b9f470e12c544015bc1a9277042470091251fee\",\n
+        \ \"user_token\": \"user-sandbox-f934f00a-886b-4e5d-a00c-e40bae1fac84\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '187'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 26 Feb 2023 21:19:56 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block
+      plaid-version:
+      - '2020-09-14'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"public_token": "public-sandbox-1fc00cdc-96b0-4668-b6cd-4a4aec9f576d"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      PLAID-CLIENT-ID:
+      - 63fa9cfe02d2d300129a40b4
+      PLAID-SECRET:
+      - 2665b99ee8e4911287e48b7e78486b
+      Plaid-Version:
+      - '2020-09-14'
+      User-Agent:
+      - Plaid Python v11.6.0
+    method: POST
+    uri: https://sandbox.plaid.com/item/public_token/exchange
+  response:
+    body:
+      string: "{\n  \"access_token\": \"access-sandbox-a8254c75-7b74-4a82-a357-c06c4e65dee1\",\n
+        \ \"item_id\": \"mKDWA6pLQruGldPZ4po3UD7mkJn8D8tLgWQAx\",\n  \"request_id\":
+        \"5kunidh2uNaZolo\"\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '164'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 26 Feb 2023 21:19:56 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block
+      plaid-version:
+      - '2020-09-14'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"user_token": "user-sandbox-f934f00a-886b-4e5d-a00c-e40bae1fac84"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      PLAID-CLIENT-ID:
+      - 63fa9cfe02d2d300129a40b4
+      PLAID-SECRET:
+      - 2665b99ee8e4911287e48b7e78486b
+      Plaid-Version:
+      - '2020-09-14'
+      User-Agent:
+      - Plaid Python v11.6.0
+    method: POST
+    uri: https://sandbox.plaid.com/credit/bank_income/get
+  response:
+    body:
+      string: "{\n  \"display_message\": null,\n  \"error_code\": \"INCOME_VERIFICATION_NOT_FOUND\",\n
+        \ \"error_message\": \"the requested data was not found. Please check the
+        ID supplied.\",\n  \"error_type\": \"INCOME_VERIFICATION_ERROR\",\n  \"request_id\":
+        \"56xP9kKTJFzV7xz\",\n  \"suggested_action\": null\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '272'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 26 Feb 2023 21:19:56 GMT
+      Server:
+      - nginx
+      plaid-version:
+      - '2020-09-14'
+    status:
+      code: 400
+      message: Bad Request
+version: 1
