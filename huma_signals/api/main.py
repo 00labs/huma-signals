@@ -1,6 +1,5 @@
 import datadog
 import fastapi
-import sentry_sdk
 import structlog
 from ddtrace import opentracer
 from fastapi.middleware import cors
@@ -11,12 +10,6 @@ from huma_signals.settings import settings
 logger = structlog.get_logger(__name__)
 
 _DATADOG_HOST = "0.0.0.0"
-
-sentry_sdk.init(
-    dsn=settings.sentry_dsn,
-    environment=settings.env,
-    traces_sample_rate=1.0,
-)
 
 datadog.initialize(
     api_key=settings.datadog_api_key,

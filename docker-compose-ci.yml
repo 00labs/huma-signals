@@ -21,7 +21,6 @@ services:
     environment:
       - ENV=test
       - CHAIN=GOERLI
-      - SENTRY_DSN
       - DATADOG_API_KEY
       - WEB3_PROVIDER_URL
       - ETHERSCAN_API_KEY

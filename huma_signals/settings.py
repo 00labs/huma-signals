@@ -1,4 +1,3 @@
-# pylint: disable=too-few-public-methods
 import enum
 import os
 import pathlib
@@ -43,7 +42,6 @@ class Settings(pydantic.BaseSettings):
     env: str
     chain: chains.Chain
     web3_provider_url: str
-    sentry_dsn: str | None = os.getenv("SENTRY_DSN")
     datadog_api_key: str | None = os.getenv("DATADOG_API_KEY")
 
     # adapter: allowlist
