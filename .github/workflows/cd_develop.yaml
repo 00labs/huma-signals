@@ -31,21 +31,27 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: dev-huma-signals
+          ECR_REPOSITORY: dev-signals
           IMAGE_TAG: ${{ steps.short-sha.outputs.sha_short }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name  $ECR_REPOSITORY
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Redeploy ECS on testnet
+      - name: Redeploy ECS on testnet goerli
         env:
-          CLUSTER_NAME: dev-testnet-huma-signals
-          SERVICE_NAME: dev-testnet-huma-signals
+          CLUSTER_NAME: dev-goerli-signals
+          SERVICE_NAME: dev-goerli-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
-      - name: Redeploy ECS on matic
-        env:
-          CLUSTER_NAME: dev-mainnet-huma-signals
-          SERVICE_NAME: dev-matic-huma-signals
-        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+      # - name: Redeploy ECS on testnet mumbai
+      #   env:
+      #     CLUSTER_NAME: dev-mumbai-signals
+      #     SERVICE_NAME: dev-mumbai-signals
+      #   run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      # - name: Redeploy ECS on matic
+      #   env:
+      #     CLUSTER_NAME: dev-mainnet-huma-signals
+      #     SERVICE_NAME: dev-mainnet-huma-signals
+      #   run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment

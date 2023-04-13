@@ -4,63 +4,22 @@ from unittest import mock
 
 import pytest
 
-from huma_signals.adapters.request_network import adapter, models
+from huma_signals.adapters.request_network import models, request_invoice_adapter
 from huma_signals.commons import chains
 
 
 def describe_adapter() -> None:
-    def it_validate_rn_invoice_api_url() -> None:
+    def it_validates_rn_invoice_api_url() -> None:
         with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(request_network_invoice_api_url="")
+            request_invoice_adapter.RequestNetworkInvoiceAdapter(
+                request_network_invoice_api_url=""
+            )
 
-    def it_validate_rn_subgraph_endpoint_url() -> None:
+    def it_validates_rn_subgraph_endpoint_url() -> None:
         with pytest.raises(ValueError):
-            adapter.RequestNetworkInvoiceAdapter(
+            request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 request_network_subgraph_endpoint_url=""
             )
-
-    def describe_get_payments() -> None:
-        @pytest.fixture
-        def rn_subgraph_endpoint_url() -> str:
-            return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-
-        @pytest.fixture
-        def from_address() -> str:
-            return "0x8d2aa089af73e788cf7afa1f94bf4cf2cde0db61".lower()
-
-        @pytest.fixture
-        def to_address() -> str:
-            return (
-                "0x63d6287d5b853ccfedba1247fbeb9a40512f709a".lower()
-            )  # gitleaks:allow
-
-        @pytest.fixture
-        def adapter_(
-            rn_subgraph_endpoint_url: str,
-        ) -> adapter.RequestNetworkInvoiceAdapter:
-            return adapter.RequestNetworkInvoiceAdapter(
-                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
-            )
-
-        async def it_returns_payment_history(
-            from_address: str,
-            to_address: str,
-            adapter_: adapter.RequestNetworkInvoiceAdapter,
-        ) -> None:
-            payments = await adapter_._get_payments(from_address, None)
-            assert len(payments) > 0
-            assert payments[-1]["from"] == from_address
-            assert payments[-1]["to"].startswith("0x")
-
-            payments = await adapter_._get_payments(None, to_address)
-            assert len(payments) > 0
-            assert payments[-1]["to"] == to_address
-            assert payments[-1]["from"].startswith("0x")
-
-            payments = await adapter_._get_payments(from_address, to_address)
-            assert len(payments) > 0
-            assert payments[-1]["to"] == to_address
-            assert payments[-1]["from"] == from_address
 
     def describe_fetch() -> None:
         @pytest.fixture
@@ -69,7 +28,7 @@ def describe_adapter() -> None:
 
         @pytest.fixture
         def rn_invoice_api_url() -> str:
-            return "https://dev.goerli.rnreader.huma.finance/invoice"
+            return "http://rn-reader/invoice"
 
         @pytest.fixture
         def borrower_address() -> str:
@@ -90,8 +49,8 @@ def describe_adapter() -> None:
         @pytest.fixture
         def adapter_(
             rn_invoice_api_url: str, rn_subgraph_endpoint_url: str
-        ) -> adapter.RequestNetworkInvoiceAdapter:
-            return adapter.RequestNetworkInvoiceAdapter(
+        ) -> request_invoice_adapter.RequestNetworkInvoiceAdapter:
+            return request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 request_network_invoice_api_url=rn_invoice_api_url,
                 request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
             )
@@ -99,7 +58,7 @@ def describe_adapter() -> None:
         async def it_can_fetch_signals(
             borrower_address: str,
             receivable_param: str,
-            adapter_: adapter.RequestNetworkInvoiceAdapter,
+            adapter_: request_invoice_adapter.RequestNetworkInvoiceAdapter,
         ) -> None:
             signals = await adapter_.fetch(
                 borrower_wallet_address=borrower_address,
@@ -143,7 +102,7 @@ def describe_adapter() -> None:
             # TODO: Use a proper data tape instead of of rely on live data for this test
             """
             mainnet_subgraph = "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-            signals = await adapter.RequestNetworkInvoiceAdapter(
+            signals = await request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 chain=chains.Chain.ETHEREUM,
                 request_network_subgraph_endpoint_url=mainnet_subgraph,
                 request_network_invoice_api_url="https://dev.goerli.rnreader.huma.finance/invoice",

@@ -78,14 +78,16 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         )
 
         # Fetch wallet tenure
+        payee_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
+        payer_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
         if settings.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
             logger.info("Fetching wallet tenure for ethereum")
             payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
                 invoice.payee
-            )  # type: Any
+            )
             payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
                 invoice.payer
-            )  # type: Any
+            )
         elif settings.chain == chains.Chain.POLYGON:
             logger.info("Fetching wallet tenure for polygon")
             payee_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
@@ -99,17 +101,17 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
 
         return models.RequestNetworkInvoiceSignals(
             payer_tenure=payer_wallet.wallet_tenure_in_days,
-            payer_recent=payer_stats.get("last_txn_age_in_days", 0),
-            payer_count=payer_stats.get("total_txns", 0),
-            payer_total_amount=payer_stats.get("total_amount", 0),
-            payer_unique_payees=payer_stats.get("unique_payees", 0),
+            payer_recent=int(payer_stats.get("last_txn_age_in_days", 0)),
+            payer_count=int(payer_stats.get("total_txns", 0)),
+            payer_total_amount=int(payer_stats.get("total_amount", 0)),
+            payer_unique_payees=int(payer_stats.get("unique_payees", 0)),
             payee_tenure=payee_wallet.wallet_tenure_in_days,
-            payee_recent=payee_stats.get("last_txn_age_in_days", 0),
-            payee_count=payee_stats.get("total_txns", 0),
-            payee_total_amount=payee_stats.get("total_amount", 0),
-            payee_unique_payers=payee_stats.get("unique_payers", 0),
-            mutual_count=pair_stats.get("total_txns", 0),
-            mutual_total_amount=pair_stats.get("total_amount", 0),
+            payee_recent=int(payee_stats.get("last_txn_age_in_days", 0)),
+            payee_count=int(payee_stats.get("total_txns", 0)),
+            payee_total_amount=int(payee_stats.get("total_amount", 0)),
+            payee_unique_payers=int(payee_stats.get("unique_payers", 0)),
+            mutual_count=int(pair_stats.get("total_txns", 0)),
+            mutual_total_amount=int(pair_stats.get("total_amount", 0)),
             payee_match_borrower=(
                 invoice.payee.lower() == borrower_wallet_address.lower()
             ),

@@ -5,11 +5,16 @@ from huma_signals.adapters.allowlist import adapter as allowlist_adapter
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.lending_pools import adapter as lending_pools_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
-from huma_signals.adapters.request_network import adapter as request_network_adapter
+from huma_signals.adapters.request_network import (
+    request_invoice_adapter,
+    request_transaction_adapter,
+)
 
-ADAPTER_REGISTRY: Dict[str, Type[models.SignalAdapterBase]] = {
+# TODO(jiatu): fix the type annotation for the value after all signal adapters are removed from the BaseModel hierarchy.
+ADAPTER_REGISTRY: Dict[str, Any] = {
     lending_pools_adapter.LendingPoolAdapter.name: lending_pools_adapter.LendingPoolAdapter,
-    request_network_adapter.RequestNetworkInvoiceAdapter.name: request_network_adapter.RequestNetworkInvoiceAdapter,
+    request_invoice_adapter.RequestNetworkInvoiceAdapter.name: request_invoice_adapter.RequestNetworkInvoiceAdapter,
+    request_transaction_adapter.RequestTransactionAdapter.name: request_transaction_adapter.RequestTransactionAdapter,
     allowlist_adapter.AllowListAdapter.name: allowlist_adapter.AllowListAdapter,
     ethereum_wallet_adapter.EthereumWalletAdapter.name: ethereum_wallet_adapter.EthereumWalletAdapter,
     polygon_wallet_adapter.PolygonWalletAdapter.name: polygon_wallet_adapter.PolygonWalletAdapter,
