@@ -33,8 +33,6 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
     ) -> None:
         if not etherscan_base_url:
             raise ValueError("etherscan_base_url is empty")
-        if not etherscan_api_key:
-            raise ValueError("etherscan_api_key is empty")
 
         self.etherscan_base_url = etherscan_base_url
         self.etherscan_api_key = etherscan_api_key
