@@ -19,7 +19,6 @@ services:
     image: huma-signals-ci:latest
     command: ["make", "test"]
     environment:
-      - ENV=test
       - CHAIN=GOERLI
       - DATADOG_API_KEY
       - WEB3_PROVIDER_URL
