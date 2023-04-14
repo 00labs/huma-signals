@@ -1,9 +1,10 @@
-from typing import ClassVar, List
+from typing import Any, ClassVar, List
 
 import pandas as pd
 import structlog
 import web3
 
+from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import models
@@ -14,7 +15,7 @@ from huma_signals.settings import settings
 logger = structlog.get_logger(__name__)
 
 
-class RequestTransactionAdapter:
+class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "request_transaction"
     required_inputs: ClassVar[List[str]] = [
         "payer_address",
@@ -36,10 +37,12 @@ class RequestTransactionAdapter:
         )
         self.chain = chain
 
-    async def fetch(
+    async def fetch(  # pylint: disable=arguments-differ
         self,
         payer_address: str,
         payee_address: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> models.RequestTransactionSignals:
         if not web3.Web3.is_address(payer_address):
             raise ValueError(f"Invalid payer address: {payer_address}")

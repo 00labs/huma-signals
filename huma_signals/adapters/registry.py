@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Type
 
 from huma_signals.adapters import models
 from huma_signals.adapters.allowlist import adapter as allowlist_adapter
@@ -10,8 +10,7 @@ from huma_signals.adapters.request_network import (
     request_transaction_adapter,
 )
 
-# TODO(jiatu): fix the type annotation for the value after all signal adapters are removed from the BaseModel hierarchy.
-ADAPTER_REGISTRY: Dict[str, Any] = {
+ADAPTER_REGISTRY: dict[str, Type[models.SignalAdapterBase]] = {
     lending_pools_adapter.LendingPoolAdapter.name: lending_pools_adapter.LendingPoolAdapter,
     request_invoice_adapter.RequestNetworkInvoiceAdapter.name: request_invoice_adapter.RequestNetworkInvoiceAdapter,
     request_transaction_adapter.RequestTransactionAdapter.name: request_transaction_adapter.RequestTransactionAdapter,
@@ -22,14 +21,14 @@ ADAPTER_REGISTRY: Dict[str, Any] = {
 
 
 def find_required_adapter(
-    signal_names: List[str],
-    adapter_registry: Optional[Dict[str, Type[models.SignalAdapterBase]]] = None,
-) -> List[Type[models.SignalAdapterBase]]:
+    signal_names: list[str],
+    adapter_registry: dict[str, Type[models.SignalAdapterBase]] | None = None,
+) -> list[Type[models.SignalAdapterBase]]:
     """Find the adapter required to fetch the signals"""
     if adapter_registry is None:
         adapter_registry = ADAPTER_REGISTRY
 
-    adapters = []
+    adapters = set()
     for signal_name in signal_names:
         adapter_name = signal_name.split(".")[0]
         adapter = adapter_registry.get(adapter_name)
@@ -37,22 +36,22 @@ def find_required_adapter(
             raise KeyError(f"Signal Adapter {adapter_name} not found in registry")
         if signal_name.split(".")[1] not in adapter.signals:
             raise KeyError(f"Signal {signal_name} not found in adapter {adapter_name}")
-        adapters.append(adapter_registry[adapter_name])
+        adapters.add(adapter_registry[adapter_name])
 
-    return list(set(adapters))
+    return list(adapters)
 
 
 async def fetch_signal(
-    signal_names: List[str],
-    adapter_inputs: Dict[str, Any],
-    registry: Optional[Dict[str, Type[models.SignalAdapterBase]]] = None,
-) -> Dict[str, Any]:
+    signal_names: list[str],
+    adapter_inputs: dict[str, Any],
+    registry: dict[str, Type[models.SignalAdapterBase]] | None = None,
+) -> dict[str, Any]:
     """Fetch signals from the signal adapters"""
     if registry is None:
         registry = ADAPTER_REGISTRY
 
     adapters = find_required_adapter(signal_names, registry)
-    all_signals: Dict[str, Any] = {}
+    all_signals: dict[str, Any] = {}
     for adapter in adapters:
         inputs = {k: adapter_inputs[k] for k in adapter.required_inputs}
         signals = (await adapter().fetch(**inputs)).dict()

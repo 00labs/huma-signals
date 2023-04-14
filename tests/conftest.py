@@ -7,6 +7,7 @@ from huma_signals.commons.chains import Chain
 
 # Fixtures registered below will be made globally available.
 pytest_plugins = [
+    "tests.fixtures.eth.eth_fixtures",
     "tests.fixtures.request.request_fixtures",
 ]
 
