@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - python-httpx/0.23.3
     method: GET
-    uri: https://api.etherscan.io/api?module=account&action=txlist&address=0x1234&startblock=0&endblock=99999999&sort=asc
+    uri: https://api.etherscan.io/api?action=txlist&address=0x1234&endblock=99999999&module=account&sort=asc&startblock=0
   response:
     content: '{"status":"0","message":"No transactions found","result":[]}'
     headers:
@@ -34,7 +34,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 13 Apr 2023 20:27:42 GMT
+      - Fri, 14 Apr 2023 18:24:21 GMT
       Server:
       - nginx
       Vary:
