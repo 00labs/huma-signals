@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - python-httpx/0.23.3
     method: GET
-    uri: https://api.etherscan.io/api?module=account&action=txlist&address=0x1234&startblock=0&endblock=99999999&sort=asc&apikey=7Y5V66HJ7ZW62HK86AQV428F5VYZV1MX19
+    uri: https://api.etherscan.io/api?module=account&action=txlist&address=0x1234&startblock=0&endblock=99999999&sort=asc
   response:
     content: '{"status":"0","message":"No transactions found","result":[]}'
     headers:
