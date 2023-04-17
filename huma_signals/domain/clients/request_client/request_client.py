@@ -203,7 +203,7 @@ class RequestClient(BaseRequestClient):
                     due_date=datetime.datetime.fromtimestamp(
                         invoice_info["creationDate"]
                     )
-                             + datetime.timedelta(days=30),
+                    + datetime.timedelta(days=30),
                 )
         except httpx.HTTPStatusError as e:
             logger.error(

@@ -101,7 +101,9 @@ def describe_RequestClient() -> None:
                 assert (
                     web3.Web3.to_checksum_address(invoice.payee) == payee_wallet_address
                 )
-                assert invoice.creation_date == datetime.datetime(2023, 4, 17)
+                assert invoice.creation_date == datetime.datetime(
+                    2023, 4, 17, 0, 36, 46
+                )
 
     def describe_enrich_payments_data() -> None:
         @pytest.fixture
