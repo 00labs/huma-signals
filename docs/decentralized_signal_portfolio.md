@@ -83,7 +83,8 @@ class WalletEthTransactionsAdapter(AdapterBase):
 
 ### Tests
 
-Please make sure to include extensive tests under [tests](../tests/domain/adapters/).
+Please make sure to include extensive tests under [tests](../tests/domain/adapters/). If your adapter makes network requests,
+please use VCR cassettes to capture them so that the unit test environment do not make real network requests at runtime.
 
 - We use `pytest` for test framework.
 - Make sure to use `pytest-describe` to organize tests.
