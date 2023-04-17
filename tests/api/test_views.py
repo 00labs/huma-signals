@@ -4,9 +4,9 @@ from unittest import mock
 import pytest
 
 from huma_signals import models
-from huma_signals.adapters import models as adapter_models
 from huma_signals.api import views
 from huma_signals.api.models import SignalFetchRequest
+from huma_signals.domain.adapters import models as adapter_models
 
 
 class DummySignals(models.HumaBaseModel):

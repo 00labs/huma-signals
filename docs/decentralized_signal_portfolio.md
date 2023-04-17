@@ -83,7 +83,7 @@ class WalletEthTransactionsAdapter(AdapterBase):
 
 ### Tests
 
-Please make sure to include extensive tests under [tests](../tests/adapters/).
+Please make sure to include extensive tests under [tests](../tests/domain/adapters/).
 
 - We use `pytest` for test framework.
 - Make sure to use `pytest-describe` to organize tests.
