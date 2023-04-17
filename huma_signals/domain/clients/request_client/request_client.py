@@ -5,9 +5,11 @@ from typing import Any, Protocol
 import httpx
 import pandas as pd
 import structlog
+import web3
 
 from huma_signals import exceptions
 from huma_signals.commons import chains, tokens
+from huma_signals.domain.clients.request_client import request_types
 from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
@@ -21,6 +23,9 @@ class BaseRequestClient(Protocol):
         from_address: str | None,
         to_address: str | None,
     ) -> list[dict[str, Any]]:
+        pass
+
+    async def get_invoice(self, invoice_id: str) -> request_types.Invoice:
         pass
 
     @classmethod
@@ -99,8 +104,10 @@ class RequestClient(BaseRequestClient):
     def __init__(
         self,
         rn_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
+        invoice_api_url: str = settings.request_network_invoice_api_url,
     ) -> None:
         self.rn_subgraph_endpoint_url = rn_subgraph_endpoint_url
+        self.invoice_api_url = invoice_api_url
 
     async def get_payments(
         self,
@@ -162,3 +169,49 @@ class RequestClient(BaseRequestClient):
             raise exceptions.RequestException(message=message) from e
 
         return payments
+
+    async def get_invoice(self, invoice_id: str) -> request_types.Invoice:
+        try:
+            async with httpx.AsyncClient(base_url=self.invoice_api_url) as client:
+                resp = await client.get(f"?id={invoice_id}")
+                resp.raise_for_status()
+                invoice_info = resp.json()
+                if not web3.Web3.is_address(invoice_info["owner"]):
+                    raise ValueError(
+                        f"Invoice's owner is not a valid address: {invoice_info['owner']}"
+                    )
+                if not web3.Web3.is_address(invoice_info["payer"]):
+                    raise ValueError(
+                        f"Invoice's payer is not a valid address: {invoice_info['payer']}"
+                    )
+                if not web3.Web3.is_address(invoice_info["payee"]):
+                    raise ValueError(
+                        f"Invoice's payee is not a valid address: {invoice_info['payee']}"
+                    )
+
+                return request_types.Invoice(
+                    token_owner=invoice_info["owner"].lower(),
+                    currency=invoice_info.get("currencyInfo").get("symbol"),
+                    amount=decimal.Decimal(invoice_info["expectedAmount"]),
+                    status="",
+                    payer=invoice_info["payer"].lower(),
+                    payee=invoice_info["payee"].lower(),
+                    creation_date=datetime.datetime.fromtimestamp(
+                        invoice_info["creationDate"]
+                    ),
+                    # TODO: Figure out way to get real due date
+                    due_date=datetime.datetime.fromtimestamp(
+                        invoice_info["creationDate"]
+                    )
+                             + datetime.timedelta(days=30),
+                )
+        except httpx.HTTPStatusError as e:
+            logger.error(
+                f"Request Network API returned status code {e.response.status_code}",
+                exc_info=True,
+                base_url=self.invoice_api_url,
+                receivable_param=invoice_id,
+            )
+            raise exceptions.RequestException(
+                f"Request Network API returned status code {e.response.status_code}",
+            ) from e

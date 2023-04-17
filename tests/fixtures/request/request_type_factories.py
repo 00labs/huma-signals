@@ -1,9 +1,11 @@
+# mypy: disable-error-code=var-annotated, assignment
 import datetime
 from typing import Any
 
 import factory
 
 from huma_signals.commons import string_utils
+from huma_signals.domain.clients.request_client import request_types
 from tests.helpers import address_helpers
 
 
@@ -27,3 +29,17 @@ class PaymentFactory(factory.DictFactory):
         """
         obj = super().create(**kwargs)
         return {string_utils.snake_to_camel(key): value for key, value in obj.items()}
+
+
+class InvoiceFactory(factory.Factory):
+    class Meta:
+        model = request_types.Invoice
+
+    token_owner = address_helpers.fake_hex_address_factory()
+    currency = "USDC"
+    amount = factory.Faker("pydecimal")
+    status = "PAID"
+    payer = address_helpers.fake_hex_address_factory()
+    payee = address_helpers.fake_hex_address_factory()
+    creation_date: datetime.datetime = factory.Faker("date_time")
+    due_date: datetime.datetime = factory.Faker("date_time")
