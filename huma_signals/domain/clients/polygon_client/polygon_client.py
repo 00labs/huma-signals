@@ -3,43 +3,44 @@ from typing import Protocol
 import httpx
 import structlog
 
-from huma_signals.domain.clients.eth_client import eth_types
+from huma_signals.domain.clients.polygon_client import polygon_types
 from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
 
 
-class BaseEthClient(Protocol):
+class BasePolygonClient(Protocol):
     async def get_transactions(
         self, wallet_address: str
-    ) -> list[eth_types.EthTransaction]:
+    ) -> list[polygon_types.PolygonTransaction]:
         pass
 
 
-class EthClient:
+class PolygonClient(BasePolygonClient):
     def __init__(
         self,
-        etherscan_base_url: str = settings.etherscan_base_url,
-        etherscan_api_key: str = settings.etherscan_api_key,
+        polygonscan_base_url: str = settings.polygonscan_base_url,
+        polygonscan_api_key: str = settings.polygonscan_api_key,
     ) -> None:
-        self.etherscan_base_url = etherscan_base_url
-        self.etherscan_api_key = etherscan_api_key
+        self.polygonscan_base_url = polygonscan_base_url
+        self.polygonscan_api_key = polygonscan_api_key
 
     async def get_transactions(
         self, wallet_address: str
-    ) -> list[eth_types.EthTransaction]:
+    ) -> list[polygon_types.PolygonTransaction]:
         try:
-            async with httpx.AsyncClient(base_url=self.etherscan_base_url) as client:
+            async with httpx.AsyncClient(base_url=self.polygonscan_base_url) as client:
                 request = (
                     f"/api?module=account&action=txlist"
                     f"&address={wallet_address}"
                     f"&startblock=0&endblock=99999999"
                     f"&sort=asc"
-                    f"&apikey={self.etherscan_api_key}"
+                    f"&apikey={self.polygonscan_api_key}"
                 )
                 resp = await client.get(request)
+
                 resp.raise_for_status()
-                payload = eth_types.EthTransactionResponse(**resp.json())
+                payload = polygon_types.PolygonTransactionResponse(**resp.json())
                 if payload.status == "1":
                     return payload.result
         except httpx.HTTPStatusError:
