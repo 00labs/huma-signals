@@ -1,5 +1,9 @@
+import datetime
+import decimal
+
 import pandas as pd
 import pytest
+import web3
 
 from huma_signals.commons import chains
 from huma_signals.domain.clients.request_client import request_client
@@ -61,6 +65,45 @@ def describe_RequestClient() -> None:
                     assert len(payments) > 0
                     assert payments[-1]["to"] == to_address
                     assert payments[-1]["from"] == from_address
+
+    def describe_get_invoice() -> None:
+        @pytest.fixture
+        def invoice_id() -> str:
+            return "0xd4d3"
+
+        @pytest.fixture
+        def payer_wallet_address() -> str:
+            return "0x8b99407A4395714B706415277f17b4d549608AFe"
+
+        @pytest.fixture
+        def payee_wallet_address() -> str:
+            return "0xc38B0528097B8076048BEdf4330644F068CEC2e6"
+
+        async def it_returns_the_invoice(
+            client: request_client.RequestClient,
+            invoice_id: str,
+            payer_wallet_address: str,
+            payee_wallet_address: str,
+        ) -> None:
+            with vcr_helpers.use_cassette(
+                fixture_file_path=f"{_FIXTURE_BASE_PATH}/get_invoice.yml"
+            ):
+                invoice = await client.get_invoice(invoice_id=invoice_id)
+                assert (
+                    web3.Web3.to_checksum_address(invoice.token_owner)
+                    == payee_wallet_address
+                )
+                assert (
+                    web3.Web3.to_checksum_address(invoice.payer) == payer_wallet_address
+                )
+                assert invoice.currency == "USDC"
+                assert invoice.amount == decimal.Decimal("100_000_000")
+                assert (
+                    web3.Web3.to_checksum_address(invoice.payee) == payee_wallet_address
+                )
+                assert invoice.creation_date == datetime.datetime(
+                    2023, 4, 17, 0, 36, 46
+                )
 
     def describe_enrich_payments_data() -> None:
         @pytest.fixture
