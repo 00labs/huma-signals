@@ -1,8 +1,6 @@
 import datetime
-import decimal
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar
 
-import httpx
 import pandas as pd
 import structlog
 import web3
@@ -11,31 +9,33 @@ from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import models
-from huma_signals.commons import chains, tokens
+from huma_signals.commons import chains
+from huma_signals.domain.clients.request_client import request_client
 from huma_signals.settings import settings
 
 _ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
-_DEFAULT_GRAPHQL_CHUNK_SIZE = 1000
 
 logger = structlog.get_logger(__name__)
 
 
 class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "request_network"
-    required_inputs: ClassVar[List[str]] = [
+    required_inputs: ClassVar[list[str]] = [
         "borrower_wallet_address",
         "receivable_param",
     ]
-    signals: ClassVar[List[str]] = list(
+    signals: ClassVar[list[str]] = list(
         models.RequestNetworkInvoiceSignals.__fields__.keys()
     )
 
     def __init__(
         self,
+        request_client_: request_client.BaseRequestClient | None = None,
         request_network_invoice_api_url: str = settings.request_network_invoice_api_url,
         request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
         chain: chains.Chain = settings.chain,
     ) -> None:
+        self.request_client = request_client_ or request_client.RequestClient()
         self.request_network_invoice_api_url = request_network_invoice_api_url
         self.request_network_subgraph_endpoint_url = (
             request_network_subgraph_endpoint_url
@@ -59,18 +59,28 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         )
 
         records = []
-        records.extend(await self._get_payments(invoice.payer, None))
-        records.extend(await self._get_payments(None, invoice.payee))
+        records.extend(
+            await self.request_client.get_payments(
+                from_address=invoice.payer, to_address=None
+            )
+        )
+        records.extend(
+            await self.request_client.get_payments(
+                from_address=None, to_address=invoice.payee
+            )
+        )
         payments_df = pd.DataFrame.from_records(records)
-        enriched_payments_df = self._enrich_payments_data(payments_df)
+        enriched_payments_df = self.request_client.enrich_payments_data(
+            payments_df, chain=self.chain
+        )
 
-        payer_stats = self._get_payment_stats(
+        payer_stats = self.request_client.get_payment_stats(
             enriched_payments_df[enriched_payments_df["from"] == invoice.payer]
         )
-        payee_stats = self._get_payment_stats(
+        payee_stats = self.request_client.get_payment_stats(
             enriched_payments_df[enriched_payments_df["to"] == invoice.payee]
         )
-        pair_stats = self._get_payment_stats(
+        pair_stats = self.request_client.get_payment_stats(
             enriched_payments_df[
                 (enriched_payments_df["from"] == invoice.payer)
                 & (enriched_payments_df["to"] == invoice.payee)
@@ -80,7 +90,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         # Fetch wallet tenure
         payee_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
         payer_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
-        if settings.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
+        if self.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
             logger.info("Fetching wallet tenure for ethereum")
             payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
                 invoice.payee
@@ -88,7 +98,7 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
                 invoice.payer
             )
-        elif settings.chain == chains.Chain.POLYGON:
+        elif self.chain == chains.Chain.POLYGON:
             logger.info("Fetching wallet tenure for polygon")
             payee_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
                 invoice.payee
@@ -124,119 +134,3 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
             payer_on_allowlist=True,
         )
-
-    async def _get_payments(
-        self,
-        from_address: Optional[str],
-        to_address: Optional[str],
-    ) -> List[Any]:
-        where_clause = ""
-        if from_address:
-            where_clause += f'from: "{from_address}",\n'
-        if to_address:
-            where_clause += f'to: "{to_address}",\n'
-
-        payments = []
-        last_chunk_size = _DEFAULT_GRAPHQL_CHUNK_SIZE
-        last_id = ""
-        async with httpx.AsyncClient() as client:
-            while last_chunk_size == _DEFAULT_GRAPHQL_CHUNK_SIZE:
-                query = f"""
-                    query HumaRequestNetworkPayments {{
-                        payments(
-                            first: {_DEFAULT_GRAPHQL_CHUNK_SIZE},
-                            where: {{
-                                {where_clause}
-                                id_gt: "{last_id}"
-                            }}
-                            orderBy: id,
-                            orderDirection: asc
-                        ) {{
-                            id
-                            contractAddress
-                            tokenAddress
-                            to
-                            from
-                            timestamp
-                            txHash
-                            amount
-                            currency
-                            amountInCrypto
-                        }}
-                    }}
-                    """
-                resp = await client.post(
-                    self.request_network_subgraph_endpoint_url,
-                    json={"query": query},
-                )
-                new_chunk = resp.json()["data"]["payments"]
-                payments.extend(new_chunk)
-                last_chunk_size = len(new_chunk)
-                if len(payments) > 0:
-                    last_id = payments[-1]["id"]
-
-        return payments
-
-    def _enrich_payments_data(
-        self,
-        payments_raw_df: pd.DataFrame,
-    ) -> pd.DataFrame:
-        """
-        Enriches the raw payments data with additional information
-        """
-        if len(payments_raw_df) == 0:
-            return pd.DataFrame(
-                columns=[
-                    "id",
-                    "contractAddress",
-                    "tokenAddress",
-                    "to",
-                    "from",
-                    "timestamp",
-                    "txHash",
-                    "amount",
-                    "currency",
-                    "amountInCrypto",
-                    "txn_time",
-                    "token_symbol",
-                    "token_usd_price",
-                    "amount_usd",
-                ]
-            )
-        df = payments_raw_df.copy().drop_duplicates("id")
-        df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
-        df["token_symbol"] = df.tokenAddress.map(
-            tokens.TOKEN_ADDRESS_MAPPING.get(self.chain)
-        ).fillna("Other")
-        df["amount"] = df.amount.astype(float)
-        df["token_usd_price"] = df.token_symbol.map(
-            tokens.TOKEN_USD_PRICE_MAPPING
-        ).fillna(0)
-        df["amount_usd"] = (df.amount * df.token_usd_price).astype(int)
-        return df
-
-    @classmethod
-    def _get_payment_stats(
-        cls, enriched_df: pd.DataFrame
-    ) -> Dict[str, int | decimal.Decimal]:
-        """
-        Calculate some basic stats from the enriched payments data
-        """
-        if len(enriched_df) == 0:
-            return {
-                "total_amount": 0,
-                "total_txns": 0,
-                "earliest_txn_age_in_days": 0,
-                "last_txn_age_in_days": 999,
-                "unique_payees": 0,
-                "unique_payers": 0,
-            }
-        now = datetime.datetime.utcnow()
-        return {
-            "total_amount": enriched_df.amount_usd.sum(),
-            "total_txns": len(enriched_df),
-            "earliest_txn_age_in_days": (now - enriched_df.txn_time.min()).days,
-            "last_txn_age_in_days": (now - enriched_df.txn_time.max()).days,
-            "unique_payees": enriched_df["to"].nunique(),
-            "unique_payers": enriched_df["from"].nunique(),
-        }

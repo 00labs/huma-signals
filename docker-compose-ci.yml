@@ -9,7 +9,7 @@ services:
     image: huma-signals-ci:latest
     command: ["make", "lint-check"]
     environment:
-      - ENV=development
+      - ENV=test
 
   tests:
     build:

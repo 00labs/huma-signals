@@ -21,6 +21,9 @@ def use_cassette(fixture_file_path: str, *args: Any, **kwargs: Any) -> Iterator:
         ignore_hosts=["test"],
         ignore_localhost=True,
         filter_headers=["Authorization", "authorization"],
+        # Some APIs require the sender to include the API key as a query param,
+        # so let's filter them out.
+        filter_query_parameters=["api_key", "apiKey", "apikey"],
         *args,
         **kwargs,
     ) as cass:

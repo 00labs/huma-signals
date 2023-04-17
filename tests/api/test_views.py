@@ -42,13 +42,13 @@ def describe_get_list_adapters() -> None:
         ]
 
 
-def describe_post_fetch() -> None:
+def describe_fetch() -> None:
     async def it_returns_a_list_of_signals() -> None:
         with mock.patch.dict(
             "huma_signals.adapters.registry.ADAPTER_REGISTRY",
             {"dummy_adapter": DummyAdapter},
         ):
-            response = await views.post_fetch(
+            response = await views.fetch(
                 SignalFetchRequest(
                     signal_names=["dummy_adapter.test_signal"],
                     adapter_inputs={"test_input": "test"},
