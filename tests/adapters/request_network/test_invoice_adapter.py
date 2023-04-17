@@ -46,16 +46,21 @@ def describe_adapter() -> None:
         def payee_wallet_address() -> str:
             return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
 
-        async def it_can_fetch_signals(
-            rn_subgraph_endpoint_url: str,
-            rn_invoice_api_url: str,
-            borrower_address: str,
-            receivable_param: str,
-        ) -> None:
-            signals = await request_invoice_adapter.RequestNetworkInvoiceAdapter(
+        @pytest.fixture
+        def adapter_(
+            rn_invoice_api_url: str, rn_subgraph_endpoint_url: str
+        ) -> request_invoice_adapter.RequestNetworkInvoiceAdapter:
+            return request_invoice_adapter.RequestNetworkInvoiceAdapter(
                 request_network_invoice_api_url=rn_invoice_api_url,
                 request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
-            ).fetch(
+            )
+
+        async def it_can_fetch_signals(
+            borrower_address: str,
+            receivable_param: str,
+            adapter_: request_invoice_adapter.RequestNetworkInvoiceAdapter,
+        ) -> None:
+            signals = await adapter_.fetch(
                 borrower_wallet_address=borrower_address,
                 receivable_param=receivable_param,
             )
@@ -87,10 +92,8 @@ def describe_adapter() -> None:
             ),
         )
         async def it_can_calculate_signals_with_mocked_invoice(
-            mocked_invoice: str,
             borrower_address: str,
             receivable_param: str,
-            rn_invoice_api_url: str,
         ) -> None:
             """
             In this test we mocked the invoice with a very active pair from mainnet,

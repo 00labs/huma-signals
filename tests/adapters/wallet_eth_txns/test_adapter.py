@@ -25,10 +25,6 @@ def describe_wallet_eth_txns_adapter() -> None:
         with pytest.raises(ValueError):
             adapter.EthereumWalletAdapter(etherscan_base_url="")
 
-    def it_validate_etherscan_api_key() -> None:
-        with pytest.raises(ValueError):
-            adapter.EthereumWalletAdapter(etherscan_api_key="")
-
     async def it_handles_address_with_no_records() -> None:
         result = await adapter.EthereumWalletAdapter().fetch("0x1234")
         assert result is not None

@@ -4,7 +4,6 @@ from typing import Any, ClassVar, Dict, List, Optional
 
 import httpx
 import pandas as pd
-import pydantic
 import structlog
 import web3
 
@@ -31,152 +30,17 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         models.RequestNetworkInvoiceSignals.__fields__.keys()
     )
 
-    request_network_invoice_api_url: str = pydantic.Field(
-        default=settings.request_network_invoice_api_url
-    )
-    request_network_subgraph_endpoint_url: str = pydantic.Field(
-        default=settings.request_network_subgraph_endpoint_url
-    )
-    chain: chains.Chain = pydantic.Field(default=settings.chain)
-
-    @pydantic.validator("request_network_invoice_api_url")
-    def validate_request_network_invoice_api_url(cls, value: str) -> str:
-        if not value:
-            raise ValueError("request_network_invoice_api_url is required")
-        return value
-
-    @pydantic.validator("request_network_subgraph_endpoint_url")
-    def validate_request_network_subgraph_endpoint_url(cls, value: str) -> str:
-        if not value:
-            raise ValueError("request_network_subgraph_endpoint_url is required")
-        return value
-
-    @pydantic.validator("chain")
-    def validate_chain(cls, value: chains.Chain) -> chains.Chain:
-        if not value:
-            raise ValueError("chain is required")
-        return value
-
-    @classmethod
-    async def _get_payments(
-        cls,
-        from_address: Optional[str],
-        to_address: Optional[str],
-        rn_subgraph_endpoint_url: str,
-    ) -> List[Any]:
-        where_clause = ""
-        if from_address:
-            where_clause += f'from: "{from_address}",\n'
-        if to_address:
-            where_clause += f'to: "{to_address}",\n'
-
-        payments = []
-        last_chunk_size = _DEFAULT_GRAPHQL_CHUNK_SIZE
-        last_id = ""
-        async with httpx.AsyncClient() as client:
-            while last_chunk_size == _DEFAULT_GRAPHQL_CHUNK_SIZE:
-                query = f"""
-                    query HumaRequestNetworkPayments {{
-                        payments(
-                            first: {_DEFAULT_GRAPHQL_CHUNK_SIZE},
-                            where: {{
-                                {where_clause}
-                                id_gt: "{last_id}"
-                            }}
-                            orderBy: id,
-                            orderDirection: asc
-                        ) {{
-                            id
-                            contractAddress
-                            tokenAddress
-                            to
-                            from
-                            timestamp
-                            txHash
-                            amount
-                            currency
-                            amountInCrypto
-                        }}
-                    }}
-                    """
-                resp = await client.post(
-                    rn_subgraph_endpoint_url,
-                    json={"query": query},
-                )
-                new_chunk = resp.json()["data"]["payments"]
-                payments.extend(new_chunk)
-                last_chunk_size = len(new_chunk)
-                if len(payments) > 0:
-                    last_id = payments[-1]["id"]
-
-        return payments
-
-    @classmethod
-    def enrich_payments_data(
-        cls, payments_raw_df: pd.DataFrame, chain: chains.Chain
-    ) -> pd.DataFrame:
-        """
-        Enriches the raw payments data with additional information
-        """
-        if len(payments_raw_df) == 0:
-            return pd.DataFrame(
-                columns=[
-                    "id",
-                    "contractAddress",
-                    "tokenAddress",
-                    "to",
-                    "from",
-                    "timestamp",
-                    "txHash",
-                    "amount",
-                    "currency",
-                    "amountInCrypto",
-                    "txn_time",
-                    "token_symbol",
-                    "token_usd_price",
-                    "amount_usd",
-                ]
-            )
-        df = payments_raw_df.copy().drop_duplicates("id")
-        df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
-        df["token_symbol"] = df.tokenAddress.map(
-            tokens.TOKEN_ADDRESS_MAPPING.get(chain)
-        ).fillna("Other")
-        df["amount"] = df.amount.astype(float)
-        df["token_usd_price"] = df.token_symbol.map(
-            tokens.TOKEN_USD_PRICE_MAPPING
-        ).fillna(0)
-        df["amount_usd"] = (df.amount * df.token_usd_price).astype(int)
-        return df
-
-    @classmethod
-    def get_payment_stats(
-        cls, enriched_df: pd.DataFrame
-    ) -> Dict[str, int | decimal.Decimal]:
-        """
-        Calculate some basic stats from the enriched payments data
-        """
-        if len(enriched_df) == 0:
-            return {
-                "total_amount": 0,
-                "total_txns": 0,
-                "earliest_txn_age_in_days": 0,
-                "last_txn_age_in_days": 999,
-                "unique_payees": 0,
-                "unique_payers": 0,
-            }
-        return {
-            "total_amount": enriched_df.amount_usd.sum(),
-            "total_txns": len(enriched_df),
-            "earliest_txn_age_in_days": (
-                datetime.datetime.now() - enriched_df.txn_time.min()
-            ).days,
-            "last_txn_age_in_days": (
-                datetime.datetime.now() - enriched_df.txn_time.max()
-            ).days,
-            "unique_payees": enriched_df["to"].nunique(),
-            "unique_payers": enriched_df["from"].nunique(),
-        }
+    def __init__(
+        self,
+        request_network_invoice_api_url: str = settings.request_network_invoice_api_url,
+        request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
+        chain: chains.Chain = settings.chain,
+    ) -> None:
+        self.request_network_invoice_api_url = request_network_invoice_api_url
+        self.request_network_subgraph_endpoint_url = (
+            request_network_subgraph_endpoint_url
+        )
+        self.chain = chain
 
     async def fetch(  # pylint: disable=too-many-arguments, arguments-differ
         self,
@@ -195,26 +59,18 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         )
 
         records = []
-        records.extend(
-            await self._get_payments(
-                invoice.payer, None, self.request_network_subgraph_endpoint_url
-            )
-        )
-        records.extend(
-            await self._get_payments(
-                None, invoice.payee, self.request_network_subgraph_endpoint_url
-            )
-        )
+        records.extend(await self._get_payments(invoice.payer, None))
+        records.extend(await self._get_payments(None, invoice.payee))
         payments_df = pd.DataFrame.from_records(records)
-        enriched_payments_df = self.enrich_payments_data(payments_df, self.chain)
+        enriched_payments_df = self._enrich_payments_data(payments_df)
 
-        payer_stats = self.get_payment_stats(
+        payer_stats = self._get_payment_stats(
             enriched_payments_df[enriched_payments_df["from"] == invoice.payer]
         )
-        payee_stats = self.get_payment_stats(
+        payee_stats = self._get_payment_stats(
             enriched_payments_df[enriched_payments_df["to"] == invoice.payee]
         )
-        pair_stats = self.get_payment_stats(
+        pair_stats = self._get_payment_stats(
             enriched_payments_df[
                 (enriched_payments_df["from"] == invoice.payer)
                 & (enriched_payments_df["to"] == invoice.payee)
@@ -268,3 +124,119 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
             # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
             payer_on_allowlist=True,
         )
+
+    async def _get_payments(
+        self,
+        from_address: Optional[str],
+        to_address: Optional[str],
+    ) -> List[Any]:
+        where_clause = ""
+        if from_address:
+            where_clause += f'from: "{from_address}",\n'
+        if to_address:
+            where_clause += f'to: "{to_address}",\n'
+
+        payments = []
+        last_chunk_size = _DEFAULT_GRAPHQL_CHUNK_SIZE
+        last_id = ""
+        async with httpx.AsyncClient() as client:
+            while last_chunk_size == _DEFAULT_GRAPHQL_CHUNK_SIZE:
+                query = f"""
+                    query HumaRequestNetworkPayments {{
+                        payments(
+                            first: {_DEFAULT_GRAPHQL_CHUNK_SIZE},
+                            where: {{
+                                {where_clause}
+                                id_gt: "{last_id}"
+                            }}
+                            orderBy: id,
+                            orderDirection: asc
+                        ) {{
+                            id
+                            contractAddress
+                            tokenAddress
+                            to
+                            from
+                            timestamp
+                            txHash
+                            amount
+                            currency
+                            amountInCrypto
+                        }}
+                    }}
+                    """
+                resp = await client.post(
+                    self.request_network_subgraph_endpoint_url,
+                    json={"query": query},
+                )
+                new_chunk = resp.json()["data"]["payments"]
+                payments.extend(new_chunk)
+                last_chunk_size = len(new_chunk)
+                if len(payments) > 0:
+                    last_id = payments[-1]["id"]
+
+        return payments
+
+    def _enrich_payments_data(
+        self,
+        payments_raw_df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """
+        Enriches the raw payments data with additional information
+        """
+        if len(payments_raw_df) == 0:
+            return pd.DataFrame(
+                columns=[
+                    "id",
+                    "contractAddress",
+                    "tokenAddress",
+                    "to",
+                    "from",
+                    "timestamp",
+                    "txHash",
+                    "amount",
+                    "currency",
+                    "amountInCrypto",
+                    "txn_time",
+                    "token_symbol",
+                    "token_usd_price",
+                    "amount_usd",
+                ]
+            )
+        df = payments_raw_df.copy().drop_duplicates("id")
+        df["txn_time"] = pd.to_datetime(df.timestamp, unit="s")
+        df["token_symbol"] = df.tokenAddress.map(
+            tokens.TOKEN_ADDRESS_MAPPING.get(self.chain)
+        ).fillna("Other")
+        df["amount"] = df.amount.astype(float)
+        df["token_usd_price"] = df.token_symbol.map(
+            tokens.TOKEN_USD_PRICE_MAPPING
+        ).fillna(0)
+        df["amount_usd"] = (df.amount * df.token_usd_price).astype(int)
+        return df
+
+    @classmethod
+    def _get_payment_stats(
+        cls, enriched_df: pd.DataFrame
+    ) -> Dict[str, int | decimal.Decimal]:
+        """
+        Calculate some basic stats from the enriched payments data
+        """
+        if len(enriched_df) == 0:
+            return {
+                "total_amount": 0,
+                "total_txns": 0,
+                "earliest_txn_age_in_days": 0,
+                "last_txn_age_in_days": 999,
+                "unique_payees": 0,
+                "unique_payers": 0,
+            }
+        now = datetime.datetime.utcnow()
+        return {
+            "total_amount": enriched_df.amount_usd.sum(),
+            "total_txns": len(enriched_df),
+            "earliest_txn_age_in_days": (now - enriched_df.txn_time.min()).days,
+            "last_txn_age_in_days": (now - enriched_df.txn_time.max()).days,
+            "unique_payees": enriched_df["to"].nunique(),
+            "unique_payers": enriched_df["from"].nunique(),
+        }
