@@ -4,6 +4,8 @@ from huma_signals.adapters.allowlist import adapter
 from tests.helpers import vcr_helpers
 
 _FIXTURE_BASE_PATH = "/domain/adapters/allowlist"
+# Don't match on path since the API key is embedded in the path.
+_VCR_MATCH_ON = ["method", "scheme", "host", "port", "query"]
 
 
 @pytest.fixture
@@ -24,7 +26,8 @@ def describe_allowlist_adapter() -> None:
     def when_the_address_is_valid() -> None:
         async def it_returns_true(valid_address: str) -> None:
             with vcr_helpers.use_cassette(
-                fixture_file_path=f"{_FIXTURE_BASE_PATH}/valid_address.yml"
+                fixture_file_path=f"{_FIXTURE_BASE_PATH}/valid_address.yml",
+                match_on=_VCR_MATCH_ON,
             ):
                 result = await adapter.AllowListAdapter().fetch(valid_address, "goerli")
                 assert result == adapter.AllowListSignal(on_allowlist=True)
@@ -32,7 +35,8 @@ def describe_allowlist_adapter() -> None:
     def when_the_address_is_invalid() -> None:
         async def it_returns_false(invalid_address: str) -> None:
             with vcr_helpers.use_cassette(
-                fixture_file_path=f"{_FIXTURE_BASE_PATH}/invalid_address.yml"
+                fixture_file_path=f"{_FIXTURE_BASE_PATH}/invalid_address.yml",
+                match_on=_VCR_MATCH_ON,
             ):
                 result = await adapter.AllowListAdapter().fetch(
                     invalid_address, "goerli"
