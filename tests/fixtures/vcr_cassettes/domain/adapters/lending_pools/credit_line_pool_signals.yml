@@ -1,0 +1,173 @@
+interactions:
+- request:
+    body: '{"jsonrpc": "2.0", "method": "net_version", "params": [], "id": 0}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
+    method: POST
+    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":0,"result":"5"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 7b97a6942e6a9858-SJC
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '37'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:43 GMT
+      Server:
+      - cloudflare
+      x-alchemy-trace-id:
+      - 5a5ba0c7f91a68be7110d3caaf749867
+    status:
+      code: 200
+      message: OK
+    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 1}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
+    method: POST
+    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":1,"result":"0x5"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 7b97a6950f279858-SJC
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '39'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:43 GMT
+      Server:
+      - cloudflare
+      x-alchemy-trace-id:
+      - 2960e007b6890c93338d08e064b938df
+    status:
+      code: 200
+      message: OK
+    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_call", "params": [{"to": "0xA22D20FB0c9980fb96A9B0B5679C061aeAf5dDE4",
+      "data": "0x9695e195"}, "latest"], "id": 2}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
+    method: POST
+    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":2,"result":"0x0000000000000000000000000d7bae0e14af194e52ea2472737b24044fe6e929"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 7b97a695afae9858-SJC
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:44 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      x-alchemy-trace-id:
+      - f78583655bb4a64846f136d12c0d8887
+    status:
+      code: 200
+      message: OK
+    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 3}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
+    method: POST
+    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":3,"result":"0x5"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 7b97a69698989858-SJC
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '39'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:44 GMT
+      Server:
+      - cloudflare
+      x-alchemy-trace-id:
+      - d4e4c666c3ae39c5a52bf9d5e1fce40f
+    status:
+      code: 200
+      message: OK
+    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_call", "params": [{"to": "0x0d7bae0e14aF194e52Ea2472737b24044fe6e929",
+      "data": "0xfab9ac1d"}, "latest"], "id": 4}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
+    method: POST
+    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":4,"result":"0x000000000000000000000000f17ff940864351631b1be3ac03702dea085ba51c00000000000000000000000000000000000000000000000000000000000003e8000000000000000000000000000000000000000000000000000000000000000f00000000000000000000000000000000000000000000000000000002540be40000000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000002000000000000000000000000026d2aed6f1e9db160b79688ea0ce1abaee4dc39000000000000000000000000000000000000000000000000000000000000000954657374546f6b656e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000045553444300000000000000000000000000000000000000000000000000000000"}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 7b97a697594f9858-SJC
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:44 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      x-alchemy-trace-id:
+      - 07db8ba625c23657f93961deef59ed1b
+    status:
+      code: 200
+      message: OK
+    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+version: 1

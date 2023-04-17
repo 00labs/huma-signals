@@ -1,0 +1,33 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - dev.allowlist.huma.finance
+      user-agent:
+      - python-httpx/0.23.3
+    method: GET
+    uri: https://dev.allowlist.huma.finance/user/testnet/0xB07Ee28C51009e43592881e240AEd864C3a7e149
+  response:
+    content: '{"wallet_address":null,"pool_address":null,"user_name":null,"created_at":null,"updated_at":null,"status":"not
+      found"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '117'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Apr 2023 21:09:29 GMT
+      server:
+      - uvicorn
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
