@@ -1,4 +1,4 @@
-# mypy: disable-error-code=var-annotated, assignment
+# mypy: disable-error-code=var-annotated
 import datetime
 from typing import Any
 
@@ -41,5 +41,5 @@ class InvoiceFactory(factory.Factory):
     status = "PAID"
     payer = address_helpers.fake_hex_address_factory()
     payee = address_helpers.fake_hex_address_factory()
-    creation_date: datetime.datetime = factory.Faker("date_time")
-    due_date: datetime.datetime = factory.Faker("date_time")
+    creation_date: datetime.datetime = factory.Faker("date_time")  # type: ignore[assignment]
+    due_date: datetime.datetime = factory.Faker("date_time")  # type: ignore[assignment]

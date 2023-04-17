@@ -14,6 +14,12 @@ from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
 
+_WALLET_ADAPTER_BY_CHAIN = {
+    chains.Chain.ETHEREUM: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chains.Chain.GOERLI: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chains.Chain.POLYGON: polygon_wallet_adapter.PolygonWalletAdapter,
+}
+
 
 class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "request_transaction"
@@ -29,6 +35,9 @@ class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
         self,
         request_client_: request_client.BaseRequestClient | None = None,
         request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
+        wallet_adapter: ethereum_wallet_adapter.BaseEthereumWalletAdapter
+        | polygon_wallet_adapter.BasePolygonWalletAdapter
+        | None = None,
         chain: chains.Chain = settings.chain,
     ) -> None:
         self.request_client = request_client_ or request_client.RequestClient()
@@ -36,6 +45,15 @@ class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
             request_network_subgraph_endpoint_url
         )
         self.chain = chain
+        if wallet_adapter is not None:
+            self.wallet_adapter = wallet_adapter
+        else:
+            try:
+                self.wallet_adapter = _WALLET_ADAPTER_BY_CHAIN[self.chain]()
+            except KeyError as e:
+                raise ValueError(
+                    f"Unsupported chain for wallet tenure: {self.chain}"
+                ) from e
 
     async def fetch(  # pylint: disable=arguments-differ
         self,
@@ -77,24 +95,8 @@ class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
 
         payee_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
         payer_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
-        if self.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
-            logger.info("Fetching wallet tenure for ethereum")
-            payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-                payee_address
-            )
-            payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-                payer_address
-            )
-        elif self.chain == chains.Chain.POLYGON:
-            logger.info("Fetching wallet tenure for polygon")
-            payee_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
-                payee_address
-            )
-            payer_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
-                payer_address
-            )
-        else:
-            raise ValueError(f"Unsupported chain for wallet tenure: {settings.chain}")
+        payee_wallet = await self.wallet_adapter.fetch(payee_address)
+        payer_wallet = await self.wallet_adapter.fetch(payer_address)
 
         return models.RequestTransactionSignals(
             payer_tenure=payer_wallet.wallet_tenure_in_days,

@@ -21,7 +21,18 @@ class PolygonWalletSignals(models.HumaBaseModel):
     total_transactions_90days: int
 
 
-class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
+class BasePolygonWalletAdapter(adapter_models.SignalAdapterBase):
+    name: ClassVar[str] = "ethereum_wallet"
+    required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
+    signals: ClassVar[list[str]] = list(PolygonWalletSignals.__fields__.keys())
+
+    async def fetch(  # pylint: disable=arguments-differ
+        self, borrower_wallet_address: str, *args: Any, **kwargs: Any
+    ) -> PolygonWalletSignals:
+        raise NotImplementedError
+
+
+class PolygonWalletAdapter(BasePolygonWalletAdapter):
     name: ClassVar[str] = "polygon_wallet"
     required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
     signals: ClassVar[List[str]] = list(PolygonWalletSignals.__fields__.keys())
@@ -37,7 +48,7 @@ class PolygonWalletAdapter(adapter_models.SignalAdapterBase):
             polygonscan_api_key=polygonscan_api_key,
         )
 
-    async def fetch(  # pylint: disable=arguments-differ
+    async def fetch(
         self, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> PolygonWalletSignals:
         transactions = await self.polygon_client.get_transactions(
