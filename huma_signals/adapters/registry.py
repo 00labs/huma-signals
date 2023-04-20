@@ -12,7 +12,7 @@ from huma_signals.adapters.request_network import (
 
 ADAPTER_REGISTRY: dict[str, Type[models.SignalAdapterBase]] = {
     lending_pools_adapter.LendingPoolAdapter.name: lending_pools_adapter.LendingPoolAdapter,
-    request_invoice_adapter.RequestNetworkInvoiceAdapter.name: request_invoice_adapter.RequestNetworkInvoiceAdapter,
+    request_invoice_adapter.RequestInvoiceAdapter.name: request_invoice_adapter.RequestInvoiceAdapter,
     request_transaction_adapter.RequestTransactionAdapter.name: request_transaction_adapter.RequestTransactionAdapter,
     allowlist_adapter.AllowListAdapter.name: allowlist_adapter.AllowListAdapter,
     ethereum_wallet_adapter.EthereumWalletAdapter.name: ethereum_wallet_adapter.EthereumWalletAdapter,

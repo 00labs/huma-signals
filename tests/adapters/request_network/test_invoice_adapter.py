@@ -1,126 +1,206 @@
-import datetime
-import decimal
-from unittest import mock
-
 import pytest
 
-from huma_signals.adapters.request_network import models, request_invoice_adapter
+from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
+from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
+from huma_signals.adapters.request_network import request_invoice_adapter
 from huma_signals.commons import chains
+from huma_signals.domain.adapters import (
+    fake_ethereum_wallet_adapter,
+    fake_polygon_wallet_adapter,
+)
+from huma_signals.domain.clients.request_client import request_client, request_types
+from tests.fixtures.request import fake_request_client, request_type_factories
+from tests.helpers import address_helpers
 
 
-def describe_adapter() -> None:
-    def it_validates_rn_invoice_api_url() -> None:
-        with pytest.raises(ValueError):
-            request_invoice_adapter.RequestNetworkInvoiceAdapter(
-                request_network_invoice_api_url=""
-            )
+def describe_RequestInvoiceAdapter() -> None:
+    @pytest.fixture
+    def payer_wallet_address() -> str:
+        return address_helpers.fake_hex_address()
 
-    def it_validates_rn_subgraph_endpoint_url() -> None:
-        with pytest.raises(ValueError):
-            request_invoice_adapter.RequestNetworkInvoiceAdapter(
-                request_network_subgraph_endpoint_url=""
-            )
+    @pytest.fixture
+    def payee_wallet_address() -> str:
+        return address_helpers.fake_hex_address()
+
+    @pytest.fixture
+    def payee_wallet_tenure() -> int:
+        return 42
+
+    @pytest.fixture
+    def payer_wallet_tenure() -> int:
+        return 24
+
+    @pytest.fixture
+    def invoice_id() -> str:
+        return address_helpers.fake_hex_address()
+
+    @pytest.fixture
+    def invoice(
+        payer_wallet_address: str, payee_wallet_address: str
+    ) -> request_types.Invoice:
+        return request_type_factories.InvoiceFactory.create(
+            payer=payer_wallet_address,
+            payee=payee_wallet_address,
+            token_owner=payee_wallet_address,
+        )
+
+    @pytest.fixture
+    def request_client_(
+        invoice: request_types.Invoice,
+    ) -> fake_request_client.FakeRequestClient:
+        return fake_request_client.FakeRequestClient(invoice=invoice)
+
+    @pytest.fixture
+    def adapter(
+        request_client_: request_client.BaseRequestClient,
+        wallet_adapter: ethereum_wallet_adapter.BaseEthereumWalletAdapter
+        | polygon_wallet_adapter.BasePolygonWalletAdapter,
+        chain: chains.Chain,
+    ) -> request_invoice_adapter.RequestInvoiceAdapter:
+        return request_invoice_adapter.RequestInvoiceAdapter(
+            request_client_=request_client_,
+            wallet_adapter=wallet_adapter,
+            chain=chain,
+        )
 
     def describe_fetch() -> None:
-        @pytest.fixture
-        def rn_subgraph_endpoint_url() -> str:
-            return "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli"
+        def with_eth_chain() -> None:
+            @pytest.fixture
+            def chain() -> chains.Chain:
+                return chains.Chain.ETHEREUM
 
-        @pytest.fixture
-        def rn_invoice_api_url() -> str:
-            return "http://rn-reader/invoice"
+            @pytest.fixture
+            def signals(
+                payee_wallet_address: str,
+                payer_wallet_address: str,
+                payee_wallet_tenure: int,
+                payer_wallet_tenure: int,
+            ) -> dict[str, ethereum_wallet_adapter.EthereumWalletSignals]:
+                return {
+                    payee_wallet_address: fake_ethereum_wallet_adapter.EthereumWalletSignalsFactory.create(
+                        wallet_tenure_in_days=payee_wallet_tenure
+                    ),
+                    payer_wallet_address: fake_ethereum_wallet_adapter.EthereumWalletSignalsFactory.create(
+                        wallet_tenure_in_days=payer_wallet_tenure
+                    ),
+                }
 
-        @pytest.fixture
-        def borrower_address() -> str:
-            return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
+            @pytest.fixture
+            def wallet_adapter(
+                signals: dict[str, ethereum_wallet_adapter.EthereumWalletSignals]
+            ) -> ethereum_wallet_adapter.BaseEthereumWalletAdapter:
+                return fake_ethereum_wallet_adapter.FakeEthereumWalletAdapter(
+                    output_signals=signals
+                )
 
-        @pytest.fixture
-        def receivable_param() -> str:
-            return "0x0235"
+            async def it_fetches_the_signals(
+                adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                payee_wallet_address: str,
+                payer_wallet_tenure: int,
+                payee_wallet_tenure: int,
+                invoice_id: str,
+                invoice: request_types.Invoice,
+            ) -> None:
+                signals = await adapter.fetch(
+                    borrower_wallet_address=payee_wallet_address,
+                    receivable_param=invoice_id,
+                )
+                assert signals.payer_count == 10
+                assert signals.payee_count == 10
+                assert signals.mutual_count == 0
+                assert signals.payer_tenure == payer_wallet_tenure
+                assert signals.payee_tenure == payee_wallet_tenure
+                assert signals.payee_match_borrower
+                assert signals.borrower_own_invoice
+                assert signals.payer_match_payee is False
+                assert signals.invoice_amount == invoice.amount
+                assert signals.payer_on_allowlist
 
-        @pytest.fixture
-        def payer_wallet_address() -> str:
-            return "0x8b99407A4395714B706415277f17b4d549608AFe".lower()
+            def when_payee_is_not_the_borrower() -> None:
+                async def it_returns_false_for_the_signal_field(
+                    adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                    invoice_id: str,
+                ) -> None:
+                    signals = await adapter.fetch(
+                        borrower_wallet_address=address_helpers.fake_hex_address(),
+                        receivable_param=invoice_id,
+                    )
+                    assert signals.payee_match_borrower is False
 
-        @pytest.fixture
-        def payee_wallet_address() -> str:
-            return "0x41D33Eb68af3efa12d69B68FFCaF1887F9eCfEC0".lower()
+            def when_the_borrower_does_not_own_the_invoice() -> None:
+                @pytest.fixture
+                def invoice() -> request_types.Invoice:
+                    return request_type_factories.InvoiceFactory.create()
 
-        @pytest.fixture
-        def adapter_(
-            rn_invoice_api_url: str, rn_subgraph_endpoint_url: str
-        ) -> request_invoice_adapter.RequestNetworkInvoiceAdapter:
-            return request_invoice_adapter.RequestNetworkInvoiceAdapter(
-                request_network_invoice_api_url=rn_invoice_api_url,
-                request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
-            )
+                async def it_returns_false_for_the_signal_field(
+                    adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                    payee_wallet_address: str,
+                    invoice_id: str,
+                ) -> None:
+                    signals = await adapter.fetch(
+                        borrower_wallet_address=payee_wallet_address,
+                        receivable_param=invoice_id,
+                    )
+                    assert signals.borrower_own_invoice is False
 
-        async def it_can_fetch_signals(
-            borrower_address: str,
-            receivable_param: str,
-            adapter_: request_invoice_adapter.RequestNetworkInvoiceAdapter,
-        ) -> None:
-            signals = await adapter_.fetch(
-                borrower_wallet_address=borrower_address,
-                receivable_param=receivable_param,
-            )
-            assert signals.payer_tenure == 0
-            assert signals.payer_recent == 999
-            assert signals.payer_count == 0
-            assert signals.payer_total_amount == decimal.Decimal("0")
-            assert signals.payee_tenure > 750
-            assert signals.payee_recent == 999
-            assert signals.payee_count == 0
-            assert signals.payee_total_amount == decimal.Decimal("0")
-            assert signals.mutual_count == 0
-            assert signals.mutual_total_amount == decimal.Decimal("0")
-            assert signals.payee_match_borrower is False
-            assert signals.borrower_own_invoice is False
-            assert signals.payer_on_allowlist is True
+            def when_payer_and_payee_have_the_same_address() -> None:
+                @pytest.fixture
+                def payee_wallet_address(payer_wallet_address: str) -> str:
+                    return payer_wallet_address
 
-        @mock.patch(
-            "huma_signals.adapters.request_network.models.Invoice.from_request_id",
-            return_value=models.Invoice(
-                token_owner="0x63d6287d5b853ccfedba1247fbeb9a40512f709a",  # gitleaks:allow
-                payer="0x8d2aa089af73e788cf7afa1f94bf4cf2cde0db61",  # gitleaks:allow
-                payee="0x63d6287d5b853ccfedba1247fbeb9a40512f709a",  # gitleaks:allow
-                amount=decimal.Decimal("100"),
-                currency="USDC",
-                status="UNPAID",
-                creation_date=datetime.datetime(2022, 12, 25),
-                due_date=datetime.datetime(2023, 1, 25),
-            ),
-        )
-        async def it_can_calculate_signals_with_mocked_invoice(
-            borrower_address: str,
-            receivable_param: str,
-        ) -> None:
-            """
-            In this test we mocked the invoice with a very active pair from mainnet,
-            so we can test the signals are calculated correctly.
+                async def it_returns_true_for_the_signal_field(
+                    adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                    payee_wallet_address: str,
+                    invoice_id: str,
+                ) -> None:
+                    signals = await adapter.fetch(
+                        borrower_wallet_address=payee_wallet_address,
+                        receivable_param=invoice_id,
+                    )
+                    assert signals.payer_match_payee
 
-            # TODO: Use a proper data tape instead of of rely on live data for this test
-            """
-            mainnet_subgraph = "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-mainnet"
-            signals = await request_invoice_adapter.RequestNetworkInvoiceAdapter(
-                chain=chains.Chain.ETHEREUM,
-                request_network_subgraph_endpoint_url=mainnet_subgraph,
-                request_network_invoice_api_url="https://dev.goerli.rnreader.huma.finance/invoice",
-            ).fetch(
-                borrower_wallet_address=borrower_address,
-                receivable_param=receivable_param,
-            )
-            assert signals.payer_tenure > 600
-            assert signals.payer_recent < 999
-            assert signals.payer_count > 830
-            assert signals.payer_total_amount > decimal.Decimal("100_000_000")
-            assert signals.payee_tenure > 600
-            assert signals.payee_recent < 999
-            assert signals.payee_count > 30
-            assert signals.payee_total_amount >= decimal.Decimal("6_000_000")
-            assert signals.mutual_count > 35
-            assert signals.mutual_total_amount >= decimal.Decimal("6_000_000")
-            assert signals.payee_match_borrower is False
-            assert signals.borrower_own_invoice is False
-            assert signals.payer_on_allowlist is True
-            assert signals.payer_match_payee is False
+        def with_polygon_chain() -> None:
+            @pytest.fixture
+            def chain() -> chains.Chain:
+                return chains.Chain.POLYGON
+
+            @pytest.fixture
+            def signals(
+                payee_wallet_address: str,
+                payer_wallet_address: str,
+                payee_wallet_tenure: int,
+                payer_wallet_tenure: int,
+            ) -> dict[str, polygon_wallet_adapter.PolygonWalletSignals]:
+                return {
+                    payee_wallet_address: fake_polygon_wallet_adapter.PolygonWalletSignalsFactory.create(
+                        wallet_tenure_in_days=payee_wallet_tenure
+                    ),
+                    payer_wallet_address: fake_polygon_wallet_adapter.PolygonWalletSignalsFactory.create(
+                        wallet_tenure_in_days=payer_wallet_tenure
+                    ),
+                }
+
+            @pytest.fixture
+            def wallet_adapter(
+                signals: dict[str, polygon_wallet_adapter.PolygonWalletSignals]
+            ) -> polygon_wallet_adapter.BasePolygonWalletAdapter:
+                return fake_polygon_wallet_adapter.FakePolygonWalletAdapter(
+                    output_signals=signals
+                )
+
+            async def it_fetches_the_signals(
+                adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                payee_wallet_address: str,
+                payer_wallet_tenure: int,
+                payee_wallet_tenure: int,
+                invoice_id: str,
+            ) -> None:
+                signals = await adapter.fetch(
+                    borrower_wallet_address=payee_wallet_address,
+                    receivable_param=invoice_id,
+                )
+                assert signals.payer_count == 10
+                assert signals.payee_count == 10
+                assert signals.mutual_count == 0
+                assert signals.payer_tenure == payer_wallet_tenure
+                assert signals.payee_tenure == payee_wallet_tenure

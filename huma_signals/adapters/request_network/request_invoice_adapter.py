@@ -13,34 +13,43 @@ from huma_signals.commons import chains
 from huma_signals.domain.clients.request_client import request_client
 from huma_signals.settings import settings
 
-_ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
-
 logger = structlog.get_logger(__name__)
 
+_ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
+_WALLET_ADAPTER_BY_CHAIN = {
+    chains.Chain.ETHEREUM: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chains.Chain.GOERLI: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chains.Chain.POLYGON: polygon_wallet_adapter.PolygonWalletAdapter,
+}
 
-class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
+
+class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "request_network"
     required_inputs: ClassVar[list[str]] = [
         "borrower_wallet_address",
         "receivable_param",
     ]
-    signals: ClassVar[list[str]] = list(
-        models.RequestNetworkInvoiceSignals.__fields__.keys()
-    )
+    signals: ClassVar[list[str]] = list(models.RequestInvoiceSignals.__fields__.keys())
 
     def __init__(
         self,
         request_client_: request_client.BaseRequestClient | None = None,
-        request_network_invoice_api_url: str = settings.request_network_invoice_api_url,
-        request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
+        wallet_adapter: ethereum_wallet_adapter.BaseEthereumWalletAdapter
+        | polygon_wallet_adapter.BasePolygonWalletAdapter
+        | None = None,
         chain: chains.Chain = settings.chain,
     ) -> None:
         self.request_client = request_client_ or request_client.RequestClient()
-        self.request_network_invoice_api_url = request_network_invoice_api_url
-        self.request_network_subgraph_endpoint_url = (
-            request_network_subgraph_endpoint_url
-        )
         self.chain = chain
+        if wallet_adapter is not None:
+            self.wallet_adapter = wallet_adapter
+        else:
+            try:
+                self.wallet_adapter = _WALLET_ADAPTER_BY_CHAIN[self.chain]()
+            except KeyError as e:
+                raise ValueError(
+                    f"Unsupported chain for wallet tenure: {self.chain}"
+                ) from e
 
     async def fetch(  # pylint: disable=too-many-arguments, arguments-differ
         self,
@@ -48,16 +57,13 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         receivable_param: str,
         *args: Any,
         **kwargs: Any,
-    ) -> models.RequestNetworkInvoiceSignals:
+    ) -> models.RequestInvoiceSignals:
         if not web3.Web3.is_address(borrower_wallet_address):
             raise ValueError(
                 f"Invalid borrower wallet address: {borrower_wallet_address}"
             )
 
-        invoice = await models.Invoice.from_request_id(
-            receivable_param, self.request_network_invoice_api_url
-        )
-
+        invoice = await self.request_client.get_invoice(invoice_id=receivable_param)
         records = []
         records.extend(
             await self.request_client.get_payments(
@@ -90,26 +96,10 @@ class RequestNetworkInvoiceAdapter(adapter_models.SignalAdapterBase):
         # Fetch wallet tenure
         payee_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
         payer_wallet: ethereum_wallet_adapter.EthereumWalletSignals | polygon_wallet_adapter.PolygonWalletSignals
-        if self.chain in {chains.Chain.ETHEREUM, chains.Chain.GOERLI}:
-            logger.info("Fetching wallet tenure for ethereum")
-            payee_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-                invoice.payee
-            )
-            payer_wallet = await ethereum_wallet_adapter.EthereumWalletAdapter().fetch(
-                invoice.payer
-            )
-        elif self.chain == chains.Chain.POLYGON:
-            logger.info("Fetching wallet tenure for polygon")
-            payee_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
-                invoice.payee
-            )
-            payer_wallet = await polygon_wallet_adapter.PolygonWalletAdapter().fetch(
-                invoice.payer
-            )
-        else:
-            raise ValueError(f"Unsupported chain for wallet tenure: {settings.chain}")
+        payee_wallet = await self.wallet_adapter.fetch(invoice.payee)
+        payer_wallet = await self.wallet_adapter.fetch(invoice.payer)
 
-        return models.RequestNetworkInvoiceSignals(
+        return models.RequestInvoiceSignals(
             payer_tenure=payer_wallet.wallet_tenure_in_days,
             payer_recent=int(payer_stats.get("last_txn_age_in_days", 0)),
             payer_count=int(payer_stats.get("total_txns", 0)),

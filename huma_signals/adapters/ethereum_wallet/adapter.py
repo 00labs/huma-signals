@@ -17,7 +17,18 @@ class EthereumWalletSignals(models.HumaBaseModel):
     total_transactions_90days: int
 
 
-class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
+class BaseEthereumWalletAdapter(adapter_models.SignalAdapterBase):
+    name: ClassVar[str] = "ethereum_wallet"
+    required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
+    signals: ClassVar[list[str]] = list(EthereumWalletSignals.__fields__.keys())
+
+    async def fetch(  # pylint: disable=arguments-differ
+        self, borrower_wallet_address: str, *args: Any, **kwargs: Any
+    ) -> EthereumWalletSignals:
+        raise NotImplementedError
+
+
+class EthereumWalletAdapter(BaseEthereumWalletAdapter):
     name: ClassVar[str] = "ethereum_wallet"
     required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
     signals: ClassVar[list[str]] = list(EthereumWalletSignals.__fields__.keys())
@@ -33,7 +44,7 @@ class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
             etherscan_api_key=etherscan_api_key,
         )
 
-    async def fetch(  # pylint: disable=arguments-differ
+    async def fetch(
         self, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> EthereumWalletSignals:
         transactions = await self.eth_client.get_transactions(
