@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, List, Type
+from typing import Any, ClassVar, Type
 from unittest import mock
 
 import pytest
@@ -15,21 +15,21 @@ class DummySignals(models.HumaBaseModel):
 
 class DummyAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "dummy_adapter"
-    required_inputs: ClassVar[List[str]] = ["test_input"]
-    signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
+    required_inputs: ClassVar[list[str]] = ["test_input"]
+    signals: ClassVar[list[str]] = list(DummySignals.__fields__.keys())
 
     async def fetch(self, *args: Any, **kwargs: Any) -> Any:
         return DummySignals(test_signal=kwargs["test_input"])
 
 
 @pytest.fixture
-def dummy_registry() -> Dict[str, Type[adapter_models.SignalAdapterBase]]:
+def dummy_registry() -> dict[str, Type[adapter_models.SignalAdapterBase]]:
     return {"dummy_adapter": DummyAdapter}
 
 
 def describe_get_list_adapters() -> None:
     def it_returns_a_list_of_adapters(
-        dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
+        dummy_registry: dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
         response = views._list_adapters(dummy_registry)
 
