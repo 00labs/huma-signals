@@ -4,8 +4,8 @@ from unittest import mock
 import pytest
 
 from huma_signals import models
+from huma_signals.api import models as api_models
 from huma_signals.api import views
-from huma_signals.api.models import SignalFetchRequest
 from huma_signals.domain.adapters import models as adapter_models
 
 
@@ -49,7 +49,7 @@ def describe_fetch() -> None:
             {"dummy_adapter": DummyAdapter},
         ):
             response = await views.fetch(
-                SignalFetchRequest(
+                api_models.SignalFetchRequest(
                     signal_names=["dummy_adapter.test_signal"],
                     adapter_inputs={"test_input": "test"},
                 )
