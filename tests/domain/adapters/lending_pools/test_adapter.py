@@ -15,7 +15,8 @@ def describe_adapter() -> None:
 
     async def it_fetches_the_signals_from_creditline_pool() -> None:
         with vcr_helpers.use_cassette(
-            fixture_file_path=f"{_FIXTURE_BASE_PATH}/credit_line_pool_signals.yml"
+            fixture_file_path=f"{_FIXTURE_BASE_PATH}/credit_line_pool_signals.yml",
+            match_on=["alchemy_url"],
         ):
             pool_address = "0xA22D20FB0c9980fb96A9B0B5679C061aeAf5dDE4"
             signals = await adapter.LendingPoolAdapter().fetch(pool_address)
@@ -32,7 +33,8 @@ def describe_adapter() -> None:
 
     async def it_fetches_the_signals_from_invoice_factoring_pool() -> None:
         with vcr_helpers.use_cassette(
-            fixture_file_path=f"{_FIXTURE_BASE_PATH}/invoice_factoring_pool_signals.yml"
+            fixture_file_path=f"{_FIXTURE_BASE_PATH}/invoice_factoring_pool_signals.yml",
+            match_on=["alchemy_url"],
         ):
             pool_address = "0x11672c0bBFF498c72BC2200f42461c0414855042"
             signals = await adapter.LendingPoolAdapter().fetch(pool_address)

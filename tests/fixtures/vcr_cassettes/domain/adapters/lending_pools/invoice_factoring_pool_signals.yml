@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
     method: POST
-    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    uri: https://eth-goerli.g.alchemy.com/v2
   response:
     body:
       string: '{"jsonrpc":"2.0","id":0,"result":"5"}'
@@ -31,7 +31,7 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    url: https://eth-goerli.g.alchemy.com/v2
 - request:
     body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 1}'
     headers:
@@ -40,7 +40,7 @@ interactions:
       User-Agent:
       - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
     method: POST
-    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    uri: https://eth-goerli.g.alchemy.com/v2
   response:
     body:
       string: '{"jsonrpc":"2.0","id":1,"result":"0x5"}'
@@ -64,7 +64,7 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    url: https://eth-goerli.g.alchemy.com/v2
 - request:
     body: '{"jsonrpc": "2.0", "method": "eth_call", "params": [{"to": "0x11672c0bBFF498c72BC2200f42461c0414855042",
       "data": "0x9695e195"}, "latest"], "id": 2}'
@@ -74,7 +74,7 @@ interactions:
       User-Agent:
       - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
     method: POST
-    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    uri: https://eth-goerli.g.alchemy.com/v2
   response:
     body:
       string: '{"jsonrpc":"2.0","id":2,"result":"0x000000000000000000000000ba779f41ae414dec63265d79a02ded47fbe007a5"}'
@@ -100,7 +100,7 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    url: https://eth-goerli.g.alchemy.com/v2
 - request:
     body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 3}'
     headers:
@@ -109,7 +109,7 @@ interactions:
       User-Agent:
       - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
     method: POST
-    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    uri: https://eth-goerli.g.alchemy.com/v2
   response:
     body:
       string: '{"jsonrpc":"2.0","id":3,"result":"0x5"}'
@@ -133,7 +133,7 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    url: https://eth-goerli.g.alchemy.com/v2
 - request:
     body: '{"jsonrpc": "2.0", "method": "eth_call", "params": [{"to": "0xBa779F41ae414dEc63265D79a02DED47fbe007a5",
       "data": "0xfab9ac1d"}, "latest"], "id": 4}'
@@ -143,7 +143,7 @@ interactions:
       User-Agent:
       - web3.py/6.1.0/<class 'web3.providers.async_rpc.AsyncHTTPProvider'>
     method: POST
-    uri: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    uri: https://eth-goerli.g.alchemy.com/v2
   response:
     body:
       string: '{"jsonrpc":"2.0","id":4,"result":"0x000000000000000000000000f17ff940864351631b1be3ac03702dea085ba51c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000003b9aca0000000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000001000000000000000000000000026d2aed6f1e9db160b79688ea0ce1abaee4dc39000000000000000000000000000000000000000000000000000000000000000954657374546f6b656e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000045553444300000000000000000000000000000000000000000000000000000000"}'
@@ -169,5 +169,5 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://eth-goerli.g.alchemy.com/v2/QCstSL86s-2pjTN_edwBPd_YpCz1Ifzo
+    url: https://eth-goerli.g.alchemy.com/v2
 version: 1
