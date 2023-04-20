@@ -3,7 +3,7 @@ from typing import Any
 
 import factory
 
-from huma_signals.adapters.ethereum_wallet import adapter
+from huma_signals.domain.adapters.ethereum_wallet import adapter
 
 
 class EthereumWalletSignalsFactory(factory.Factory):
