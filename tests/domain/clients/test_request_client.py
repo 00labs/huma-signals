@@ -7,7 +7,7 @@ import web3
 
 from huma_signals.commons import chains
 from huma_signals.domain.clients.request_client import request_client
-from tests.fixtures.request import request_type_factories
+from tests.fixtures.clients.request import request_type_factories
 from tests.helpers import vcr_helpers
 
 _FIXTURE_BASE_PATH = "/domain/clients/request_client"

@@ -4,9 +4,9 @@ import fastapi
 import structlog
 from fastapi import encoders
 
-from huma_signals.adapters import models as adapter_models
-from huma_signals.adapters import registry
 from huma_signals.api import models
+from huma_signals.domain.adapters import models as adapter_models
+from huma_signals.domain.adapters import registry
 
 logger = structlog.get_logger(__name__)
 

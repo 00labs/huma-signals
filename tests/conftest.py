@@ -3,13 +3,13 @@ import os
 import pytest
 
 from huma_signals import settings
-from huma_signals.commons.chains import Chain
+from huma_signals.commons import chains
 
 # Fixtures registered below will be made globally available.
 pytest_plugins = [
-    "tests.fixtures.eth.eth_fixtures",
-    "tests.fixtures.polygon.polygon_fixtures",
-    "tests.fixtures.request.request_fixtures",
+    "tests.fixtures.clients.eth.eth_fixtures",
+    "tests.fixtures.clients.polygon.polygon_fixtures",
+    "tests.fixtures.clients.request.request_fixtures",
 ]
 
 
@@ -17,4 +17,4 @@ pytest_plugins = [
 def ensure_test_env() -> None:
     """make sure the env is set to TEST"""
     assert os.getenv("ENV") == settings.Env.TEST
-    assert os.getenv("CHAIN") == Chain.GOERLI.value
+    assert os.getenv("CHAIN") == chains.Chain.GOERLI.value

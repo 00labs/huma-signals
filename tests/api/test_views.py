@@ -1,12 +1,12 @@
-from typing import Any, ClassVar, Dict, List, Type
+from typing import Any, ClassVar, Type
 from unittest import mock
 
 import pytest
 
 from huma_signals import models
-from huma_signals.adapters import models as adapter_models
+from huma_signals.api import models as api_models
 from huma_signals.api import views
-from huma_signals.api.models import SignalFetchRequest
+from huma_signals.domain.adapters import models as adapter_models
 
 
 class DummySignals(models.HumaBaseModel):
@@ -15,21 +15,21 @@ class DummySignals(models.HumaBaseModel):
 
 class DummyAdapter(adapter_models.SignalAdapterBase):
     name: ClassVar[str] = "dummy_adapter"
-    required_inputs: ClassVar[List[str]] = ["test_input"]
-    signals: ClassVar[List[str]] = list(DummySignals.__fields__.keys())
+    required_inputs: ClassVar[list[str]] = ["test_input"]
+    signals: ClassVar[list[str]] = list(DummySignals.__fields__.keys())
 
     async def fetch(self, *args: Any, **kwargs: Any) -> Any:
         return DummySignals(test_signal=kwargs["test_input"])
 
 
 @pytest.fixture
-def dummy_registry() -> Dict[str, Type[adapter_models.SignalAdapterBase]]:
+def dummy_registry() -> dict[str, Type[adapter_models.SignalAdapterBase]]:
     return {"dummy_adapter": DummyAdapter}
 
 
 def describe_get_list_adapters() -> None:
     def it_returns_a_list_of_adapters(
-        dummy_registry: Dict[str, Type[adapter_models.SignalAdapterBase]]
+        dummy_registry: dict[str, Type[adapter_models.SignalAdapterBase]]
     ) -> None:
         response = views._list_adapters(dummy_registry)
 
@@ -45,11 +45,11 @@ def describe_get_list_adapters() -> None:
 def describe_fetch() -> None:
     async def it_returns_a_list_of_signals() -> None:
         with mock.patch.dict(
-            "huma_signals.adapters.registry.ADAPTER_REGISTRY",
+            "huma_signals.domain.adapters.registry.ADAPTER_REGISTRY",
             {"dummy_adapter": DummyAdapter},
         ):
             response = await views.fetch(
-                SignalFetchRequest(
+                api_models.SignalFetchRequest(
                     signal_names=["dummy_adapter.test_signal"],
                     adapter_inputs={"test_input": "test"},
                 )
