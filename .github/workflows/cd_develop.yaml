@@ -3,7 +3,7 @@ name: Dev Huma Signals CD
 on:
   push:
     branches: [ "develop" ]
-  
+
   workflow_dispatch:
 
 jobs:
@@ -44,11 +44,23 @@ jobs:
           SERVICE_NAME: dev-goerli-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
-      # - name: Redeploy ECS on testnet mumbai
-      #   env:
-      #     CLUSTER_NAME: dev-mumbai-signals
-      #     SERVICE_NAME: dev-mumbai-signals
-      #   run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+      - name: Redeploy ECS on testnet goerli internal
+        env:
+          CLUSTER_NAME: dev-goerli-signals
+          SERVICE_NAME: dev-goerli-internal-signals
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      - name: Redeploy ECS on testnet mumbai
+        env:
+          CLUSTER_NAME: dev-mumbai-signals
+          SERVICE_NAME: dev-mumbai-signals
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
+      - name: Redeploy ECS on testnet mumbai
+        env:
+          CLUSTER_NAME: dev-mumbai-signals
+          SERVICE_NAME: dev-mumbai-internal-signals
+        run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
 
       # - name: Redeploy ECS on matic
       #   env:
