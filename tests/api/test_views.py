@@ -55,4 +55,4 @@ def describe_fetch() -> None:
                 )
             )
 
-            assert response == {"signals": {"dummy_adaptegca" "r.test_signal": "test"}}
+            assert response == {"signals": {"dummy_adapter.test_signal": "test"}}
