@@ -86,7 +86,7 @@
   },
   {
     "inputs": [],
-    "name": "invalidFlowrate",
+    "name": "isTransferred",
     "type": "error"
   },
   {
@@ -716,138 +716,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract ISuperToken",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "afterAgreementCreated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISuperToken",
-        "name": "_superToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_agreementClass",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_agreementId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_ctx",
-        "type": "bytes"
-      }
-    ],
-    "name": "afterAgreementTerminated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "newCtx",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISuperToken",
-        "name": "_superToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_agreementClass",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_agreementId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_ctx",
-        "type": "bytes"
-      }
-    ],
-    "name": "afterAgreementUpdated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "newCtx",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "borrower",
         "type": "address"
@@ -924,123 +792,6 @@
     "name": "approveCredit",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISuperToken",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "beforeAgreementCreated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISuperToken",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "beforeAgreementTerminated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ISuperToken",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "beforeAgreementUpdated",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1209,12 +960,12 @@
         "type": "address"
       },
       {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "receivableTokenId",
+        "type": "uint256"
       }
     ],
-    "name": "drawdownWithAuthorization",
+    "name": "drawdownWithReceivable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1679,9 +1430,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint96",
             "name": "flowrate",
-            "type": "uint256"
+            "type": "uint96"
           },
           {
             "internalType": "uint256",
