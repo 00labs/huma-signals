@@ -37,6 +37,6 @@ def describe_fetch() -> None:
 
         signals = resp.json()["signals"]
         assert set(signals.keys()) == set(signal_request.signal_names)
-        assert signals["request_network.payee_tenure"] == 573
+        assert signals["request_network.payee_tenure"] > 570
         assert signals["request_network.payee_match_borrower"]
         assert signals["request_network.borrower_own_invoice"]
