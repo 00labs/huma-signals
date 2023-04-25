@@ -36,7 +36,7 @@ _POOLS = [
     ),
     PoolSetting(
         pool_address=web3.Web3.to_checksum_address(
-            "0x04595eA2AbA2288bDa9CC4115747C7568Ab1b413"
+            "0x423Dbc7B52DB033bE5630c0521A43F4aFeDe275A"
         ),
         chain=chains.Chain.MUMBAI,
         pool_abi_path=str(
