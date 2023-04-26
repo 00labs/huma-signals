@@ -29,10 +29,6 @@ class BaseEthereumWalletAdapter(adapter_models.SignalAdapterBase):
 
 
 class EthereumWalletAdapter(BaseEthereumWalletAdapter):
-    name: ClassVar[str] = "ethereum_wallet"
-    required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[list[str]] = list(EthereumWalletSignals.__fields__.keys())
-
     def __init__(
         self,
         eth_client_: eth_client.BaseEthClient | None = None,

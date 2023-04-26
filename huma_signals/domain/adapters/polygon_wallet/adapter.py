@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, ClassVar, List
+from typing import Any, ClassVar
 
 import structlog
 
@@ -22,7 +22,7 @@ class PolygonWalletSignals(models.HumaBaseModel):
 
 
 class BasePolygonWalletAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "ethereum_wallet"
+    name: ClassVar[str] = "polygon_wallet"
     required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
     signals: ClassVar[list[str]] = list(PolygonWalletSignals.__fields__.keys())
 
@@ -33,10 +33,6 @@ class BasePolygonWalletAdapter(adapter_models.SignalAdapterBase):
 
 
 class PolygonWalletAdapter(BasePolygonWalletAdapter):
-    name: ClassVar[str] = "polygon_wallet"
-    required_inputs: ClassVar[List[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[List[str]] = list(PolygonWalletSignals.__fields__.keys())
-
     def __init__(
         self,
         polygon_client_: polygon_client.BasePolygonClient | None = None,
