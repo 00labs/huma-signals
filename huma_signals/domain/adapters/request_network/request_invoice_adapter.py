@@ -5,6 +5,7 @@ import pandas as pd
 import structlog
 import web3
 
+from huma_signals import exceptions
 from huma_signals.commons import chains
 from huma_signals.domain.adapters import models as adapter_models
 from huma_signals.domain.adapters.ethereum_wallet import (
@@ -63,7 +64,7 @@ class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
         **kwargs: Any,
     ) -> models.RequestInvoiceSignals:
         if not web3.Web3.is_address(borrower_wallet_address):
-            raise ValueError(
+            raise exceptions.InvalidAddressException(
                 f"Invalid borrower wallet address: {borrower_wallet_address}"
             )
 

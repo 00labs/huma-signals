@@ -177,15 +177,15 @@ class RequestClient(BaseRequestClient):
                 resp.raise_for_status()
                 invoice_info = resp.json()
                 if not web3.Web3.is_address(invoice_info["owner"]):
-                    raise ValueError(
+                    raise exceptions.InvalidAddressException(
                         f"Invoice's owner is not a valid address: {invoice_info['owner']}"
                     )
                 if not web3.Web3.is_address(invoice_info["payer"]):
-                    raise ValueError(
+                    raise exceptions.InvalidAddressException(
                         f"Invoice's payer is not a valid address: {invoice_info['payer']}"
                     )
                 if not web3.Web3.is_address(invoice_info["payee"]):
-                    raise ValueError(
+                    raise exceptions.InvalidAddressException(
                         f"Invoice's payee is not a valid address: {invoice_info['payee']}"
                     )
 
@@ -206,9 +206,8 @@ class RequestClient(BaseRequestClient):
                     + datetime.timedelta(days=30),
                 )
         except httpx.HTTPStatusError as e:
-            logger.error(
+            logger.exception(
                 f"Request Network API returned status code {e.response.status_code}",
-                exc_info=True,
                 base_url=self.invoice_api_url,
                 receivable_param=invoice_id,
             )
