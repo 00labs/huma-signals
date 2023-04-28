@@ -49,3 +49,4 @@ jobs:
           CLUSTER_NAME: prod-mainnet-huma-signals
           SERVICE_NAME: prod-mainnet-huma-signals
         run: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+
