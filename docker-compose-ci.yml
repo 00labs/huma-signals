@@ -9,7 +9,7 @@ services:
     image: huma-signals-ci:latest
     command: ["make", "lint-check"]
     environment:
-      - ENV=development
+      - ENV=test
 
   tests:
     build:
@@ -19,9 +19,7 @@ services:
     image: huma-signals-ci:latest
     command: ["make", "test"]
     environment:
-      - ENV=test
       - CHAIN=GOERLI
-      - SENTRY_DSN
       - DATADOG_API_KEY
       - WEB3_PROVIDER_URL
       - ETHERSCAN_API_KEY
@@ -30,11 +28,12 @@ services:
       - POLYGONSCAN_BASE_URL=https://api.polygonscan.com
       - REQUEST_NETWORK_SUBGRAPH_ENDPOINT_URL=https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli
       - REQUEST_NETWORK_INVOICE_API_URL=http://rn-reader/invoice
+      - INSTRUMENTATION_ENABLED=false
     depends_on:
       - rn-reader
 
   rn-reader:
-    image: 117773458657.dkr.ecr.us-west-1.amazonaws.com/request-network-reader:latest
+    image: 117773458657.dkr.ecr.us-west-1.amazonaws.com/dev-rn-reader:latest
     command: ["yarn", "server"]
     environment:
       - PROVIDER_URL

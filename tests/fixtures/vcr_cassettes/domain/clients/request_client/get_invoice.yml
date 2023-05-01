@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:4000
+      user-agent:
+      - python-httpx/0.23.3
+    method: GET
+    uri: http://rn-reader/invoice/?id=0xd4d3
+  response:
+    content: '{"expectedAmount":"100000000","payee":"0xc38B0528097B8076048BEdf4330644F068CEC2e6","payer":"0x8b99407A4395714B706415277f17b4d549608AFe","creationDate":1681691806,"dueDate":0,"currencyInfo":{"address":"0xf17FF940864351631b1be3ac03702dEA085ba51c","symbol":"USDC","decimals":6},"initialAmount":"100000000","events":[{"type":"create","amount":"100000000","timestamp":1681691820}],"owner":"0xc38B0528097B8076048BEdf4330644F068CEC2e6"}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '429'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 17 Apr 2023 00:47:08 GMT
+      ETag:
+      - W/"1ad-PwKJzxEhgEi9LpcQqgZAXY8APzo"
+      Keep-Alive:
+      - timeout=5
+      X-Powered-By:
+      - Express
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

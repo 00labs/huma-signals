@@ -20,6 +20,11 @@ TOKEN_ADDRESS_MAPPING = {
         "0xdc31ee1784292379fbb2964b3b9c4124d8f89c60": "DAI",
         "0x56705db9f87c8a930ec87da0d458e00a657fccb0": "USDT",
     },
+    chains.Chain.MUMBAI: {
+        "0xe6b8a5cf854791412c1f6efc7caf629f5df1c747": "USDC",
+        "0xa02f6adc7926efebbd59fd43a84f4e0c0c91e832": "USDT",
+        "0xd393b1e02da9831ff419e22ea105aae4c47e1253": "DAI",
+    },
 }
 
 TOKEN_USD_PRICE_MAPPING = {

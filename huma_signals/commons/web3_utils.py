@@ -11,10 +11,11 @@ _WEB3_CHAIN_NETWORK_ID: Dict[chains.Chain, str] = {
     chains.Chain.ETHEREUM: "1",
     chains.Chain.GOERLI: "5",
     chains.Chain.POLYGON: "137",
+    chains.Chain.MUMBAI: "80001",
 }
 
 _MODULES: Dict[str, Union[Type[module.Module], Sequence[Any]]] = {
-    "eth": eth.AsyncEth,
+    "eth": eth.AsyncEth,  # type: ignore[attr-defined]
     "net": net.AsyncNet,
     "geth": (
         geth.Geth,

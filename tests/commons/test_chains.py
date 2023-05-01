@@ -6,7 +6,7 @@ from huma_signals.commons import chains
 def describe_chain() -> None:
     def describe_chain_() -> None:
         def it_has_correct_number_of_chains() -> None:
-            assert len(chains.Chain) == 3
+            assert len(chains.Chain) == 4
 
         def it_support_polygon() -> None:
             assert chains.Chain.POLYGON == chains.Chain("POLYGON")
