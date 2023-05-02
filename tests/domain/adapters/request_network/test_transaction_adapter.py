@@ -1,5 +1,6 @@
 import pytest
 
+from huma_signals import exceptions
 from huma_signals.commons import chains
 from huma_signals.domain.adapters.ethereum_wallet import (
     adapter as ethereum_wallet_adapter,
@@ -100,6 +101,38 @@ def describe_RequestTransactionAdapter() -> None:
                 assert signals.payer_tenure == payer_wallet_tenure
                 assert signals.payee_tenure == payee_wallet_tenure
 
+            def with_invalid_payer_addresses() -> None:
+                @pytest.fixture
+                def payer_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_transaction_adapter.RequestTransactionAdapter,
+                    payee_wallet_address: str,
+                    payer_wallet_address: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            payer_address=payer_wallet_address,
+                            payee_address=payee_wallet_address,
+                        )
+
+            def with_invalid_payee_addresses() -> None:
+                @pytest.fixture
+                def payee_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_transaction_adapter.RequestTransactionAdapter,
+                    payee_wallet_address: str,
+                    payer_wallet_address: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            payer_address=payer_wallet_address,
+                            payee_address=payee_wallet_address,
+                        )
+
         def with_polygon_chain() -> None:
             @pytest.fixture
             def chain() -> chains.Chain:
@@ -145,3 +178,35 @@ def describe_RequestTransactionAdapter() -> None:
                 assert signals.mutual_count == 0
                 assert signals.payer_tenure == payer_wallet_tenure
                 assert signals.payee_tenure == payee_wallet_tenure
+
+            def with_invalid_payer_addresses() -> None:
+                @pytest.fixture
+                def payer_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_transaction_adapter.RequestTransactionAdapter,
+                    payee_wallet_address: str,
+                    payer_wallet_address: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            payer_address=payer_wallet_address,
+                            payee_address=payee_wallet_address,
+                        )
+
+            def with_invalid_payee_addresses() -> None:
+                @pytest.fixture
+                def payee_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_transaction_adapter.RequestTransactionAdapter,
+                    payee_wallet_address: str,
+                    payer_wallet_address: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            payer_address=payer_wallet_address,
+                            payee_address=payee_wallet_address,
+                        )
