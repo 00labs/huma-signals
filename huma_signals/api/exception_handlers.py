@@ -21,6 +21,12 @@ def handle_exception(f: Callable) -> Callable:
                 status_code=status_code,
                 detail={"type": e.__class__.__name__, "message": e.message},
             )
+        except Exception as e:
+            logger.exception(f"Error calling {f}", e=e)
+            raise fastapi.HTTPException(
+                status_code=500,
+                detail={"type": e.__class__.__name__, "message": str(e)},
+            )
 
     return wrapper
 
