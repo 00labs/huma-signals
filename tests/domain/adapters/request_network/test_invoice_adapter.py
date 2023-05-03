@@ -1,5 +1,6 @@
 import pytest
 
+from huma_signals import exceptions
 from huma_signals.commons import chains
 from huma_signals.domain.adapters.ethereum_wallet import (
     adapter as ethereum_wallet_adapter,
@@ -163,6 +164,22 @@ def describe_RequestInvoiceAdapter() -> None:
                     )
                     assert signals.payer_match_payee
 
+            def with_invalid_borrower_address() -> None:
+                @pytest.fixture
+                def payee_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                    payee_wallet_address: str,
+                    invoice_id: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            borrower_wallet_address=payee_wallet_address,
+                            receivable_param=invoice_id,
+                        )
+
         def with_polygon_chain() -> None:
             @pytest.fixture
             def chain() -> chains.Chain:
@@ -208,3 +225,19 @@ def describe_RequestInvoiceAdapter() -> None:
                 assert signals.mutual_count == 0
                 assert signals.payer_tenure == payer_wallet_tenure
                 assert signals.payee_tenure == payee_wallet_tenure
+
+            def with_invalid_borrower_address() -> None:
+                @pytest.fixture
+                def payee_wallet_address() -> str:
+                    return "0xabc"
+
+                async def it_throws_error(
+                    adapter: request_invoice_adapter.RequestInvoiceAdapter,
+                    payee_wallet_address: str,
+                    invoice_id: str,
+                ) -> None:
+                    with pytest.raises(exceptions.InvalidAddressException):
+                        await adapter.fetch(
+                            borrower_wallet_address=payee_wallet_address,
+                            receivable_param=invoice_id,
+                        )
