@@ -4,7 +4,6 @@ import httpx
 import structlog
 
 from huma_signals.domain.clients.polygon_client import polygon_types
-from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -19,8 +18,8 @@ class BasePolygonClient(Protocol):
 class PolygonClient(BasePolygonClient):
     def __init__(
         self,
-        polygonscan_base_url: str = settings.polygonscan_base_url,
-        polygonscan_api_key: str = settings.polygonscan_api_key,
+        polygonscan_base_url: str,
+        polygonscan_api_key: str,
     ) -> None:
         self.polygonscan_base_url = polygonscan_base_url
         self.polygonscan_api_key = polygonscan_api_key

@@ -1,6 +1,7 @@
 import pytest
 
 from huma_signals.domain.clients.eth_client import eth_client
+from huma_signals.settings import settings
 from tests.helpers import vcr_helpers
 
 _FIXTURE_BASE_PATH = "/domain/clients/eth_client"
@@ -9,7 +10,10 @@ _FIXTURE_BASE_PATH = "/domain/clients/eth_client"
 def describe_EthClient() -> None:
     @pytest.fixture
     def client() -> eth_client.EthClient:
-        return eth_client.EthClient()
+        return eth_client.EthClient(
+            etherscan_base_url=settings.etherscan_base_url,
+            etherscan_api_key=settings.polygonscan_api_key,
+        )
 
     def describe_get_transactions() -> None:
         async def it_returns_the_transactions(

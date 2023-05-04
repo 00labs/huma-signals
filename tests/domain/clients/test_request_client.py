@@ -7,6 +7,7 @@ import web3
 
 from huma_signals.commons import chains
 from huma_signals.domain.clients.request_client import request_client
+from huma_signals.settings import settings
 from tests.fixtures.clients.request import request_type_factories
 from tests.helpers import vcr_helpers
 
@@ -17,13 +18,14 @@ def describe_RequestClient() -> None:
     @pytest.fixture
     def client(rn_subgraph_endpoint_url: str) -> request_client.RequestClient:
         return request_client.RequestClient(
-            rn_subgraph_endpoint_url=rn_subgraph_endpoint_url
+            request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
+            invoice_api_url=settings.request_network_invoice_api_url,
         )
 
     def describe_get_payments() -> None:
         def when_to_address_is_none() -> None:
             async def it_returns_payment_history(
-                client: request_client.RequestClient, from_address: str, to_address: str
+                client: request_client.RequestClient, from_address: str
             ) -> None:
                 with vcr_helpers.use_cassette(
                     fixture_file_path=f"{_FIXTURE_BASE_PATH}/get_payments_no_to_address.yml"

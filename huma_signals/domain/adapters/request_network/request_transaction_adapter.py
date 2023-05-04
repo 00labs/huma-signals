@@ -15,7 +15,7 @@ from huma_signals.domain.adapters.polygon_wallet import (
 )
 from huma_signals.domain.adapters.request_network import models
 from huma_signals.domain.clients.request_client import request_client
-from huma_signals.settings import settings
+from huma_signals.domain.clients.request_client.settings import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -36,18 +36,19 @@ class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
         models.RequestTransactionSignals.__fields__.keys()
     )
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         request_client_: request_client.BaseRequestClient | None = None,
-        request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
         wallet_adapter: ethereum_wallet_adapter.BaseEthereumWalletAdapter
         | polygon_wallet_adapter.BasePolygonWalletAdapter
         | None = None,
+        request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
+        invoice_api_url: str = settings.request_network_invoice_api_url,
         chain: chains.Chain = settings.chain,
     ) -> None:
-        self.request_client = request_client_ or request_client.RequestClient()
-        self.request_network_subgraph_endpoint_url = (
-            request_network_subgraph_endpoint_url
+        self.request_client = request_client_ or request_client.RequestClient(
+            request_network_subgraph_endpoint_url=request_network_subgraph_endpoint_url,
+            invoice_api_url=invoice_api_url,
         )
         self.chain = chain
         if wallet_adapter is not None:

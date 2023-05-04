@@ -1,6 +1,7 @@
 import pytest
 
 from huma_signals.domain.clients.polygon_client import polygon_client
+from huma_signals.settings import settings
 from tests.helpers import vcr_helpers
 
 _FIXTURE_BASE_PATH = "/domain/clients/polygon_client"
@@ -9,7 +10,10 @@ _FIXTURE_BASE_PATH = "/domain/clients/polygon_client"
 def describe_PolygonClient() -> None:
     @pytest.fixture
     def client() -> polygon_client.PolygonClient:
-        return polygon_client.PolygonClient()
+        return polygon_client.PolygonClient(
+            polygonscan_base_url=settings.polygonscan_base_url,
+            polygonscan_api_key=settings.polygonscan_api_key,
+        )
 
     def describe_get_transactions() -> None:
         async def it_returns_the_transactions(
