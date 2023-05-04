@@ -1,10 +1,21 @@
+import pydantic
 import pytest
 
 from huma_signals.domain.clients.polygon_client import polygon_client
-from huma_signals.settings import settings
 from tests.helpers import vcr_helpers
 
 _FIXTURE_BASE_PATH = "/domain/clients/polygon_client"
+
+
+class Settings(pydantic.BaseSettings):
+    class Config:
+        case_sensitive = False
+
+    polygonscan_base_url: str
+    polygonscan_api_key: str
+
+
+settings = Settings()
 
 
 def describe_PolygonClient() -> None:
