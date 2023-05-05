@@ -45,6 +45,7 @@ pandas-stubs = "^1.5.3.230321"
 factory-boy = "^3.2.1"
 faker = "^18.4.0"
 types-factory-boy = "^0.4.1"
+pytest-mock = "^3.10.0"
 
 [tool.pytest.ini_options]
 describe_prefixes = ["describe", "if", "when", "with", "without"]

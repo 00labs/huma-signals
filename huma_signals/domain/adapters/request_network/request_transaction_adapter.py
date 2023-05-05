@@ -4,6 +4,7 @@ import pandas as pd
 import structlog
 import web3
 
+from huma_signals import exceptions
 from huma_signals.commons import chains
 from huma_signals.domain.adapters import models as adapter_models
 from huma_signals.domain.adapters.ethereum_wallet import (
@@ -67,9 +68,13 @@ class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
         **kwargs: Any,
     ) -> models.RequestTransactionSignals:
         if not web3.Web3.is_address(payer_address):
-            raise ValueError(f"Invalid payer address: {payer_address}")
+            raise exceptions.InvalidAddressException(
+                f"Invalid payer address: {payer_address}"
+            )
         if not web3.Web3.is_address(payee_address):
-            raise ValueError(f"Invalid payee address: {payee_address}")
+            raise exceptions.InvalidAddressException(
+                f"Invalid payee address: {payee_address}"
+            )
 
         payer_payments = await self.request_client.get_payments(
             from_address=payer_address,

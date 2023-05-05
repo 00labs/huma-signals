@@ -5,13 +5,17 @@ from typing import Any, ClassVar, List
 import aiofiles
 import orjson
 import pydantic
+import structlog
 import web3
+from web3 import exceptions as web3_exceptions
 
-from huma_signals import models
+from huma_signals import exceptions, models
 from huma_signals.commons import web3_utils
 from huma_signals.domain.adapters import models as adapter_models
 from huma_signals.domain.adapters.lending_pools import registry
 from huma_signals.settings import settings
+
+logger = structlog.get_logger(__name__)
 
 
 class LendingPoolSignals(models.HumaBaseModel):
@@ -59,29 +63,47 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     async def fetch(  # pylint: disable=arguments-differ
         self, pool_address: str, *args: Any, **kwargs: Any
     ) -> LendingPoolSignals:
-        pool_settings = registry.POOL_REGISTRY[
-            web3.Web3.to_checksum_address(pool_address)
-        ]
+        try:
+            checksum_address = web3.Web3.to_checksum_address(pool_address)
+            pool_settings = registry.POOL_REGISTRY[checksum_address]
+        except KeyError as e:
+            message = f"Invalid pool_address {pool_address}: pool settings not found."
+            logger.exception(message)
+            raise exceptions.PoolSettingsNotFoundException(
+                pool_address=pool_address
+            ) from e
 
         w3 = await web3_utils.get_w3(pool_settings.chain, settings.web3_provider_url)
 
-        async with aiofiles.open(pool_settings.pool_abi_path, encoding="utf-8") as f:
+        async with aiofiles.open(pool_settings.pool_abi_path) as f:
             contents = await f.read()
             huma_pool_contract = w3.eth.contract(
-                address=web3.Web3.to_checksum_address(pool_address),
+                address=checksum_address,
                 abi=orjson.loads(contents),
             )
+        try:
+            contract_address = await huma_pool_contract.functions.poolConfig().call()
+        except web3_exceptions.Web3Exception as e:
+            message = "Failed to get contract address"
+            logger.exception(message)
+            raise exceptions.ContractCallFailedException(message=message) from e
+
         async with aiofiles.open(
             pathlib.Path(__file__).parent.resolve() / "abi" / "BasePoolConfig.json",
-            encoding="utf-8",
         ) as f:
             contents = await f.read()
             pool_config_contract = w3.eth.contract(
-                address=await huma_pool_contract.functions.poolConfig().call(),
+                address=contract_address,
                 abi=orjson.loads(contents),
             )
 
-        pool_summary = await pool_config_contract.functions.getPoolSummary().call()
+        try:
+            pool_summary = await pool_config_contract.functions.getPoolSummary().call()
+        except web3_exceptions.Web3Exception as e:
+            message = "Failed to get pool summary"
+            logger.exception(message)
+            raise exceptions.ContractCallFailedException(message=message) from e
+
         return LendingPoolSignals(
             pool_address=pool_address,
             apr=pool_summary[1],
