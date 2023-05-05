@@ -14,8 +14,8 @@ from huma_signals.domain.adapters.polygon_wallet import (
     adapter as polygon_wallet_adapter,
 )
 from huma_signals.domain.adapters.request_network import models
+from huma_signals.domain.adapters.request_network.settings import settings
 from huma_signals.domain.clients.request_client import request_client
-from huma_signals.domain.clients.request_client.settings import settings
 
 logger = structlog.get_logger(__name__)
 
