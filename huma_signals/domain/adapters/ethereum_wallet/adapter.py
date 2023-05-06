@@ -4,8 +4,8 @@ from typing import Any, ClassVar
 from huma_signals import models
 from huma_signals.commons import datetime_utils
 from huma_signals.domain.adapters import models as adapter_models
+from huma_signals.domain.adapters.ethereum_wallet.settings import settings
 from huma_signals.domain.clients.eth_client import eth_client, eth_types
-from huma_signals.settings import settings
 
 
 class EthereumWalletSignals(models.HumaBaseModel):

@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 import pandas as pd
+import pydantic
 import pytest
 import web3
 
@@ -13,17 +14,28 @@ from tests.helpers import vcr_helpers
 _FIXTURE_BASE_PATH = "/domain/clients/request_client"
 
 
+class Settings(pydantic.BaseSettings):
+    class Config:
+        case_sensitive = False
+
+    request_network_invoice_api_url: str
+
+
+settings = Settings()
+
+
 def describe_RequestClient() -> None:
     @pytest.fixture
     def client(rn_subgraph_endpoint_url: str) -> request_client.RequestClient:
         return request_client.RequestClient(
-            rn_subgraph_endpoint_url=rn_subgraph_endpoint_url
+            request_network_subgraph_endpoint_url=rn_subgraph_endpoint_url,
+            invoice_api_url=settings.request_network_invoice_api_url,
         )
 
     def describe_get_payments() -> None:
         def when_to_address_is_none() -> None:
             async def it_returns_payment_history(
-                client: request_client.RequestClient, from_address: str, to_address: str
+                client: request_client.RequestClient, from_address: str
             ) -> None:
                 with vcr_helpers.use_cassette(
                     fixture_file_path=f"{_FIXTURE_BASE_PATH}/get_payments_no_to_address.yml"

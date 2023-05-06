@@ -6,8 +6,8 @@ import structlog
 from huma_signals import models
 from huma_signals.commons import datetime_utils
 from huma_signals.domain.adapters import models as adapter_models
+from huma_signals.domain.adapters.polygon_wallet.settings import settings
 from huma_signals.domain.clients.polygon_client import polygon_client, polygon_types
-from huma_signals.settings import settings
 
 logger = structlog.get_logger()
 

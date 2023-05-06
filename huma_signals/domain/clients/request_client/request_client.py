@@ -10,7 +10,6 @@ import web3
 from huma_signals import exceptions
 from huma_signals.commons import chains, tokens
 from huma_signals.domain.clients.request_client import request_types
-from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -103,10 +102,12 @@ class RequestClient(BaseRequestClient):
 
     def __init__(
         self,
-        rn_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
-        invoice_api_url: str = settings.request_network_invoice_api_url,
+        request_network_subgraph_endpoint_url: str,
+        invoice_api_url: str,
     ) -> None:
-        self.rn_subgraph_endpoint_url = rn_subgraph_endpoint_url
+        self.request_network_subgraph_endpoint_url = (
+            request_network_subgraph_endpoint_url
+        )
         self.invoice_api_url = invoice_api_url
 
     async def get_payments(
@@ -151,7 +152,7 @@ class RequestClient(BaseRequestClient):
                         }}
                         """
                     resp = await client.post(
-                        self.rn_subgraph_endpoint_url,
+                        self.request_network_subgraph_endpoint_url,
                         json={"query": query},
                     )
                     new_chunk = resp.json()["data"]["payments"]
