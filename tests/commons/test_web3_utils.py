@@ -1,7 +1,18 @@
+import pydantic
 import pytest
 
 from huma_signals.commons import chains, web3_utils
-from huma_signals.settings import settings
+
+
+class Settings(pydantic.BaseSettings):
+    class Config:
+        case_sensitive = False
+
+    chain: chains.Chain
+    web3_provider_url: str
+
+
+settings = Settings()
 
 
 def describe_get_w3() -> None:
