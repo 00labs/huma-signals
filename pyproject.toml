@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "huma-signals"
 version = "0.1.0"
-description = ""
-authors = ["Lei Du <lei@huma.finance>"]
+description = "Enables access to high-quality signals about a borrower's income, assets, and liabilities."
+authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
 readme = "README.md"
 packages = [{include = "huma_signals"}]
