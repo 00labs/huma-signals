@@ -16,8 +16,6 @@ pandas = "^1.5.2"
 python-dotenv = "^0.21.0"
 web3 = "^6.1.0"
 httpx = "^0.24.0"
-base58 = "^2.1.1"
-ipfshttpclient = "^0.7.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 ddtrace = {extras = ["opentracing"], version = "^1.7.5"}
