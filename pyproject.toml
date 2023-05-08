@@ -20,6 +20,7 @@ aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 ddtrace = {extras = ["opentracing"], version = "^1.7.5"}
 datadog = "^0.44.0"
+urllib3 = "^1.26"
 
 [tool.poetry.group.dev.dependencies]
 pytest-describe = "^2.0.1"
