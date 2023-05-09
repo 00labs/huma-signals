@@ -16,12 +16,11 @@ pandas = "^1.5.2"
 python-dotenv = "^0.21.0"
 web3 = "^6.1.0"
 httpx = "^0.24.0"
-base58 = "^2.1.1"
-ipfshttpclient = "^0.7.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 ddtrace = {extras = ["opentracing"], version = "^1.7.5"}
 datadog = "^0.44.0"
+urllib3 = "^1.26"
 
 [tool.poetry.group.dev.dependencies]
 pytest-describe = "^2.0.1"
