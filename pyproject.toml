@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huma-signals"
-version = "0.1.1"
+version = "0.1.2"
 description = "Enables access to high-quality signals about a borrower's income, assets, and liabilities."
 authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
@@ -15,14 +15,12 @@ uvicorn = "^0.20.0"
 pandas = "^1.5.2"
 python-dotenv = "^0.21.0"
 web3 = "^6.1.0"
-httpx = "^0.23.3"
-base58 = "^2.1.1"
-ipfshttpclient = "^0.7.0"
+httpx = "^0.24.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
-pylint-pydantic = "^0.1.6"
 ddtrace = {extras = ["opentracing"], version = "^1.7.5"}
 datadog = "^0.44.0"
+urllib3 = "^1.26"
 
 [tool.poetry.group.dev.dependencies]
 pytest-describe = "^2.0.1"
@@ -46,6 +44,7 @@ factory-boy = "^3.2.1"
 faker = "^18.4.0"
 types-factory-boy = "^0.4.1"
 pytest-mock = "^3.10.0"
+pylint-pydantic = "^0.1.6"
 
 [tool.pytest.ini_options]
 describe_prefixes = ["describe", "if", "when", "with", "without"]
