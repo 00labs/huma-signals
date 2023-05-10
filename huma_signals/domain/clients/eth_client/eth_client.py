@@ -4,7 +4,6 @@ import httpx
 import structlog
 
 from huma_signals.domain.clients.eth_client import eth_types
-from huma_signals.settings import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -19,8 +18,8 @@ class BaseEthClient(Protocol):
 class EthClient:
     def __init__(
         self,
-        etherscan_base_url: str = settings.etherscan_base_url,
-        etherscan_api_key: str = settings.etherscan_api_key,
+        etherscan_base_url: str,
+        etherscan_api_key: str,
     ) -> None:
         self.etherscan_base_url = etherscan_base_url
         self.etherscan_api_key = etherscan_api_key

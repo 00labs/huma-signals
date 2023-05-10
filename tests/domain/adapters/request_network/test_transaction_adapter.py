@@ -10,7 +10,6 @@ from huma_signals.domain.adapters.polygon_wallet import (
 )
 from huma_signals.domain.adapters.request_network import request_transaction_adapter
 from huma_signals.domain.clients.request_client import request_client
-from huma_signals.settings import settings
 from tests.fixtures.adapters import (
     fake_ethereum_wallet_adapter,
     fake_polygon_wallet_adapter,
@@ -49,7 +48,6 @@ def describe_RequestTransactionAdapter() -> None:
     ) -> request_transaction_adapter.RequestTransactionAdapter:
         return request_transaction_adapter.RequestTransactionAdapter(
             request_client_=request_client_,
-            request_network_subgraph_endpoint_url=settings.request_network_subgraph_endpoint_url,
             wallet_adapter=wallet_adapter,
             chain=chain,
         )

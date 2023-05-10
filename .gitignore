@@ -131,3 +131,6 @@ dmypy.json
 # env files 
 *.env
 *.envrc
+
+# IntelliJ
+.idea
