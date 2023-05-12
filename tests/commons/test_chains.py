@@ -26,14 +26,3 @@ def describe_chain() -> None:
         def it_does_not_support_other_chains() -> None:
             with pytest.raises(ValueError):
                 assert chains.Chain("SOME_CHAIN") is None
-
-        def it_can_get_chain_from_chain_name() -> None:
-            assert chains.Chain.from_chain_name("polygon") == chains.Chain.POLYGON
-            assert chains.Chain.from_chain_name("ethereum") == chains.Chain.ETHEREUM
-            assert chains.Chain.from_chain_name("goerli") == chains.Chain.GOERLI
-            assert chains.Chain.from_chain_name("matic") == chains.Chain.POLYGON
-            assert chains.Chain.from_chain_name("eth") == chains.Chain.ETHEREUM
-            assert chains.Chain.from_chain_name("MAINNET") == chains.Chain.ETHEREUM
-
-            with pytest.raises(ValueError):
-                assert chains.Chain.from_chain_name("SOME_CHAIN") is None

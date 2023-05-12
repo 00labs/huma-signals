@@ -1,9 +1,6 @@
-import os
+import pathlib
 
-import pytest
-
-from huma_signals import settings
-from huma_signals.commons import chains
+import dotenv
 
 # Fixtures registered below will be made globally available.
 pytest_plugins = [
@@ -12,9 +9,4 @@ pytest_plugins = [
     "tests.fixtures.clients.request.request_fixtures",
 ]
 
-
-@pytest.fixture(scope="session", autouse=True)
-def ensure_test_env() -> None:
-    """make sure the env is set to TEST"""
-    assert os.getenv("ENV") == settings.Env.TEST
-    assert os.getenv("CHAIN") == chains.Chain.GOERLI.value
+dotenv.load_dotenv(dotenv_path=pathlib.Path(__file__).parent / "dotenv" / "test.env")

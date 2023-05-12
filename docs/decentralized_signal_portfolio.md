@@ -70,7 +70,7 @@ class WalletEthTransactionsAdapter(AdapterBase):
 ```
 
 - Secret management
-  - For now, secrets should be included in [dotenv](../huma_signals/dotenv/) and loaded thru [settings](../evaluation_agent/settings.py) when DSP service is initialized.
+  - For now, secrets should be included in [dotenv](../tests/dotenv/) and loaded thru [settings](../evaluation_agent/settings.py) when DSP service is initialized.
 - Name
   - Each Signal Adapter should have a unique name.
   - The Signal Adapter's name is used as the namespace for signals.
@@ -83,7 +83,7 @@ class WalletEthTransactionsAdapter(AdapterBase):
 
 ### Tests
 
-Please make sure to include extensive tests under [tests](../tests/domain/adapters/). If your adapter makes network requests,
+Please make sure to include extensive tests under [tests](../tests/adapters/). If your adapter makes network requests,
 please use VCR cassettes to capture them so that the unit test environment do not make real network requests at runtime.
 
 - We use `pytest` for test framework.
