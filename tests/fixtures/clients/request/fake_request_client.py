@@ -1,6 +1,6 @@
 from typing import Any
 
-from huma_signals.domain.clients.request_client import request_client, request_types
+from huma_signals.clients.request_client import request_client, request_types
 from tests.fixtures.clients.request import request_type_factories
 
 

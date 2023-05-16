@@ -1,4 +1,4 @@
-from huma_signals.domain.clients.eth_client import eth_types
+from huma_signals.clients.eth_client import eth_types
 from tests.fixtures.clients.eth import eth_type_factories
 
 
