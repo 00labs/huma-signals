@@ -20,7 +20,7 @@ services:
     command: ["make", "test"]
     environment:
       - CHAIN=GOERLI
-      - DATADOG_API_KEY
+      - DATADOG_API_KEY=""
       - WEB3_PROVIDER_URL
       - ETHERSCAN_API_KEY
       - ETHERSCAN_BASE_URL=https://api.etherscan.io
