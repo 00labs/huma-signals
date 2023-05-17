@@ -1,11 +1,14 @@
 [tool.poetry]
 name = "huma-signals"
-version = "0.1.4"
+version = "0.2.0"
 description = "Enables access to high-quality signals about a borrower's income, assets, and liabilities."
 authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
 readme = "README.md"
 packages = [{include = "huma_signals"}]
+homepage = "https://github.com/00labs/huma-signals/"
+documentation = "https://docs.huma.finance/developer-guidelines/decentralized_signal_portfolio"
+repository = "https://github.com/00labs/huma-signals.git"
 
 [tool.poetry.dependencies]
 python = "~3.10"
