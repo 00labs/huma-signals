@@ -3,13 +3,11 @@
   <h1 align="center">Decentralized Signal Portfolio</h1>
 </p>
 
-
-
 <p align="center">
   <a href="https://github.com/00labs/huma-signals/actions" target="_blank">
-    <img alt="Action Status" src="https://github.com/00labs/huma-signals/actions/workflows/ci.yaml/badge.svg">
+    <img alt="Action Status" src="https://github.com/00labs/huma-signals/actions/workflows/ci-main.yml/badge.svg">
   </a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-0.2.0-blue.svg?cacheSeconds=2592000" />
   <a href="https://docs.huma.finance/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
@@ -23,8 +21,7 @@
     <img alt="Twitter: humafinance" src="https://img.shields.io/twitter/follow/humafinance.svg?style=social" />
   </a>
 
-The Decentralized Signal Portfolio (DSP) is an open platform that enables access to high-quality signals about a borrower's income, assets, and liabilities. These signals are collected through Signal Adapters hosted on the DSP, which gather data from a variety of on-chain and off-chain sources. Any developer can contribute to the platform by adding a new Signal Adapter for a specific data source.
-
+The Decentralized Signal Portfolio (DSP) is an open source package that enables access to high-quality signals about a borrower's income, assets, and liabilities. These signals are collected through Signal Adapters, which gather data from a variety of on-chain and off-chain sources. Any developer can contribute to the platform by adding a new Signal Adapter for a specific data source.
 </p>
 
 ## Overview
