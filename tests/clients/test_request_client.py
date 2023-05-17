@@ -11,7 +11,7 @@ from huma_signals.commons import chains
 from tests.fixtures.clients.request import request_type_factories
 from tests.helpers import vcr_helpers
 
-_FIXTURE_BASE_PATH = "/domain/clients/request_client"
+_FIXTURE_BASE_PATH = "/clients/request_client"
 
 
 class Settings(pydantic.BaseSettings):
