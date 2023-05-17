@@ -6,6 +6,9 @@ authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
 readme = "README.md"
 packages = [{include = "huma_signals"}]
+homepage = "https://github.com/00labs/huma-signals/"
+documentation = "https://docs.huma.finance/developer-guidelines/decentralized_signal_portfolio"
+repository = "https://github.com/00labs/huma-signals.git"
 
 [tool.poetry.dependencies]
 python = "~3.10"
