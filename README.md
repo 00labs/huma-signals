@@ -7,7 +7,7 @@
   <a href="https://github.com/00labs/huma-signals/actions" target="_blank">
     <img alt="Action Status" src="https://github.com/00labs/huma-signals/actions/workflows/ci-main.yml/badge.svg">
   </a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.2.0-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-0.2.1-blue.svg?cacheSeconds=2592000" />
   <a href="https://docs.huma.finance/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
