@@ -3,7 +3,7 @@ from typing import Any
 
 import factory
 
-from huma_signals.domain.adapters.polygon_wallet import adapter
+from huma_signals.adapters.polygon_wallet import adapter
 
 
 class PolygonWalletSignalsFactory(factory.Factory):

@@ -22,11 +22,3 @@ RUN pip install poetry==1.2.2
 FROM base AS dev
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
-
-# Build target for staging and prod
-FROM base AS prod
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
-
-CMD poetry run ddtrace-run uvicorn huma_signals.api.main:app --reload --host "0.0.0.0"
