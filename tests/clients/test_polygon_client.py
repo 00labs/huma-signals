@@ -4,7 +4,7 @@ import pytest
 from huma_signals.clients.polygon_client import polygon_client
 from tests.helpers import vcr_helpers
 
-_FIXTURE_BASE_PATH = "/domain/clients/polygon_client"
+_FIXTURE_BASE_PATH = "/clients/polygon_client"
 
 
 class Settings(pydantic.BaseSettings):

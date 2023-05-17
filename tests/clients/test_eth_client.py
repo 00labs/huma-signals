@@ -4,7 +4,7 @@ import pytest
 from huma_signals.clients.eth_client import eth_client
 from tests.helpers import vcr_helpers
 
-_FIXTURE_BASE_PATH = "/domain/clients/eth_client"
+_FIXTURE_BASE_PATH = "/clients/eth_client"
 
 
 class Settings(pydantic.BaseSettings):
