@@ -1,23 +1,23 @@
 # Decentralized Signal Portfolio
 
-The Decentralized Signal Portfolio (DSP) is an open platform that enables access to high-quality signals about a borrower's income, assets, and liabilities. These signals are collected through Signal Adapters hosted on the DSP, which gather data from a variety of on-chain and off-chain sources. Any developer can contribute to the platform by adding a new Signal Adapter for a specific data source. By adding and improving these signals, we can not only improve the quality of evaluations made by Evaluation Agents but also provide a valuable data source for reuse by the broader ecosystem.
+The Decentralized Signal Portfolio (DSP) is an open-source package that enables access to high-quality signals about a borrower's income, assets, and liabilities. These signals are collected through Signal Adapters in the package, which gather data from a variety of on-chain and off-chain sources. Any developer can contribute to the platform by adding a new Signal Adapter for a specific data source. By adding and improving these signals, we can not only improve the quality of evaluations made by Evaluation Agents but also provide a valuable data source for reuse by the broader ecosystem.
 
 ## Types of signals
 
-Income-related signals help understand the amount, frequency, and other objective quantities that describe the income associated with a wallet. This can include information about predicted future income from that source as well.
+In general, there are a few different flavors of signals:
 
-Asset-related signals help understand the quality and quantity of the borrower's assets.
+- Income signals represent the amount, frequency, and other quantitative features that describe the income associated with a wallet. Predicted future income could be included as well.
+- Asset signals represent the quality and quantity of the borrowers' assets.
+- Liability signals represent borrowers' payment obligations from their assets and future income.
 
-Liabilities are signals about borrowers' payment obligations from their assets and future income.
-
-There is a wide range of sources that a Signal Adapter can be developed. Examples include;
+There is a wide range of sources that a Signal Adapter can be developed to fetch from. Examples include:
 
 - On-chain sources
-  - Direct payments from treasuries, i.e., Gnosis SAFE’s, Circle Business Account
+  - Direct payments from treasuries, i.e., Gnosis SAFE, Circle Business Account
   - Payments/invoices like Request Network, Utopia Labs, Coinshift, Superfluid
   - Positions in lending pools
   - Yield farming
-  - Staking, miner, and validator income
+  - Staking, mining, and validation income
   - Gaming income
   - NFT royalties
   - …
@@ -31,18 +31,20 @@ There is a wide range of sources that a Signal Adapter can be developed. Example
 
 ## Example of a Signal Adapter
 
-See the [Eth Transactions Adapter](../examples/signal_adapaters/simple_eth_transactions.py) for a working example.
+See the [Ethereum Wallet Adapter](../huma_signals/adapters/ethereum_wallet) for a working example.
 
 ## Contributing new Signal Adapter
 
-All signal adapter codes are under the [example folder](../examples/signal_adapaters/).
+All signal adapters' code can be located under the [`huma_signals` directory](../huma_signals/).
 
 ### Adding signal definition
 
-Add a new signal definition class to list all the signals supported by the new adapter.
+Add a new signal definition class to list all the signals supported by the new adapter like the one below:
 
 ```python
-class WalletEthTransactionsSignals(Model):
+from huma_signals import models
+
+class EthereumWalletSignals(models.HumaBaseModel):
     total_transactions: int
     total_sent: int
     total_received: int
@@ -51,53 +53,66 @@ class WalletEthTransactionsSignals(Model):
     total_transactions_90days: int
 ```
 
-### Adding signal adapter logic
+### Adding adapter-specific env settings
 
-Add an Adapter class with code to actually fetch data from external sources and compute any derived signals:
-
-An example:
+It's likely that your new Signal Adapter needs some specific env settings to run, e.g. Alchemy API key. You can create a `pydantic.Setting` class to capture all the env settings for your adapter. For example:
 
 ```python
-class WalletEthTransactionsAdapter(AdapterBase):
-    name: ClassVar[str] = "wallet_eth_txns"
-    required_inputs: ClassVar[List[str]] = ["wallet_address", "network"]
-    signals: ClassVar[List[str]] = WalletEthTransactionsSignals.__fields__.keys()
+import pydantic
 
-    def fetch(
-        self, input_a: str, input_b: str, input_c: str
-    ) -> WalletEthTransactionsSignals:
-        pass
+class Settings(pydantic.BaseSettings):
+    class Config:
+        case_sensitive = False
+
+    etherscan_base_url: str
+    etherscan_api_key: str
+
+
+settings = Settings()
 ```
 
-- Secret management
-  - For now, secrets should be included in [dotenv](../huma_signals/dotenv/) and loaded thru [settings](../evaluation_agent/settings.py) when DSP service is initialized.
-- Name
-  - Each Signal Adapter should have a unique name.
-  - The Signal Adapter's name is used as the namespace for signals.
-  - For example, a signal's full name looks like `signal_adapter_name.signal_name` so we can avoid name conflict.
-- Required inputs
-  - These are the inputs a signal adapter required to fetch and compute signals.
-  - It's the caller's responsibility to provide these inputs. In most cases, the caller will be the [Huma Evaluation Agent](https://docs.huma.finance/developer-guidlines/evaluation_agent).
-- The `fetch` method
-  - The unified interface to receive inputs and return computed signals.
+Then in your adapter, you can access the env vars by referencing the settings defined above.
 
-### Tests
+### Adding Signal Adapter logic
 
-Please make sure to include extensive tests under [tests](../tests/domain/adapters/). If your adapter makes network requests,
-please use VCR cassettes to capture them so that the unit test environment do not make real network requests at runtime.
+Add an Adapter class with code to fetch data from external sources and compute derived signals. Below is an example:
 
-- We use `pytest` for test framework.
-- Make sure to use `pytest-describe` to organize tests.
-Please provide the necessary fixtures to properly test the new adapter end-to-end.
+```python
+from typing import Any
 
-## Life cycle of a new Signal Adapter
+from huma_signals.adapters import models as adapter_models
+
+
+class EthereumWalletAdapter(adapter_models.SignalAdapterBase):
+  def __init__(self, *args: Any, **kwargs: Any):
+    pass
+
+  async def fetch(
+          self, input_a: str, input_b: str, input_c: str
+  ) -> EthereumWalletSignals:
+    """
+    The unified interface to receive inputs and return computed signals.
+    """
+    pass
+```
+
+### Testing
+
+Please include extensive tests under [tests](../tests). Below are the things to keep in mind:
+
+- Use `pytest` for test framework.
+- Use `pytest-describe` to organize tests.
+- If your adapter makes network requests, please use VCR cassettes to capture them so that the unit test environment do not make real network requests at runtime.
+- If your tests require environment variables to run, please specify them in `pydantic.Setting` classes in your test files.
+
+## Lifecycle of a new Signal Adapter
 
 1. Implement the Signal Adapter according to the provided interface, and submit a pull request for review by Huma DAO.
-2. If your Signal Adapter is accepted, it will be deployed on the DSP with the appropriate open-source license.
-3. All accepted Signal Adapters will be listed and available for use by Evaluation Agents (EAs).
+2. If your Signal Adapter is accepted, it will be published as part of the package with the appropriate open-source license.
+3. Evaluation Agents (EAs) can install the `huma-signals` package and use your Signal Adapter to fetch signals.
 4. Performance and usage statistics for Signal Adapters will be regularly collected and shared as metadata. This information will be valuable to EA developers in choosing the most robust Signal Adapters, and will also be used to calculate rewards for contributors.
 5. Each Signal Adapter must be maintained by its original developer, Huma DAO, or the community. The maintainer will receive rewards but is also responsible for meeting service level agreements, implementing new features, and addressing bug fixes for the Signal Adapter.
 
-## (Coming Soon) Developer participation and rewards
+## (Coming soon) Developer participation and rewards
 
 We invite developers to contribute to the initial development and ongoing maintenance of Signal Adapters on the DSP platform. As a way to kickstart development, Huma offers bounty programs and a portion of the protocol revenue will be allocated to reward Signal Adapter developers and maintainers. The Huma DAO will review all contributions and determine how to distribute the reward pool among different contributors. Join us and be a part of building the future of decentralized finance!

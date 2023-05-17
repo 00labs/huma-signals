@@ -1,0 +1,30 @@
+name: Huma DSP CI
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+
+      - name: Lint
+        run: docker-compose -f ./docker-compose-ci.yml run lint-tests
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+
+      - name: Unit and e2e tests
+        env:
+          WEB3_PROVIDER_URL: ${{ secrets.WEB3_PROVIDER_URL }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+        run: docker-compose -f ./docker-compose-ci.yml run tests

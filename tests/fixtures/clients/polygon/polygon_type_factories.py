@@ -3,7 +3,7 @@ from typing import Any
 
 import factory
 
-from huma_signals.domain.clients.polygon_client import polygon_types
+from huma_signals.clients.polygon_client import polygon_types
 from tests.helpers import address_helpers
 
 

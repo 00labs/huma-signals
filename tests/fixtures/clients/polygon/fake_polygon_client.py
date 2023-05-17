@@ -1,4 +1,4 @@
-from huma_signals.domain.clients.polygon_client import polygon_types
+from huma_signals.clients.polygon_client import polygon_types
 from tests.fixtures.clients.polygon import polygon_type_factories
 
 

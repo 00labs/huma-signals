@@ -8,8 +8,8 @@ It also helps us if you spread the word. Reference the project in blog posts, or
 
 - [Ways to contribute](#ways-to-contribute)
 - [Fix outstanding issues](#fix-outstanding-issues)
-- [Report Bugs or Vulnerabilities](#report-bugs-or-vulnerabilities)
-- [Request a New Feature](#request-a-new-feature)
+- [Report bugs or vulnerabilities](#report-bugs-or-vulnerabilities)
+- [Request a new feature](#request-a-new-feature)
 - [Create a new Signal Adapter](#create-a-new-signal-adapter)
 
 ## Fix outstanding issues
@@ -32,7 +32,7 @@ By following these steps, you will help us triage and resolve the issue as quick
 
 ## Request a new feature
 
-If you have a great idea for a new feature, we'd love to hear about it! Please open an issue and provide the following information:
+If you have a new feature in mind, we'd love to hear about it! Please open an issue and provide the following information:
 
 - A clear explanation of the motivation behind the feature request. Is it related to a problem or frustration with the current service? Is it something you need for a project? Let us know!
 - A detailed description of the feature you are requesting.

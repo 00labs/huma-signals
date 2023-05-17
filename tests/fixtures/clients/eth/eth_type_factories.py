@@ -3,7 +3,7 @@ from typing import Any
 
 import factory
 
-from huma_signals.domain.clients.eth_client import eth_types
+from huma_signals.clients.eth_client import eth_types
 from tests.helpers import address_helpers
 
 
