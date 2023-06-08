@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, ClassVar
+from typing import Any
 
 import pandas as pd
 import structlog
@@ -16,7 +16,6 @@ from huma_signals.commons import chains
 
 logger = structlog.get_logger(__name__)
 
-_ALLOWED_PAYER_ADDRESSES = {"0x2177d6C4eC1a6511184CA6FfAb4FD1d1F5bFF39f".lower()}
 _WALLET_ADAPTER_BY_CHAIN = {
     chains.Chain.ETHEREUM: ethereum_wallet_adapter.EthereumWalletAdapter,
     chains.Chain.GOERLI: ethereum_wallet_adapter.EthereumWalletAdapter,
@@ -25,13 +24,6 @@ _WALLET_ADAPTER_BY_CHAIN = {
 
 
 class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "request_network"
-    required_inputs: ClassVar[list[str]] = [
-        "borrower_wallet_address",
-        "receivable_param",
-    ]
-    signals: ClassVar[list[str]] = list(models.RequestInvoiceSignals.__fields__.keys())
-
     def __init__(  # pylint: disable=too-many-arguments
         self,
         request_client_: request_client.BaseRequestClient | None = None,
@@ -127,6 +119,5 @@ class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
             payer_match_payee=(invoice.payer.lower() == invoice.payee.lower()),
             days_until_due_date=(invoice.due_date - datetime.datetime.utcnow()).days,
             invoice_amount=invoice.amount,
-            # payer_on_allowlist=(invoice.payer.lower() in _ALLOWED_PAYER_ADDRESSES),
             payer_on_allowlist=True,
         )

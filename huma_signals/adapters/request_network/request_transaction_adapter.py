@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, List
+from typing import Any
 
 import pandas as pd
 import structlog
@@ -23,15 +23,6 @@ _WALLET_ADAPTER_BY_CHAIN = {
 
 
 class RequestTransactionAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "request_transaction"
-    required_inputs: ClassVar[List[str]] = [
-        "payer_address",
-        "payee_address",
-    ]
-    signals: ClassVar[List[str]] = list(
-        models.RequestTransactionSignals.__fields__.keys()
-    )
-
     def __init__(  # pylint: disable=too-many-arguments
         self,
         request_client_: request_client.BaseRequestClient | None = None,

@@ -30,3 +30,12 @@ class ContractCallFailedException(HumaSignalException):
 class RequestException(HumaSignalException):
     def __init__(self, message: str) -> None:
         super().__init__(message=message)
+
+
+class SuperfluidException(HumaSignalException):
+    def __init__(self, message: str) -> None:
+        super().__init__(message=message)
+
+
+class SuperfluidStreamNotFoundException(SuperfluidException):
+    pass
