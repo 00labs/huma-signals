@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, ClassVar
+from typing import Any
 
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
@@ -18,10 +18,6 @@ class EthereumWalletSignals(models.HumaBaseModel):
 
 
 class BaseEthereumWalletAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "ethereum_wallet"
-    required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[list[str]] = list(EthereumWalletSignals.__fields__.keys())
-
     async def fetch(  # pylint: disable=arguments-differ
         self, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> EthereumWalletSignals:

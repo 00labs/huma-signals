@@ -1,6 +1,6 @@
 import decimal
 import pathlib
-from typing import Any, ClassVar, List
+from typing import Any, ClassVar
 
 import aiofiles
 import orjson
@@ -55,10 +55,6 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
     interval_in_days_max: ClassVar[int] = 90
     interval_in_days_min: ClassVar[int] = 0
     invoice_amount_ratio: ClassVar[float] = 0.8
-
-    name: ClassVar[str] = "lending_pool"
-    required_inputs: ClassVar[List[str]] = ["pool_address"]
-    signals: ClassVar[List[str]] = list(LendingPoolSignals.__fields__.keys())
 
     async def fetch(  # pylint: disable=arguments-differ
         self, pool_address: str, *args: Any, **kwargs: Any
