@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, ClassVar
+from typing import Any
 
 import structlog
 
@@ -22,10 +22,6 @@ class PolygonWalletSignals(models.HumaBaseModel):
 
 
 class BasePolygonWalletAdapter(adapter_models.SignalAdapterBase):
-    name: ClassVar[str] = "polygon_wallet"
-    required_inputs: ClassVar[list[str]] = ["borrower_wallet_address"]
-    signals: ClassVar[list[str]] = list(PolygonWalletSignals.__fields__.keys())
-
     async def fetch(  # pylint: disable=arguments-differ
         self, borrower_wallet_address: str, *args: Any, **kwargs: Any
     ) -> PolygonWalletSignals:

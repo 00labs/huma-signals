@@ -17,12 +17,6 @@ def describe_LendingPoolAdapter() -> None:
     def pool_address() -> str:
         return "0xA22D20FB0c9980fb96A9B0B5679C061aeAf5dDE4"
 
-    def it_returns_the_name() -> None:
-        assert adapter.LendingPoolAdapter.name == "lending_pool"
-
-    def it_returns_the_required_inputs() -> None:
-        assert adapter.LendingPoolAdapter.required_inputs == ["pool_address"]
-
     def describe_fetch() -> None:
         async def it_fetches_the_signals(pool_address: str) -> None:
             with vcr_helpers.use_cassette(
