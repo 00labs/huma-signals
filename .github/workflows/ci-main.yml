@@ -3,6 +3,8 @@ name: Huma DSP CI for Merging to Main
 on:
   push:
     branches: [ "main" ]
+    tag:
+      - "*"
 
 jobs:
   lint:
@@ -28,7 +30,6 @@ jobs:
     needs:
       - lint
       - tests
-    if: startsWith(github.event.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v3
       - name: Build and publish to pypi
