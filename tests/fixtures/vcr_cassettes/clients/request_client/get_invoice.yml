@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - python-httpx/0.24.0
     method: GET
-    uri: http://localhost:4000/invoice/?id=016fed96cde5f301cb7340ff88c1ba5da96d48485d39f6a146f7bf7794433d3959
+    uri: http://rn-reader/invoice/?id=016fed96cde5f301cb7340ff88c1ba5da96d48485d39f6a146f7bf7794433d3959
   response:
     content: '{"expectedAmount":"100000000","payee":"0xc38B0528097B8076048BEdf4330644F068CEC2e6","payer":"0x8b99407A4395714B706415277f17b4d549608AFe","creationDate":1681691806,"dueDate":0,"owner":"0x11672c0bBFF498c72BC2200f42461c0414855042","tokenId":"0xd4d3","currencyInfo":{"address":"0xf17FF940864351631b1be3ac03702dEA085ba51c","symbol":"USDC","decimals":6},"initialAmount":"100000000","events":[{"type":"create","amount":"100000000","timestamp":1681691820}]}'
     headers:

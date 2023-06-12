@@ -36,7 +36,7 @@ def use_cassette(fixture_file_path: str, **kwargs: Any) -> Iterator:
         # We want the test to make actual requests to the test server, hence
         # ignore them here.
         ignore_hosts=["test"],
-        # ignore_localhost=True,
+        ignore_localhost=True,
         filter_headers=["Authorization", "authorization"],
         # Some APIs require the sender to include the API key as a query param,
         # so let's filter them out.
