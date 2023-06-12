@@ -61,7 +61,7 @@ class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
                 f"Invalid borrower wallet address: {borrower_wallet_address}"
             )
 
-        invoice = await self.request_client.get_invoice(invoice_id=receivable_param)
+        invoice = await self.request_client.get_invoice(request_id=receivable_param)
         records = []
         records.extend(
             await self.request_client.get_payments(
@@ -119,5 +119,5 @@ class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
             payer_match_payee=(invoice.payer.lower() == invoice.payee.lower()),
             days_until_due_date=(invoice.due_date - datetime.datetime.utcnow()).days,
             invoice_amount=invoice.amount,
-            payer_on_allowlist=True,
+            token_id=invoice.token_id,
         )

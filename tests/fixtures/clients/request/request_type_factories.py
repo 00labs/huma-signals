@@ -35,6 +35,7 @@ class InvoiceFactory(factory.Factory):
     class Meta:
         model = request_types.Invoice
 
+    token_id = address_helpers.fake_hex_address_factory(length=4)
     token_owner = address_helpers.fake_hex_address_factory()
     currency = "USDC"
     amount = factory.Faker("pydecimal")

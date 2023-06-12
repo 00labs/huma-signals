@@ -80,8 +80,8 @@ def describe_RequestClient() -> None:
 
     def describe_get_invoice() -> None:
         @pytest.fixture
-        def invoice_id() -> str:
-            return "0xd4d3"
+        def request_id() -> str:
+            return "016fed96cde5f301cb7340ff88c1ba5da96d48485d39f6a146f7bf7794433d3959"
 
         @pytest.fixture
         def payer_wallet_address() -> str:
@@ -93,18 +93,14 @@ def describe_RequestClient() -> None:
 
         async def it_returns_the_invoice(
             client: request_client.RequestClient,
-            invoice_id: str,
+            request_id: str,
             payer_wallet_address: str,
             payee_wallet_address: str,
         ) -> None:
             with vcr_helpers.use_cassette(
                 fixture_file_path=f"{_FIXTURE_BASE_PATH}/get_invoice.yml"
             ):
-                invoice = await client.get_invoice(invoice_id=invoice_id)
-                assert (
-                    web3.Web3.to_checksum_address(invoice.token_owner)
-                    == payee_wallet_address
-                )
+                invoice = await client.get_invoice(request_id=request_id)
                 assert (
                     web3.Web3.to_checksum_address(invoice.payer) == payer_wallet_address
                 )
@@ -114,8 +110,9 @@ def describe_RequestClient() -> None:
                     web3.Web3.to_checksum_address(invoice.payee) == payee_wallet_address
                 )
                 assert invoice.creation_date == datetime.datetime(
-                    2023, 4, 17, 0, 36, 46
+                    2023, 4, 16, 17, 36, 46
                 )
+                assert invoice.token_id == "0xd4d3"
 
     def describe_enrich_payments_data() -> None:
         @pytest.fixture

@@ -24,7 +24,7 @@ class BaseRequestClient(Protocol):
     ) -> list[dict[str, Any]]:
         pass
 
-    async def get_invoice(self, invoice_id: str) -> request_types.Invoice:
+    async def get_invoice(self, request_id: str) -> request_types.Invoice:
         pass
 
     @classmethod
@@ -171,10 +171,10 @@ class RequestClient(BaseRequestClient):
 
         return payments
 
-    async def get_invoice(self, invoice_id: str) -> request_types.Invoice:
+    async def get_invoice(self, request_id: str) -> request_types.Invoice:
         try:
             async with httpx.AsyncClient(base_url=self.invoice_api_url) as client:
-                resp = await client.get(f"?id={invoice_id}")
+                resp = await client.get(f"?id={request_id}")
                 resp.raise_for_status()
                 invoice_info = resp.json()
                 if not web3.Web3.is_address(invoice_info["owner"]):
@@ -205,12 +205,13 @@ class RequestClient(BaseRequestClient):
                         invoice_info["creationDate"]
                     )
                     + datetime.timedelta(days=30),
+                    token_id=invoice_info["tokenId"],
                 )
         except httpx.HTTPStatusError as e:
             logger.exception(
                 f"Request Network API returned status code {e.response.status_code}",
                 base_url=self.invoice_api_url,
-                receivable_param=invoice_id,
+                receivable_param=request_id,
             )
             raise exceptions.RequestException(
                 f"Request Network API returned status code {e.response.status_code}",

@@ -17,5 +17,5 @@ class FakeRequestClient(request_client.BaseRequestClient):
             size=10, from_=from_address, to=to_address
         )
 
-    async def get_invoice(self, invoice_id: str) -> request_types.Invoice:
+    async def get_invoice(self, request_id: str) -> request_types.Invoice:
         return self.invoice or request_type_factories.InvoiceFactory.create()
