@@ -7,6 +7,7 @@ from huma_signals import models
 
 
 class Invoice(models.HumaBaseModel):
+    token_id: str = pydantic.Field(description="The ID of the invoice token")
     token_owner: str = pydantic.Field(description="The address of the token owner")
     currency: str = pydantic.Field(
         description="The currency of the invoice (e.g. USDC, ETH, etc.)"
