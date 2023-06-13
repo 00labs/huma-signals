@@ -197,6 +197,7 @@ class RequestClient(BaseRequestClient):
                     status="",
                     payer=invoice_info["payer"].lower(),
                     payee=invoice_info["payee"].lower(),
+                    # TODO(jiatu): do we need to add tz info here?
                     creation_date=datetime.datetime.fromtimestamp(
                         invoice_info["creationDate"]
                     ),

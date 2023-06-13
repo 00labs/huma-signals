@@ -8,6 +8,7 @@ class SuperfluidSignals(models.HumaBaseModel):
     current_flow_rate: int = pydantic.Field(
         description="The current flow rate of the stream in the unit of wei/sec"
     )
+    stream_id: str = pydantic.Field(description="The stream ID")
 
 
 class SuperfluidStream(pydantic_utils.CamelCaseAliased):

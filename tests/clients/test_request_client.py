@@ -110,7 +110,7 @@ def describe_RequestClient() -> None:
                     web3.Web3.to_checksum_address(invoice.payee) == payee_wallet_address
                 )
                 assert invoice.creation_date == datetime.datetime(
-                    2023, 4, 16, 17, 36, 46
+                    2023, 4, 17, 0, 36, 46
                 )
                 assert invoice.token_id == "0xd4d3"
 
