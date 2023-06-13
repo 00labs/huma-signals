@@ -36,6 +36,10 @@ def describe_SuperfluidAdapter() -> None:
                     super_token_address=super_token_address,
                 )
                 assert signals.current_flow_rate == 999975694444444443
+                assert (
+                    signals.stream_id
+                    == "0x6a577ba814111bb2a90cfcbec07c18fea686e726f2e41994c7b466d901bfb856"
+                )
 
         def if_the_stream_cannot_be_found() -> None:
             @pytest.fixture

@@ -56,13 +56,27 @@ class SuperfluidAdapter(adapter_models.SignalAdapterBase):
             if not web3.Web3.is_address(address):
                 raise exceptions.InvalidAddressException(f"Invalid address: {address}")
 
+        sender_address = payer_wallet_address.lower()
+        receiver_address = borrower_wallet_address.lower()
+        token_address = super_token_address.lower()
         current_stream = await self._get_current_stream(
-            sender_address=payer_wallet_address.lower(),
-            receiver_address=borrower_wallet_address.lower(),
-            token_address=super_token_address.lower(),
+            sender_address=sender_address,
+            receiver_address=receiver_address,
+            token_address=token_address,
         )
+        # Pylint doesn't recognize the `@combomethod` decorator that makes a method
+        # callable as a class method.
+        stream_id = web3.Web3.solidity_keccak(  # pylint: disable=no-value-for-parameter
+            abi_types=["address", "address", "address"],
+            values=[
+                web3.Web3.to_checksum_address(token_address),
+                web3.Web3.to_checksum_address(sender_address),
+                web3.Web3.to_checksum_address(receiver_address),
+            ],
+        ).hex()
         return superfluid_models.SuperfluidSignals(
             current_flow_rate=current_stream.current_flow_rate,
+            stream_id=stream_id,
         )
 
     async def _get_current_stream(

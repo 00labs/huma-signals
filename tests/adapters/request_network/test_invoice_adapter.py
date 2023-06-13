@@ -32,7 +32,7 @@ def describe_RequestInvoiceAdapter() -> None:
         return 24
 
     @pytest.fixture
-    def invoice_id() -> str:
+    def request_id() -> str:
         return address_helpers.fake_hex_address()
 
     @pytest.fixture
@@ -99,12 +99,12 @@ def describe_RequestInvoiceAdapter() -> None:
                 payee_wallet_address: str,
                 payer_wallet_tenure: int,
                 payee_wallet_tenure: int,
-                invoice_id: str,
+                request_id: str,
                 invoice: request_types.Invoice,
             ) -> None:
                 signals = await adapter.fetch(
                     borrower_wallet_address=payee_wallet_address,
-                    receivable_param=invoice_id,
+                    receivable_param=request_id,
                 )
                 assert signals.payer_count == 10
                 assert signals.payee_count == 10
@@ -115,16 +115,16 @@ def describe_RequestInvoiceAdapter() -> None:
                 assert signals.borrower_own_invoice
                 assert signals.payer_match_payee is False
                 assert signals.invoice_amount == invoice.amount
-                assert signals.payer_on_allowlist
+                assert signals.token_id == invoice.token_id
 
             def when_payee_is_not_the_borrower() -> None:
                 async def it_returns_false_for_the_signal_field(
                     adapter: request_invoice_adapter.RequestInvoiceAdapter,
-                    invoice_id: str,
+                    request_id: str,
                 ) -> None:
                     signals = await adapter.fetch(
                         borrower_wallet_address=address_helpers.fake_hex_address(),
-                        receivable_param=invoice_id,
+                        receivable_param=request_id,
                     )
                     assert signals.payee_match_borrower is False
 
@@ -136,11 +136,11 @@ def describe_RequestInvoiceAdapter() -> None:
                 async def it_returns_false_for_the_signal_field(
                     adapter: request_invoice_adapter.RequestInvoiceAdapter,
                     payee_wallet_address: str,
-                    invoice_id: str,
+                    request_id: str,
                 ) -> None:
                     signals = await adapter.fetch(
                         borrower_wallet_address=payee_wallet_address,
-                        receivable_param=invoice_id,
+                        receivable_param=request_id,
                     )
                     assert signals.borrower_own_invoice is False
 
@@ -152,11 +152,11 @@ def describe_RequestInvoiceAdapter() -> None:
                 async def it_returns_true_for_the_signal_field(
                     adapter: request_invoice_adapter.RequestInvoiceAdapter,
                     payee_wallet_address: str,
-                    invoice_id: str,
+                    request_id: str,
                 ) -> None:
                     signals = await adapter.fetch(
                         borrower_wallet_address=payee_wallet_address,
-                        receivable_param=invoice_id,
+                        receivable_param=request_id,
                     )
                     assert signals.payer_match_payee
 
@@ -168,12 +168,12 @@ def describe_RequestInvoiceAdapter() -> None:
                 async def it_throws_error(
                     adapter: request_invoice_adapter.RequestInvoiceAdapter,
                     payee_wallet_address: str,
-                    invoice_id: str,
+                    request_id: str,
                 ) -> None:
                     with pytest.raises(exceptions.InvalidAddressException):
                         await adapter.fetch(
                             borrower_wallet_address=payee_wallet_address,
-                            receivable_param=invoice_id,
+                            receivable_param=request_id,
                         )
 
         def with_polygon_chain() -> None:
@@ -210,11 +210,11 @@ def describe_RequestInvoiceAdapter() -> None:
                 payee_wallet_address: str,
                 payer_wallet_tenure: int,
                 payee_wallet_tenure: int,
-                invoice_id: str,
+                request_id: str,
             ) -> None:
                 signals = await adapter.fetch(
                     borrower_wallet_address=payee_wallet_address,
-                    receivable_param=invoice_id,
+                    receivable_param=request_id,
                 )
                 assert signals.payer_count == 10
                 assert signals.payee_count == 10
@@ -230,10 +230,10 @@ def describe_RequestInvoiceAdapter() -> None:
                 async def it_throws_error(
                     adapter: request_invoice_adapter.RequestInvoiceAdapter,
                     payee_wallet_address: str,
-                    invoice_id: str,
+                    request_id: str,
                 ) -> None:
                     with pytest.raises(exceptions.InvalidAddressException):
                         await adapter.fetch(
                             borrower_wallet_address=payee_wallet_address,
-                            receivable_param=invoice_id,
+                            receivable_param=request_id,
                         )
