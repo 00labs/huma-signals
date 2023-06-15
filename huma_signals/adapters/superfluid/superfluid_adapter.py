@@ -6,7 +6,7 @@ from huma_signals import exceptions
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.superfluid import superfluid_models
 from huma_signals.adapters.superfluid.settings import settings
-from huma_signals.commons import chains
+from huma_utils import chain_utils
 
 logger = structlog.get_logger()
 
@@ -37,7 +37,7 @@ class SuperfluidAdapter(adapter_models.SignalAdapterBase):
     def __init__(
         self,
         superfluid_subgraph_endpoint_url: str = settings.superfluid_subgraph_endpoint_url,
-        chain: chains.Chain = settings.chain,
+        chain: chain_utils.Chain = settings.chain,
     ) -> None:
         self.superfluid_subgraph_endpoint_url = superfluid_subgraph_endpoint_url
         self.chain = chain

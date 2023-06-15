@@ -5,7 +5,7 @@ from typing import Any
 import factory
 
 from huma_signals.clients.request_client import request_types
-from huma_signals.commons import string_utils
+from huma_utils import string_utils
 from tests.helpers import address_helpers
 
 

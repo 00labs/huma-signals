@@ -1,6 +1,6 @@
 import pydantic
 
-from huma_signals.commons import string_utils
+from huma_utils import string_utils
 
 
 class CamelCaseAliased(pydantic.BaseModel):
