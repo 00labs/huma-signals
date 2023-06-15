@@ -1,11 +1,11 @@
 import pytest
+from huma_utils import chain_utils
 
 from huma_signals import exceptions
 from huma_signals.adapters.ethereum_wallet import adapter as ethereum_wallet_adapter
 from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapter
 from huma_signals.adapters.request_network import request_transaction_adapter
 from huma_signals.clients.request_client import request_client
-from huma_signals.commons import chains
 from tests.fixtures.adapters import (
     fake_ethereum_wallet_adapter,
     fake_polygon_wallet_adapter,
@@ -40,7 +40,7 @@ def describe_RequestTransactionAdapter() -> None:
         request_client_: request_client.BaseRequestClient,
         wallet_adapter: ethereum_wallet_adapter.BaseEthereumWalletAdapter
         | polygon_wallet_adapter.BasePolygonWalletAdapter,
-        chain: chains.Chain,
+        chain: chain_utils.Chain,
     ) -> request_transaction_adapter.RequestTransactionAdapter:
         return request_transaction_adapter.RequestTransactionAdapter(
             request_client_=request_client_,
@@ -51,8 +51,8 @@ def describe_RequestTransactionAdapter() -> None:
     def describe_fetch() -> None:
         def with_eth_chain() -> None:
             @pytest.fixture
-            def chain() -> chains.Chain:
-                return chains.Chain.ETHEREUM
+            def chain() -> chain_utils.Chain:
+                return chain_utils.Chain.ETHEREUM
 
             @pytest.fixture
             def signals(
@@ -129,8 +129,8 @@ def describe_RequestTransactionAdapter() -> None:
 
         def with_polygon_chain() -> None:
             @pytest.fixture
-            def chain() -> chains.Chain:
-                return chains.Chain.POLYGON
+            def chain() -> chain_utils.Chain:
+                return chain_utils.Chain.POLYGON
 
             @pytest.fixture
             def signals(

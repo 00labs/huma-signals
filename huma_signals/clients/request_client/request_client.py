@@ -6,11 +6,11 @@ import httpx
 import pandas as pd
 import structlog
 import web3
+from huma_utils import chain_utils
 
 from huma_signals import exceptions
 from huma_signals.clients.request_client import request_types
 from huma_signals.commons import tokens
-from huma_utils import chain_utils
 
 logger = structlog.get_logger(__name__)
 

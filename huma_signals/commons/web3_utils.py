@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Any, Dict, Sequence, Type, Union
 
 import web3
-from web3 import eth, geth, module, net
-
 from huma_utils import chain_utils
+from web3 import eth, geth, module, net
 
 _WEB3_CHAIN_NETWORK_ID: Dict[chain_utils.Chain, str] = {
     chain_utils.Chain.ETHEREUM: "1",

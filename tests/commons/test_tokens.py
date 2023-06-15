@@ -1,7 +1,7 @@
 import web3
+from huma_utils import chain_utils
 
 from huma_signals.commons import tokens
-from huma_utils import chain_utils
 
 
 def describe_TOKEN_ADDRESS_MAPPING() -> None:

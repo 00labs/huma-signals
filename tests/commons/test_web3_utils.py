@@ -1,6 +1,5 @@
 import pydantic
 import pytest
-
 from huma_utils import chain_utils, web3_utils
 
 
@@ -35,4 +34,6 @@ def describe_get_w3() -> None:
 
     async def it_raises_error_if_chain_is_not_matched_with_provider() -> None:
         with pytest.raises(ValueError):
-            await web3_utils.get_w3(chain_utils.Chain.POLYGON, settings.web3_provider_url)
+            await web3_utils.get_w3(
+                chain_utils.Chain.POLYGON, settings.web3_provider_url
+            )

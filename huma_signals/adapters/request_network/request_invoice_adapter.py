@@ -4,6 +4,7 @@ from typing import Any
 import pandas as pd
 import structlog
 import web3
+from huma_utils import chain_utils
 
 from huma_signals import exceptions
 from huma_signals.adapters import models as adapter_models
@@ -12,14 +13,13 @@ from huma_signals.adapters.polygon_wallet import adapter as polygon_wallet_adapt
 from huma_signals.adapters.request_network import models
 from huma_signals.adapters.request_network.settings import settings
 from huma_signals.clients.request_client import request_client
-from huma_signals.commons import chains
 
 logger = structlog.get_logger(__name__)
 
 _WALLET_ADAPTER_BY_CHAIN = {
-    chains.Chain.ETHEREUM: ethereum_wallet_adapter.EthereumWalletAdapter,
-    chains.Chain.GOERLI: ethereum_wallet_adapter.EthereumWalletAdapter,
-    chains.Chain.POLYGON: polygon_wallet_adapter.PolygonWalletAdapter,
+    chain_utils.Chain.ETHEREUM: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chain_utils.Chain.GOERLI: ethereum_wallet_adapter.EthereumWalletAdapter,
+    chain_utils.Chain.POLYGON: polygon_wallet_adapter.PolygonWalletAdapter,
 }
 
 
@@ -32,7 +32,7 @@ class RequestInvoiceAdapter(adapter_models.SignalAdapterBase):
         | None = None,
         request_network_subgraph_endpoint_url: str = settings.request_network_subgraph_endpoint_url,
         invoice_api_url: str = settings.request_network_invoice_api_url,
-        chain: chains.Chain = settings.chain,
+        chain: chain_utils.Chain = settings.chain,
     ) -> None:
         self.request_client = request_client_ or request_client.RequestClient(
             request_network_subgraph_endpoint_url=request_network_subgraph_endpoint_url,

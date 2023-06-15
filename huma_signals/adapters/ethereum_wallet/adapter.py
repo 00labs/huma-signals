@@ -1,11 +1,12 @@
 import datetime
 from typing import Any
 
+from huma_utils import datetime_utils
+
 from huma_signals import models
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.ethereum_wallet.settings import settings
 from huma_signals.clients.eth_client import eth_client, eth_types
-from huma_utils import datetime_utils
 
 
 class EthereumWalletSignals(models.HumaBaseModel):

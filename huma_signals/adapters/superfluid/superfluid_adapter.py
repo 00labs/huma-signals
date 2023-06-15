@@ -1,12 +1,12 @@
 import httpx
 import structlog
 import web3
+from huma_utils import chain_utils
 
 from huma_signals import exceptions
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.superfluid import superfluid_models
 from huma_signals.adapters.superfluid.settings import settings
-from huma_utils import chain_utils
 
 logger = structlog.get_logger()
 
