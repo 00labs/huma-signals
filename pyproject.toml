@@ -19,6 +19,7 @@ httpx = "^0.24.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 urllib3 = "^1.26"
+huma-utils = "^0.2.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-describe = "^2.0.1"
