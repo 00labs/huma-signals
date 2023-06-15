@@ -2,11 +2,11 @@ from unittest import mock
 
 import pytest
 import pytest_mock
+from huma_utils import web3_utils
 from web3 import exceptions as web3_exceptions
 
 from huma_signals import exceptions
 from huma_signals.adapters.lending_pools import adapter
-from huma_signals.commons import web3_utils
 from tests.helpers import address_helpers, vcr_helpers
 
 _FIXTURE_BASE_PATH = "/adapters/lending_pools"

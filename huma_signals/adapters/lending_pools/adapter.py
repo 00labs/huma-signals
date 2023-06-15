@@ -7,13 +7,13 @@ import orjson
 import pydantic
 import structlog
 import web3
+from huma_utils import web3_utils
 from web3 import exceptions as web3_exceptions
 
 from huma_signals import exceptions, models
 from huma_signals.adapters import models as adapter_models
 from huma_signals.adapters.lending_pools import registry
 from huma_signals.adapters.lending_pools.settings import settings
-from huma_signals.commons import web3_utils
 
 logger = structlog.get_logger(__name__)
 

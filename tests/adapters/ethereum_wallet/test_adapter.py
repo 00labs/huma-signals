@@ -1,10 +1,10 @@
 import datetime
 
 import pytest
+from huma_utils import datetime_utils
 
 from huma_signals.adapters.ethereum_wallet import adapter
 from huma_signals.clients.eth_client import eth_types
-from huma_signals.commons import datetime_utils
 from tests.fixtures.clients.eth import eth_type_factories, fake_eth_client
 from tests.helpers import address_helpers
 

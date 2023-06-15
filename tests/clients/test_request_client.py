@@ -5,9 +5,9 @@ import pandas as pd
 import pydantic
 import pytest
 import web3
+from huma_utils import chain_utils
 
 from huma_signals.clients.request_client import request_client
-from huma_signals.commons import chains
 from tests.fixtures.clients.request import request_type_factories
 from tests.helpers import vcr_helpers
 
@@ -116,8 +116,8 @@ def describe_RequestClient() -> None:
 
     def describe_enrich_payments_data() -> None:
         @pytest.fixture
-        def chain() -> chains.Chain:
-            return chains.Chain.ETHEREUM
+        def chain() -> chain_utils.Chain:
+            return chain_utils.Chain.ETHEREUM
 
         @pytest.fixture
         def token_address() -> str:
@@ -132,7 +132,7 @@ def describe_RequestClient() -> None:
             return pd.DataFrame.from_records(raw_data)
 
         def it_enriches_the_payment_data(
-            payments_data: pd.DataFrame, chain: chains.Chain
+            payments_data: pd.DataFrame, chain: chain_utils.Chain
         ) -> None:
             enriched_data = request_client.RequestClient.enrich_payments_data(
                 payments_data, chain=chain
@@ -151,7 +151,7 @@ def describe_RequestClient() -> None:
                 request_type_factories.PaymentFactory.create_batch(size=num_payments)
             )
             return request_client.RequestClient.enrich_payments_data(
-                raw_data, chain=chains.Chain.ETHEREUM
+                raw_data, chain=chain_utils.Chain.ETHEREUM
             )
 
         def it_summarizes_payment_stats(

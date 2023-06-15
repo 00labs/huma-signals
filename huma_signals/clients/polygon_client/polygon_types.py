@@ -1,6 +1,5 @@
 import pydantic
-
-from huma_signals.commons import pydantic_utils
+from huma_utils import pydantic_utils
 
 
 class PolygonTransaction(pydantic_utils.CamelCaseAliased):
