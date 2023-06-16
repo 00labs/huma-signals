@@ -4,8 +4,7 @@ import pathlib
 
 import dotenv
 import pydantic
-
-from huma_signals.commons import chains
+from huma_utils import chain_utils
 
 
 class Env(str, enum.Enum):
@@ -40,7 +39,7 @@ class Settings(pydantic.BaseSettings):
         case_sensitive = False
 
     env: str
-    chain: chains.Chain
+    chain: chain_utils.Chain
     web3_provider_url: str
 
     instrumentation_enabled: bool

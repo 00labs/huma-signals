@@ -6,10 +6,11 @@ import httpx
 import pandas as pd
 import structlog
 import web3
+from huma_utils import chain_utils
 
 from huma_signals import exceptions
 from huma_signals.clients.request_client import request_types
-from huma_signals.commons import chains, tokens
+from huma_signals.commons import tokens
 
 logger = structlog.get_logger(__name__)
 
@@ -29,7 +30,7 @@ class BaseRequestClient(Protocol):
 
     @classmethod
     def enrich_payments_data(
-        cls, payments_raw_df: pd.DataFrame, chain: chains.Chain
+        cls, payments_raw_df: pd.DataFrame, chain: chain_utils.Chain
     ) -> pd.DataFrame:
         """
         Enriches the raw payments data with additional information

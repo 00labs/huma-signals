@@ -1,10 +1,10 @@
 import datetime
 
 import pytest
+from huma_utils import datetime_utils
 
 from huma_signals.adapters.polygon_wallet import adapter
 from huma_signals.clients.polygon_client import polygon_types
-from huma_signals.commons import datetime_utils
 from tests.fixtures.clients.polygon import fake_polygon_client, polygon_type_factories
 from tests.helpers import address_helpers
 
