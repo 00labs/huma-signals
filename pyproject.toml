@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huma-signals"
-version = "0.4.1"
+version = "0.5.0"
 description = "Enables access to high-quality signals about a borrower's income, assets, and liabilities."
 authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
