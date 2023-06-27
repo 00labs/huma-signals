@@ -36,6 +36,17 @@ _POOLS = [
     ),
     PoolSetting(
         pool_address=web3.Web3.to_checksum_address(
+            "0x91bd14A985AD18f63E3380ac2510EC6e24eAE687"
+        ),
+        chain=chain_utils.Chain.GOERLI,
+        pool_abi_path=str(
+            pathlib.Path(__file__).parent.resolve()
+            / "abi"
+            / "ReceivableFactoringPool.json"
+        ),
+    ),
+    PoolSetting(
+        pool_address=web3.Web3.to_checksum_address(
             "0xC5BF9750A7BF93479990EF940d7e3984caa22558"
         ),
         chain=chain_utils.Chain.MUMBAI,
