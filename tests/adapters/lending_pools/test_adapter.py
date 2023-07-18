@@ -27,11 +27,17 @@ def describe_LendingPoolAdapter() -> None:
                 assert signals.pool_address == pool_address
                 assert signals.apr == 1000
                 assert signals.max_credit_amount == 10_000_000_000
-                assert signals.token_address == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                assert (
+                    signals.token_address
+                    == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                )
                 assert signals.token_name == "TestToken"
                 assert signals.token_symbol == "USDC"
                 assert signals.token_decimal == 6
-                assert signals.nft_contract_address == "0x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
+                assert (
+                    signals.nft_contract_address
+                    == "0x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
+                )
                 assert signals.interval_in_days_max == 90
                 assert signals.interval_in_days_min == 0
                 assert signals.invoice_amount_ratio == 0.8
@@ -51,11 +57,17 @@ def describe_LendingPoolAdapter() -> None:
                     assert signals.pool_address == pool_address
                     assert signals.apr == 0
                     assert signals.max_credit_amount == 1_000_000_000
-                    assert signals.token_address == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                    assert (
+                        signals.token_address
+                        == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                    )
                     assert signals.token_name == "TestToken"
                     assert signals.token_symbol == "USDC"
                     assert signals.token_decimal == 6
-                    assert signals.nft_contract_address == "0x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
+                    assert (
+                        signals.nft_contract_address
+                        == "0x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
+                    )
                     assert signals.interval_in_days_max == 90
                     assert signals.interval_in_days_min == 0
                     assert signals.invoice_amount_ratio == 0.8
