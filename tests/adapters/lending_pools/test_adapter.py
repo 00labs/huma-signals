@@ -31,7 +31,7 @@ def describe_LendingPoolAdapter() -> None:
                 assert signals.token_name == "TestToken"
                 assert signals.token_symbol == "USDC"
                 assert signals.token_decimal == 6
-                assert signals.nft_contract_address == "x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
+                assert signals.nft_contract_address == "0x026D2AED6f1E9Db160b79688Ea0CE1ABaee4Dc39"
                 assert signals.interval_in_days_max == 90
                 assert signals.interval_in_days_min == 0
                 assert signals.invoice_amount_ratio == 0.8
