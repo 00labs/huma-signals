@@ -38,9 +38,6 @@ class LendingPoolSignals(models.HumaBaseModel):
     token_decimal: int = pydantic.Field(
         ..., description="Decimal of the token used by the pool"
     )
-    nft_contract_address: str = pydantic.Field(
-        ..., description="Contract address of the NFT or receivable"
-    )
     interval_in_days_max: int = pydantic.Field(
         ..., description="Maximum payment interval in days for the pool"
     )
@@ -114,7 +111,6 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
             token_name=pool_summary[5],
             token_symbol=pool_summary[6],
             token_decimal=pool_summary[7],
-            nft_contract_address=pool_summary[9],
             interval_in_days_max=self.interval_in_days_max,
             interval_in_days_min=self.interval_in_days_min,
             invoice_amount_ratio=self.invoice_amount_ratio,
