@@ -26,6 +26,9 @@ class LendingPoolSignals(models.HumaBaseModel):
     max_credit_amount: decimal.Decimal = pydantic.Field(
         ..., description="Maximum credit amount defined by the pool"
     )
+    token_address: str = pydantic.Field(
+        ..., description="Contract address of the token"
+    )
     token_name: str = pydantic.Field(
         ..., description="Name of the token used by the pool"
     )
@@ -104,6 +107,7 @@ class LendingPoolAdapter(adapter_models.SignalAdapterBase):
             pool_address=pool_address,
             apr=pool_summary[1],
             max_credit_amount=pool_summary[3],
+            token_address=pool_summary[0],
             token_name=pool_summary[5],
             token_symbol=pool_summary[6],
             token_decimal=pool_summary[7],
