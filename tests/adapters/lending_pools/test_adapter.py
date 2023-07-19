@@ -27,6 +27,10 @@ def describe_LendingPoolAdapter() -> None:
                 assert signals.pool_address == pool_address
                 assert signals.apr == 1000
                 assert signals.max_credit_amount == 10_000_000_000
+                assert (
+                    signals.token_address
+                    == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                )
                 assert signals.token_name == "TestToken"
                 assert signals.token_symbol == "USDC"
                 assert signals.token_decimal == 6
@@ -49,6 +53,10 @@ def describe_LendingPoolAdapter() -> None:
                     assert signals.pool_address == pool_address
                     assert signals.apr == 0
                     assert signals.max_credit_amount == 1_000_000_000
+                    assert (
+                        signals.token_address
+                        == "0xf17FF940864351631b1be3ac03702dEA085ba51c"
+                    )
                     assert signals.token_name == "TestToken"
                     assert signals.token_symbol == "USDC"
                     assert signals.token_decimal == 6
