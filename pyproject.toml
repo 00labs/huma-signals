@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huma-signals"
-version = "0.6.1"
+version = "0.6.2"
 description = "Enables access to high-quality signals about a borrower's income, assets, and liabilities."
 authors = ["Jiatu Liu <jiatu@huma.finance>", "Ji Peng <ji@huma.finance>"]
 license = "AGPL v3"
@@ -19,7 +19,7 @@ httpx = "^0.24.0"
 aiofiles = "^22.1.0"
 orjson = "^3.8.5"
 urllib3 = "^1.26"
-huma-utils = "^0.2.1"
+huma-utils = "^0.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-describe = "^2.0.1"
