@@ -53,7 +53,7 @@ _POOLS = [
         pool_abi_path=str(
             pathlib.Path(__file__).parent.resolve()
             / "abi"
-            / "ReceivableFactoringPool.json"
+            / "ReceivableFactoringPoolSuperfluid.json"
         ),
     ),
     PoolSetting(
@@ -74,6 +74,17 @@ _POOLS = [
             pathlib.Path(__file__).parent.resolve()
             / "abi"
             / "ReceivableFactoringPool.json"
+        ),
+    ),
+    PoolSetting(
+        pool_address=web3.Web3.to_checksum_address(
+            "0xF713B5203Cb6f3223830De218c2ed89Ee654b94B"
+        ),
+        chain=chain_utils.Chain.POLYGON,
+        pool_abi_path=str(
+            pathlib.Path(__file__).parent.resolve()
+            / "abi"
+            / "ReceivableFactoringPoolSuperfluid.json"
         ),
     ),
 ]
